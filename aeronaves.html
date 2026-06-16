@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aeronaves Disponíveis | Plane Aviation</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow" data-i18n="ac_eyebrow">Estoque</span>
+      <h1 class="h-display" style="margin-top:.5rem" data-i18n="ac_title">Aeronaves Disponíveis</h1>
+      <p class="muted" style="font-size:.875rem;margin-top:.75rem;max-width:32rem">Unidades certificadas, inspecionadas e prontas para entrega. Exclusividade e segurança Plane Aviation.</p>
+    </div>
+  </section>
+
+  <!-- FILTROS -->
+  <section class="filters">
+    <div class="container">
+      <div class="filters-label">
+        <svg class="icon i-35" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+        <span data-i18n="ac_filters">Filtros</span>
+      </div>
+      <div class="fgroup"><span data-i18n="ac_model">Modelo:</span><select id="fModelo"></select></div>
+      <div class="fgroup"><span data-i18n="ac_condition">Condição:</span><select id="fCondicao"></select></div>
+      <div class="fgroup"><span data-i18n="ac_year">Ano:</span><select id="fAno"></select></div>
+      <span class="count" id="count"></span>
+    </div>
+  </section>
+
+  <!-- GRID -->
+  <section style="padding:3rem 0">
+    <div class="container">
+      <div class="grid g1 sm-g2 lg-g3" id="grid"></div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="i18n.js"></script>
+<script src="site.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  let allListings = []; // só populado pelo Firestore — nada fixo do wireframe
+
+  const ARROW = '<svg class="icon i-3" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+  const XICO  = '<svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+  const ARROW35 = '<svg class="icon i-35" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+
+  const elModelo=document.getElementById("fModelo"), elCond=document.getElementById("fCondicao"),
+        elAno=document.getElementById("fAno"), elGrid=document.getElementById("grid"),
+        elCount=document.getElementById("count"), elFilters=document.querySelector(".filters");
+  const fill=(el,o)=>el.innerHTML=o.map(x=>`<option>${x}</option>`).join("");
+
+  function formatPrice(item){
+    if (item.priceNum) {
+      return item.currency === "BRL"
+        ? "R$ " + Number(item.priceNum).toLocaleString("pt-BR")
+        : "USD " + Number(item.priceNum).toLocaleString("en-US");
+    }
+    return "Sob Consulta";
+  }
+
+  function card(item){
+    const media = (item.images && item.images[0])
+      ? `<img src="${item.images[0]}" alt="${item.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`
+      : `<div class="ph" style="aspect-ratio:4/3">${XICO}<span class="lbl">[Foto ${item.model}]</span></div>`;
+    return `<a href="aeronave.html?id=${item.id}" class="lcard">
+      <div class="img">
+        ${media}
+        ${item.tag ? `<span class="tag solid">${item.tag}</span>` : ""}
+      </div>
+      <div class="body">
+        <div class="cond">${item.condition||""}</div>
+        <h3>${item.model}</h3>
+        <div class="meta"><span>${item.year||""}</span>${item.hoursNum!=null?`<span class="div"></span><span>${Number(item.hoursNum).toLocaleString("pt-BR")} horas</span>`:""}</div>
+        <div style="font-size:.8125rem;font-weight:600;margin-top:.375rem">${formatPrice(item)}</div>
+        <span class="more">Ver detalhes ${ARROW}</span>
+      </div>
+    </a>`;
+  }
+  const sell = `<div class="sell">
+      <div>
+        <p class="sell-title">Pensando em vender?</p>
+        <p class="sell-desc">Deixe a Plane cuidar de todo o processo comercial da sua aeronave.</p>
+      </div>
+      <a href="contato.html?motivo=vender" class="btn btn-solid btn-sm">Avaliar minha aeronave ${ARROW35}</a>
+    </div>`;
+
+  function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
+
+  // Monta as opções dos filtros a partir dos dados reais (nada fixo)
+  function buildFilters(){
+    if (allListings.length === 0){
+      elFilters.style.display = "none";
+      return;
+    }
+    elFilters.style.display = "";
+    const models = [...new Set(allListings.map(l=>l.model).filter(Boolean))].sort();
+    const conditions = [...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort();
+    const years = [...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a);
+    const all = t("ac_all");
+    fill(elModelo, [all, ...models]);
+    fill(elCond, [all, ...conditions]);
+    fill(elAno, [all, ...years]);
+  }
+
+  function render(){
+    const all = t("ac_all");
+    if (allListings.length === 0){
+      elGrid.innerHTML = `<div class="empty">${t("ac_empty")}</div>`;
+      elCount.textContent = "0";
+      return;
+    }
+    const fm=elModelo.value, fc=elCond.value, fy=elAno.value;
+    const filtered=allListings.filter(l=>{
+      const m=fm===all||l.model===fm;
+      const c=fc===all||l.condition===fc;
+      const y=fy===all||String(l.year)===fy;
+      return m&&c&&y;
+    });
+    let html="";
+    filtered.forEach((item,idx)=>{ if(idx===3) html+=sell; html+=card(item); });
+    if(filtered.length===0) html=`<div class="empty">${t("ac_noresult")}</div>`;
+    elGrid.innerHTML=html;
+    elCount.textContent=`${filtered.length}`;
+  }
+  [elModelo,elCond,elAno].forEach(el=>el.addEventListener("change",render));
+
+  async function init(){
+    if (window.PA && PA.configured) {
+      try {
+        const snap = await PA.db.collection("aircraft").orderBy("createdAt","desc").get();
+        allListings = snap.docs.map(d => {
+          const a = d.data();
+          return { id:d.id, tag:a.tag||"", tagSolid:true, model:a.model||"", year:a.year||"",
+            hoursNum:a.hoursNum!=null?a.hoursNum:null, hours:a.hours||"",
+            condition:a.condition||"", currency:a.currency||"USD", priceNum:a.priceNum||null,
+            images:a.images||[] };
+        });
+      } catch(e){ allListings = []; }
+    }
+    buildFilters();
+    render();
+  }
+  init();
+  // Re-renderiza cards e filtros quando idioma muda
+  document.addEventListener("pa:langchange", () => { buildFilters(); render(); });
+</script>
+</body>
+</html>

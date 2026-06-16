@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalhe da Aeronave | Plane Aviation</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+  /* ---- Breadcrumb ---- */
+  .crumb{ border-bottom:1px solid hsl(var(--border)); }
+  .crumb .container{ padding-top:.75rem; padding-bottom:.75rem; display:flex; align-items:center; gap:.5rem; font-size:.75rem; color:hsl(var(--muted-foreground)); }
+  .crumb a:hover{ color:hsl(var(--foreground)); }
+  .crumb .cur{ color:hsl(var(--foreground)); font-weight:500; }
+
+  /* ---- Layout principal ---- */
+  .det-wrap{ padding:2.5rem 0 4rem; }
+  .det-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:2.5rem;
+    align-items:start;
+  }
+  @media(min-width:1024px){ .det-grid{ grid-template-columns:55% 1fr; } }
+
+  /* ---- Galeria ---- */
+  .gal-main{ position:relative; border-radius:var(--radius-sm); overflow:hidden; }
+  .gal-nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:2.25rem; height:2.25rem;
+    background:rgba(255,255,255,.85); backdrop-filter:blur(4px);
+    border:1px solid hsl(var(--border)); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .15s;
+  }
+  .gal-nav:hover{ background:#fff; }
+  .gal-nav.prev{ left:.75rem; } .gal-nav.next{ right:.75rem; }
+  .thumbs{ display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-top:.625rem; }
+  .thumbs button{ background:none; border:2px solid transparent; border-radius:var(--radius-sm); padding:0; cursor:pointer; overflow:hidden; transition:border-color .15s; }
+  .thumbs button.active{ border-color:hsl(var(--foreground)); }
+
+  /* ---- Info lateral ---- */
+  .det-info{ display:flex; flex-direction:column; gap:0; }
+
+  /* Condição + localização */
+  .det-badge{ font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:hsl(var(--muted-foreground)); margin-bottom:.375rem; }
+
+  /* Nome da aeronave */
+  .det-info h1{ font-size:1.875rem; font-weight:700; letter-spacing:-.025em; line-height:1.1; margin-bottom:.875rem; }
+  @media(min-width:640px){ .det-info h1{ font-size:2.25rem; } }
+
+  /* Metas: Ano · Motor · Célula · Hélice */
+  .det-metas{ display:flex; flex-wrap:wrap; gap:.375rem; margin-bottom:1.25rem; }
+  .det-meta-item{
+    display:inline-flex; align-items:center; gap:.375rem;
+    font-size:.75rem; font-weight:500;
+    background:hsl(var(--muted));
+    border:1px solid hsl(var(--border));
+    border-radius:var(--radius-sm);
+    padding:.3rem .625rem;
+    color:hsl(var(--foreground));
+    white-space:nowrap;
+  }
+  .det-meta-item .meta-label{ color:hsl(var(--muted-foreground)); font-weight:400; }
+
+  /* Preço */
+  .det-price{
+    font-size:1.5rem; font-weight:700; letter-spacing:-.025em;
+    margin-bottom:1.25rem; color:hsl(var(--foreground));
+  }
+  .det-price.consult{ font-size:1rem; color:hsl(var(--muted-foreground)); font-weight:500; }
+
+  /* Botões CTA */
+  .det-actions{ display:flex; gap:.625rem; margin-bottom:2rem; flex-wrap:wrap; }
+  .det-actions .btn{ flex:1; min-width:10rem; padding:.75rem 1rem; font-size:.75rem; }
+
+  /* Descrição (abaixo dos botões, alinhada à imagem) */
+  .det-desc-section{ margin-top:2rem; }
+  .det-desc-section p{
+    font-size:var(--font-size-small);
+    color:hsl(var(--muted-foreground));
+    line-height:1.8;
+    white-space:pre-wrap;
+  }
+
+  /* Ficha técnica */
+  .specs{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); overflow:hidden; }
+  .specs .r{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; font-size:var(--font-size-small); border-bottom:1px solid hsl(var(--border)); }
+  .specs .r:last-child{ border-bottom:none; }
+  .specs .r .v{ font-weight:600; }
+
+  /* Tecnologias */
+  .feats-section{ padding:3rem 0; border-top:1px solid hsl(var(--border)); margin-top:3rem; }
+  .feat{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:1.25rem; background:hsl(var(--card)); }
+  .feat svg{ color:hsl(var(--foreground)/.6); margin-bottom:.75rem; }
+  .feat h3{ font-size:var(--font-size-small); font-weight:700; margin-bottom:.25rem; }
+  .feat p{ font-size:var(--font-size-xs); color:hsl(var(--muted-foreground)); }
+
+  /* Outras opções */
+  .other-section{ padding:3rem 0; border-top:1px solid hsl(var(--border)); }
+  .other-grid{ display:grid; grid-template-columns:1fr; gap:1.25rem; }
+  @media(min-width:640px){ .other-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(min-width:1024px){ .other-grid{ grid-template-columns:repeat(4,1fr); } }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <!-- Breadcrumb -->
+  <div class="crumb">
+    <div class="container">
+      <a href="aeronaves.html" data-i18n="det_crumb">Aeronaves Disponíveis</a>
+      <span>/</span>
+      <span class="cur" id="crumbModel"></span>
+    </div>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div class="det-wrap">
+    <div class="container">
+      <div class="det-grid">
+
+        <!-- COLUNA ESQUERDA: Galeria + Descrição + Specs + Tecnologias -->
+        <div>
+          <!-- Galeria -->
+          <div class="gal-main">
+            <div class="ph rounded" id="galMain" style="aspect-ratio:4/3"></div>
+            <button class="gal-nav prev" id="galPrev" aria-label="Anterior"><svg class="icon i-4" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="gal-nav next" id="galNext" aria-label="Próxima"><svg class="icon i-4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+            <span class="tag solid" id="galTag" style="display:none"></span>
+          </div>
+          <div class="thumbs" id="thumbs"></div>
+
+          <!-- Descrição (alinhada à imagem) -->
+          <div id="descBlock" style="display:none" class="det-desc-section">
+            <h2 class="label" id="descLabel" style="margin-bottom:.75rem;margin-top:2rem">Sobre esta aeronave</h2>
+            <p id="descText"></p>
+          </div>
+
+          <!-- Ficha técnica -->
+          <div id="specsBlock" style="display:none;margin-top:2rem">
+            <h2 class="label" id="specsLabel" style="margin-bottom:.75rem">Ficha Técnica</h2>
+            <div class="specs" id="specs"></div>
+          </div>
+        </div>
+
+        <!-- COLUNA DIREITA: Info, metas, preço, CTAs -->
+        <div class="det-info">
+          <p class="det-badge" id="condLoc"></p>
+          <h1 id="model"></h1>
+
+          <!-- Metas: Ano · Motor · Célula · Hélice (só aparece o que tiver preenchido) -->
+          <div class="det-metas" id="detMetas"></div>
+
+          <!-- Preço -->
+          <div class="det-price" id="detPrice"></div>
+
+          <!-- CTAs -->
+          <div class="det-actions">
+            <a href="contato.html?motivo=comprar" class="btn btn-solid" data-i18n="det_cta1">Solicitar Proposta</a>
+            <a href="contato.html?motivo=visita" class="btn btn-outline" data-i18n="det_cta2">Agendar Visita / Call</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tecnologias a bordo (largura total, abaixo do grid) -->
+      <div class="feats-section" id="featsSection" style="display:none">
+        <h2 class="label" id="featsLabel" style="margin-bottom:1.5rem">Tecnologias a bordo</h2>
+        <div class="grid g1 sm-g2 lg-g4" id="feats" style="gap:1rem"></div>
+      </div>
+
+      <!-- Outras aeronaves disponíveis -->
+      <div class="other-section" id="otherSection" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+          <h2 style="font-size:1.125rem;font-weight:700;letter-spacing:-.025em">Outras opções disponíveis</h2>
+          <a href="aeronaves.html" class="arrow-link">Ver todas <svg class="icon i-35" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </div>
+        <div class="other-grid" id="otherGrid"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="i18n.js"></script>
+<script src="site.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  const ICONS = {
+    Shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    Monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+    Navigation:'<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+    Gauge:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+    Zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    Wind:'<path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/>',
+    Award:'<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>'
+  };
+
+  function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
+  function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
+  function getLocalized(p,f){ const l=getLang(); return l==="pt"?p[f]||"":(p.translations?.[l]?.[f]||p[f]||""); }
+  function getLocalizedArray(p,f){ const l=getLang(); return l==="pt"?p[f]||[]:(p.translations?.[l]?.[f]||p[f]||[]); }
+
+  const id = new URLSearchParams(location.search).get("id");
+  let activeImg=0, galleryCount=4, P=null;
+
+  document.addEventListener("pa:langchange", ()=>{ if(P) render(P); });
+
+  const galMainEl = document.getElementById("galMain");
+  const thumbsEl  = document.getElementById("thumbs");
+
+  function hasImgs(){ return P && P.images && P.images.length; }
+
+  function paintMain(){
+    if(hasImgs())
+      galMainEl.innerHTML=`<img src="${P.images[activeImg]}" alt="${P.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`;
+    else
+      galMainEl.innerHTML=`<svg class="icon" style="width:3rem;height:3rem;opacity:.2" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
+  }
+  function paintThumbs(){
+    if(!hasImgs()){ thumbsEl.innerHTML=""; return; }
+    thumbsEl.innerHTML = P.images.map((url,i)=>
+      `<button data-i="${i}" class="${i===activeImg?"active":""}">
+        <img src="${url}" alt="${P.model} foto ${i+1}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">
+      </button>`).join("");
+    thumbsEl.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      activeImg=+b.dataset.i; paintMain(); paintThumbs();
+    }));
+  }
+
+  document.getElementById("galPrev").addEventListener("click",()=>{
+    if(!hasImgs()) return;
+    activeImg=(activeImg-1+galleryCount)%galleryCount; paintMain(); paintThumbs();
+  });
+  document.getElementById("galNext").addEventListener("click",()=>{
+    if(!hasImgs()) return;
+    activeImg=(activeImg+1)%galleryCount; paintMain(); paintThumbs();
+  });
+
+  // Formata número de horas
+  function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+" "+t("det_hours") : null; }
+
+  // Formata preço com moeda
+  function fmtPreco(p){
+    if(!p.priceNum) return null;
+    return p.currency==="BRL"
+      ? "R$ "+Number(p.priceNum).toLocaleString("pt-BR")
+      : "USD "+Number(p.priceNum).toLocaleString("en-US");
+  }
+
+  function render(p){
+    P=p;
+    galleryCount = hasImgs() ? p.images.length : 4;
+    if(!P._rendered){ activeImg=0; P._rendered=true; }
+
+    const loc_condition   = getLocalized(p,"condition");
+    const loc_location    = getLocalized(p,"location");
+    const loc_description = getLocalized(p,"description");
+    const loc_specs       = getLocalizedArray(p,"specs");
+    const loc_features    = getLocalizedArray(p,"features");
+
+    // Breadcrumb + título
+    document.getElementById("crumbModel").textContent = `${p.model}${p.year?" — "+p.year:""}`;
+    document.getElementById("condLoc").textContent    = [loc_condition, loc_location].filter(Boolean).join(" · ");
+    document.getElementById("model").textContent      = p.model;
+
+    // --- Metas (Ano · Motor · Célula · Hélice) ---
+    const metas = [];
+    if(p.year)             metas.push({ label:t("det_meta_year"),   value:p.year });
+    if(p.hoursNum!=null)   metas.push({ label:t("det_meta_cell"),   value:fmtHoras(p.hoursNum) });
+    if(p.motorHours!=null) metas.push({ label:t("det_meta_engine"), value:fmtHoras(p.motorHours) });
+    if(p.heliceHours!=null)metas.push({ label:t("det_meta_prop"),   value:fmtHoras(p.heliceHours) });
+
+    document.getElementById("detMetas").innerHTML = metas.map(m=>
+      `<span class="det-meta-item"><span class="meta-label">${m.label}</span>${m.value}</span>`
+    ).join("");
+
+    // --- Preço ---
+    const preco = fmtPreco(p);
+    const priceEl = document.getElementById("detPrice");
+    if(preco){ priceEl.textContent=preco; priceEl.className="det-price"; }
+    else { priceEl.textContent=t("ac_consult"); priceEl.className="det-price consult"; }
+
+    // --- Tag/Selo ---
+    const galTag = document.getElementById("galTag");
+    if(p.tag){ galTag.textContent=p.tag; galTag.style.display=""; }
+    else { galTag.style.display="none"; }
+
+    // --- Descrição ---
+    const descBlock = document.getElementById("descBlock");
+    const descLabel = document.getElementById("descLabel");
+    const descText  = document.getElementById("descText");
+    if(loc_description){
+      descText.textContent  = loc_description;
+      descLabel.textContent = t("det_about");
+      descBlock.style.display="block";
+    } else { descBlock.style.display="none"; }
+
+    // --- Ficha técnica ---
+    const specsBlock = document.getElementById("specsBlock");
+    const specsLabel = document.getElementById("specsLabel");
+    const specsEl    = document.getElementById("specs");
+    const specsHTML  = loc_specs.filter(s=>s[0]||s[1]).map(s=>
+      `<div class="r"><span class="muted">${s[0]||""}</span><span class="v">${s[1]||""}</span></div>`).join("");
+    if(specsHTML){ specsEl.innerHTML=specsHTML; specsLabel.textContent=t("det_specs"); specsBlock.style.display="block"; }
+    else { specsBlock.style.display="none"; }
+
+    // --- Tecnologias ---
+    const featsSection = document.getElementById("featsSection");
+    const featsLabel   = document.getElementById("featsLabel");
+    const featsEl      = document.getElementById("feats");
+    const featsHTML    = loc_features.filter(f=>f[1]||f[2]).map(f=>
+      `<div class="feat"><svg class="icon i-5" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
+    if(featsHTML){ featsEl.innerHTML=featsHTML; featsLabel.textContent=t("det_tech"); featsSection.style.display="block"; }
+    else { featsSection.style.display="none"; }
+
+    paintMain(); paintThumbs();
+  }
+
+  function fromFirestore(a){
+    return {
+      tag:a.tag||"", model:a.model||"", year:a.year||"",
+      hoursNum:   a.hoursNum!=null   ? a.hoursNum   : null,
+      motorHours: a.motorHours!=null ? a.motorHours : null,
+      heliceHours:a.heliceHours!=null? a.heliceHours: null,
+      condition:a.condition||"", currency:a.currency||"USD",
+      priceNum:a.priceNum!=null?a.priceNum:null,
+      location:a.location||"", description:a.description||"",
+      translations:a.translations||{},
+      images:a.images||[],
+      specs:(a.specs||[]).map(s=>[s.label,s.value]),
+      features:(a.features||[]).map(f=>[f.icon,f.title,f.desc])
+    };
+  }
+
+  // Pequeno card para seção "Outras opções"
+  function otherCard(d,a){
+    const preco = a.priceNum
+      ? (a.currency==="BRL"?"R$ ":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US")
+      : t("ac_consult");
+    const img = (a.images&&a.images[0])
+      ? `<img src="${a.images[0]}" alt="${a.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`
+      : `<div class="ph" style="aspect-ratio:4/3"><svg class="icon" style="width:2rem;height:2rem;opacity:.2" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>`;
+    return `<a href="aeronave.html?id=${d.id}" class="lcard">
+      <div class="img">${img}${a.tag?`<span class="tag solid">${a.tag}</span>`:""}</div>
+      <div class="body compact">
+        <div class="cond">${a.condition||""}</div>
+        <h3>${a.model}</h3>
+        <div class="meta">${a.year?`<span>${a.year}</span>`:""}${a.hoursNum!=null?`<span class="div"></span><span>${Number(a.hoursNum).toLocaleString("pt-BR")} ${t("det_hours")}</span>`:""}</div>
+        <div style="font-size:.8125rem;font-weight:600;margin-top:.375rem">${preco}</div>
+      </div>
+    </a>`;
+  }
+
+  function notFound(){
+    document.querySelector(".det-wrap").innerHTML=`
+      <div class="container" style="padding:4rem 0;text-align:center">
+        <span class="eyebrow">Estoque</span>
+        <h1 class="h-display" style="margin-top:.5rem" data-i18n="det_notfound">Aeronave não encontrada</h1>
+        <p class="muted" style="font-size:var(--font-size-small);margin-top:.75rem;max-width:28rem;margin-left:auto;margin-right:auto" data-i18n="det_notfound_p">Este anúncio não existe mais ou foi removido.</p>
+        <a href="aeronaves.html" class="btn btn-solid btn-md" style="margin-top:1.5rem;display:inline-flex" data-i18n="det_back">Ver Aeronaves Disponíveis</a>
+      </div>`;
+    if(window.PA_I18N) PA_I18N.applyLang();
+  }
+
+  async function init(){
+    if(!window.PA || !PA.configured || !id){ notFound(); return; }
+    try {
+      const doc = await PA.db.collection("aircraft").doc(id).get();
+      if(!doc.exists){ notFound(); return; }
+      render(fromFirestore(doc.data()));
+
+      // Carrega outras aeronaves (exclui a atual, pega até 4)
+      const others = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(10).get();
+      const otherDocs = others.docs.filter(d=>d.id!==id).slice(0,4);
+      if(otherDocs.length){
+        document.getElementById("otherSection").style.display="block";
+        document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCard(d,d.data())).join("");
+      }
+    } catch(e){ notFound(); }
+  }
+  init();
+</script>
+</body>
+</html>
