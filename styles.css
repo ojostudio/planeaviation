@@ -267,7 +267,8 @@ body { padding-top: 0; }
 .nav a.active { opacity: .6; }
 
 /* Header actions (lang + cta) */
-.hd-actions { display: none; align-items: center; gap: 1.25rem; }
+.hd-actions { display: none; align-items: center; gap: 1.25rem; height: 100%; }
+
 /* Botão CTA do header — vermelho sólido */
 .hd-actions .btn-solid {
   background: #d9202a;
@@ -275,10 +276,13 @@ body { padding-top: 0; }
   border-radius: 0;
   font-size: 11px;
   letter-spacing: .06em;
-  padding: .6rem 1.25rem;
+  padding: 0 1.5rem;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  height: 100%;
   gap: .5rem;
+  margin-right: -1.5rem; /* Isso faz ele colar totalmente na margem direita */
 }
 .hd-actions .btn-solid:hover { background: #b51820; opacity:1; }
 

@@ -51,8 +51,8 @@
     </div>`;
   }
 
-  /* ---- HEADER ---- */
-  const header = `
+/* ---- HEADER ---- */
+const header = `
 <header class="site" role="banner">
   <div class="hd-row">
     <a href="index.html" class="logo" aria-label="Plane Aviation — Home">
@@ -61,7 +61,10 @@
     <nav class="nav" aria-label="Principal">${navHTML()}</nav>
     <div class="hd-actions">
       ${langSelector()}
-      <a href="contato.html" class="btn btn-solid btn-xs" data-i18n="nav_cta">${t("nav_cta")}</a>
+      <a href="contato.html" class="btn btn-solid btn-xs">
+        <span data-i18n="nav_cta">${t("nav_cta")}</span>
+        <svg class="icon i-35" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
     </div>
     <button class="hd-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
       <svg class="icon i-5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
@@ -71,7 +74,10 @@
 <div class="mobile-nav" id="mobileNav" aria-hidden="true">
   <nav aria-label="Mobile">${navHTML()}</nav>
   ${langSelector()}
-  <a href="contato.html" class="btn btn-solid btn-sm" data-i18n="nav_cta">${t("nav_cta")}</a>
+  <a href="contato.html" class="btn btn-solid btn-sm">
+    <span data-i18n="nav_cta">${t("nav_cta")}</span>
+    <svg class="icon i-35" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+  </a>
 </div>`;
 
   /* ---- Links do footer ---- */
