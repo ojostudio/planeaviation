@@ -258,7 +258,7 @@ body { padding-top: calc(var(--header-top) * 2 + var(--header-h)); }
 /* Logo */
 .logo { display: flex; align-items: center; flex-shrink: 0; }
 .logo svg { height: 200px; width: auto; display: block; }
-@media(max-width:1000px) { .logo svg { height: 100px; } }
+@media(max-width:639px) { .logo svg { height: 22px; } }
 
 /* Nav links */
 .nav { display: none; align-items: center; gap: 1.75rem; }
