@@ -56,7 +56,7 @@
   /* --- Bordas --- */
   --radius:    6px;   /* cantos padrão — cards, botões */
   --radius-sm: 0px;   /* cantos retos (estilo atual dos cards) */
-  --radius-xl: 1.5rem; /* header flutuante */
+  --radius-xl: 9999px; /* header flutuante — cantos totalmente arredondados */
 
   /* --- Botões (edite para mudar cor/tamanho global) --- */
   --btn-bg:         hsl(var(--foreground));
@@ -257,8 +257,8 @@ body { padding-top: calc(var(--header-top) * 2 + var(--header-h)); }
 
 /* Logo */
 .logo { display: flex; align-items: center; flex-shrink: 0; }
-.logo svg { height: 200px; width: auto; display: block; }
-@media(max-width:639px) { .logo svg { height: 22px; } }
+.logo svg { height: 34px; width: auto; display: block; }
+@media(max-width:639px) { .logo svg { height: 26px; } }
 
 /* Nav links */
 .nav { display: none; align-items: center; gap: 1.75rem; }

@@ -36,6 +36,12 @@ service cloud.firestore {
       allow write: if isEditor();
     }
 
+    // Configurações do site (hero, vídeos) — público lê; só admin escreve
+    match /siteConfig/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Usuários / papéis (admin gerencia; cada um lê o próprio)
     match /users/{uid} {
       allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);

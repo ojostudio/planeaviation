@@ -36,7 +36,7 @@
   .tbl tr:last-child td{ border-bottom:none; }
   .tbl .thumb{ width:3.5rem; height:2.5rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); background:hsl(var(--muted)); display:block; }
   .tbl .act{ display:flex; gap:.5rem; justify-content:flex-end; }
-  .icon-btn{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.375rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--foreground)); }
+  .icon-btn{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.4rem .75rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--foreground)); line-height:1.4; display:inline-flex; align-items:center; }
   .icon-btn:hover{ background:hsl(var(--muted)); }
   .icon-btn.danger{ color:#b42318; border-color:#f3c6c0; }
   .icon-btn.danger:hover{ background:#fdecea; }
@@ -145,11 +145,11 @@
 <div id="view-app" style="display:none">
   <div class="admin-top">
     <div class="container">
-      <div class="logo"><svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:22px;width:auto;display:block"><g> <path d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76s1.29,16.03-.43,24.62c-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg></div>
+      <a href="index.html" target="_blank" class="logo" aria-label="Ver site"><svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:22px;width:auto;display:block"><g> <path d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76s1.29,16.03-.43,24.62c-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg></a>
       <div class="who">
         <span><b id="meName"></b> <span id="meEmail" style="font-size:.7rem;color:hsl(var(--muted-foreground))"></span></span>
         <span class="pill" id="mePill"></span>
-        <a href="index.html" class="icon-btn" target="_blank" style="font-size:.75rem;padding:.375rem .625rem">Ver site</a>
+        <a href="index.html" class="icon-btn" target="_blank">Ver site</a>
         <button class="icon-btn" id="logoutBtn">Sair</button>
       </div>
     </div>
@@ -160,6 +160,7 @@
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
       <button class="tab" data-tab="cirrus">Frota Cirrus</button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
+      <button class="tab admin-only" data-tab="config">Configurações</button>
     </div>
 
     <!-- AIRCRAFT -->
@@ -190,6 +191,34 @@
         <button class="btn btn-solid btn-sm" id="addUser">+ Criar usuário</button>
       </div>
       <table class="tbl"><tbody id="userRows"></tbody></table>
+    </div>
+  </div>
+
+    <!-- CONFIG -->
+    <div class="panel" id="panel-config">
+      <div class="row-head">
+        <div><h2>Configurações do Site</h2><p class="sub">Mídia da página inicial.</p></div>
+        <button class="btn btn-solid btn-sm" id="cfgSave">Salvar configurações</button>
+      </div>
+      <div style="max-width:42rem">
+        <div id="cfgMsg" class="msg"></div>
+
+        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem;margin-bottom:1.5rem">
+          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Hero — Vídeo ou imagem de fundo</h3>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">O conteúdo que aparece atrás do título principal na Home. Vídeo tem prioridade sobre imagem.</p>
+          <div class="fld"><label>URL do vídeo de fundo (MP4)</label><input id="cfgHeroVideo" type="url" placeholder="https://... .mp4"></div>
+          <div style="text-align:center;font-size:.75rem;color:hsl(var(--muted-foreground));margin:.5rem 0">— ou —</div>
+          <div class="fld"><label>URL da imagem de fundo (JPG/PNG/WebP)</label><input id="cfgHeroImage" type="url" placeholder="https://... .jpg"></div>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground))">💡 Para vídeos grandes, use um serviço de hospedagem (ex: Cloudflare Stream, Vimeo, ou link direto de storage). Para imagens, pode usar qualquer URL pública.</p>
+        </div>
+
+        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
+          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Vídeo "Nossa História"</h3>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">O vídeo que aparece na seção "Conheça a nossa história" da Home. Aceita YouTube, Vimeo ou MP4 direto.</p>
+          <div class="fld"><label>URL do vídeo</label><input id="cfgHistoriaVideo" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."></div>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground))">💡 Cole o link normal do YouTube ou Vimeo — o embed é gerado automaticamente.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -406,6 +435,28 @@
   </div>
 </div>
 
+<!-- ===== MODAL: EDITAR USUÁRIO ===== -->
+<div class="overlay" id="ovEditUser">
+  <div class="modal" style="max-width:28rem">
+    <div class="modal-head"><h3>Editar usuário</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <div id="editUserMsg" class="msg"></div>
+      <div class="fld"><label>Nome *</label><input id="editUserName" type="text" placeholder="Nome completo"></div>
+      <div class="fld"><label>E-mail</label><input id="editUserEmail" type="email" disabled style="background:hsl(var(--muted));color:hsl(var(--muted-foreground))"></div>
+      <div class="fld"><label>Permissão *</label>
+        <select id="editUserRole">
+          <option value="editor">Editor — edita conteúdo</option>
+          <option value="admin">Admin — acesso total</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-solid btn-sm" id="editUserSave">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
 <script src="firebase-config.js"></script>
 <script>
 (function(){
@@ -477,7 +528,7 @@
     document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".overlay").classList.remove("open"));
     document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e=>{ if(e.target===o) o.classList.remove("open"); }));
 
-    loadAircraft(); loadCirrus(); if(me.role==="admin") loadUsers();
+    loadAircraft(); loadCirrus(); if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
     wireAircraftModal(); wireCirrusModal(); wireUserModal();
   }
 
@@ -871,27 +922,30 @@
      ============================================================ */
   async function loadUsers(){
     const rows=$("userRows");
-    rows.innerHTML=`<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
+    rows.innerHTML=`<tr><td class="empty-row" colspan="2">Carregando…</td></tr>`;
     const snap=await db.collection("users").get().catch(()=>null);
-    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhum usuário cadastrado.</td></tr>`; return; }
+    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="2">Nenhum usuário cadastrado.</td></tr>`; return; }
     rows.innerHTML="";
     snap.forEach(doc=>{ const u=doc.data(); const isMe=doc.id===me.uid;
       const displayName = u.name || u.email || doc.id;
       const tr=document.createElement("tr");
       tr.innerHTML=`
         <td>
-          <b>${esc(displayName)}</b>
-          ${u.name?`<div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(u.email||"")}</div>`:""}
-          ${isMe?'<span style="font-size:.7rem;color:hsl(var(--muted-foreground))">(você)</span>':""}
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+            <b>${esc(displayName)}</b>
+            <span class="pill ${u.role}">${esc(u.role||"")}</span>
+            ${isMe?'<span style="font-size:.7rem;color:hsl(var(--muted-foreground))">(você)</span>':""}
+          </div>
+          ${u.name?`<div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.125rem">${esc(u.email||"")}</div>`:""}
         </td>
-        <td><span class="pill ${u.role}">${esc(u.role||"")}</span></td>
         <td><div class="act">
-          <select class="icon-btn roleSel" ${isMe?"disabled":""}><option value="editor" ${u.role==="editor"?"selected":""}>editor</option><option value="admin" ${u.role==="admin"?"selected":""}>admin</option></select>
-          <button class="icon-btn danger" ${isMe?"disabled style='opacity:.4'":""}>Remover</button>
+          <button class="icon-btn editUser" ${isMe?"disabled style='opacity:.4'":""}>Editar</button>
+          <button class="icon-btn danger rmUser" ${isMe?"disabled style='opacity:.4'":""}>Remover</button>
         </div></td>`;
-      const sel=tr.querySelector(".roleSel");
-      if(!isMe){ sel.onchange=async()=>{ try{ await db.collection("users").doc(doc.id).update({role:sel.value}); loadUsers(); }catch(e){ alert(e.message);} }; }
-      const rm=tr.querySelector(".danger"); if(!isMe) rm.onclick=()=>removeUser(doc.id,displayName);
+      if(!isMe){
+        tr.querySelector(".editUser").onclick=()=>openEditUser(doc.id, u);
+        tr.querySelector(".rmUser").onclick=()=>removeUser(doc.id, displayName);
+      }
       rows.appendChild(tr);
     });
   }
@@ -902,6 +956,18 @@
       $("ovUser").classList.add("open");
     };
     $("uSave").onclick=createUser;
+    // Edit user modal
+    $("editUserSave").onclick = async () => {
+      if(!editUserId) return;
+      const name = $("editUserName").value.trim();
+      const role = $("editUserRole").value;
+      if(!name) return msg($("editUserMsg"),"Informe o nome.","err");
+      try {
+        await db.collection("users").doc(editUserId).update({ name, role, updatedAt:ts(), updatedBy:me.email });
+        $("ovEditUser").classList.remove("open");
+        loadUsers();
+      } catch(e){ msg($("editUserMsg"), e.message, "err"); }
+    };
   }
   async function createUser(){
     const name  = $("uName").value.trim();
@@ -925,8 +991,46 @@
     }catch(e){ msg($("userMsg"), traduz(e.code) || e.message, "err"); }
     finally{ $("uSave").disabled=false; }
   }
-  async function removeUser(uid,email){
-    if(!confirm(`Remover acesso de ${email}? O papel é revogado imediatamente.`)) return;
+  /* ---- Modal de edição de usuário ---- */
+  let editUserId = null;
+  function openEditUser(uid, u){
+    editUserId = uid;
+    $("editUserName").value  = u.name  || "";
+    $("editUserEmail").value = u.email || "";
+    $("editUserRole").value  = u.role  || "editor";
+    clearMsg($("editUserMsg"));
+    $("ovEditUser").classList.add("open");
+  }
+
+  /* ============================================================
+     CONFIGURAÇÕES DO SITE (mídia da Home)
+     ============================================================ */
+  async function loadConfig(){
+    try {
+      const doc = await db.collection("siteConfig").doc("home").get();
+      if(!doc.exists) return;
+      const d = doc.data();
+      $("cfgHeroVideo").value     = d.heroVideoUrl     || "";
+      $("cfgHeroImage").value     = d.heroImageUrl     || "";
+      $("cfgHistoriaVideo").value = d.historiaVideoUrl || "";
+    } catch(e){ /* silencioso */ }
+  }
+  function wireConfigPanel(){
+    $("cfgSave").onclick = async () => {
+      const data = {
+        heroVideoUrl:     $("cfgHeroVideo").value.trim(),
+        heroImageUrl:     $("cfgHeroImage").value.trim(),
+        historiaVideoUrl: $("cfgHistoriaVideo").value.trim(),
+        updatedAt: ts(), updatedBy: me.email
+      };
+      try {
+        await db.collection("siteConfig").doc("home").set(data, { merge:true });
+        msg($("cfgMsg"),"Configurações salvas com sucesso! Recarregue o site para ver as mudanças.","ok");
+      } catch(e){ msg($("cfgMsg"),"Erro ao salvar: "+e.message,"err"); }
+    };
+  }
+  async function removeUser(uid, displayName){
+    if(!confirm(`Remover acesso de ${displayName}? O papel é revogado imediatamente.`)) return;
     try{ await db.collection("users").doc(uid).delete(); loadUsers(); }
     catch(e){ alert(e.message); }
     // Obs.: a conta de login (Auth) só pode ser apagada por completo via Cloud Function (Admin SDK).

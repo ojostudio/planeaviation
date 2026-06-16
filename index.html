@@ -79,10 +79,11 @@
 
   <!-- HERO -->
   <section class="hero-home">
-    <div class="hero-bg">
+    <!-- Fundo dinâmico: vídeo ou imagem gerenciado pelo painel admin -->
+    <div class="hero-bg" id="heroBg">
       <div class="vp">
         <div class="ring"><svg class="icon" style="width:2.5rem;height:2.5rem" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
-        <span>[ Placeholder de Vídeo de Fundo ]</span>
+        <span>[ Placeholder de Vídeo / Imagem de Fundo ]</span>
       </div>
     </div>
     <div class="hero-overlay"></div>
@@ -117,8 +118,9 @@
         <span class="eyebrow" data-i18n="home_vid_eyebrow">Plane Aviation</span>
         <h2 style="font-size:1.5rem;font-weight:700;letter-spacing:-.025em;margin-top:.5rem" data-i18n="home_vid_title">Conheça a nossa história</h2>
       </div>
-      <div class="vid-box">
-        <div class="vid-inner">
+      <!-- Vídeo gerenciado pelo painel admin -->
+      <div class="vid-box" id="vidBox">
+        <div class="vid-inner" id="vidInner">
           <div class="vid-play"><svg class="icon i-6" style="margin-left:3px" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
           <span style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:hsl(var(--muted-foreground))">[ Vídeo Institucional — Plane Aviation ]</span>
         </div>
@@ -267,6 +269,52 @@
     grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Nenhuma aeronave cadastrada no momento. Em breve novas unidades estarão disponíveis.</div>';
   }
   loadHighlights();
+
+  // Carrega mídia do hero e vídeo institucional do Firestore (coleção "siteConfig")
+  async function loadSiteMedia(){
+    if(!window.PA || !PA.configured) return;
+    try {
+      const doc = await PA.db.collection("siteConfig").doc("home").get();
+      if(!doc.exists) return;
+      const d = doc.data();
+
+      // --- HERO: vídeo de fundo ou imagem ---
+      const heroBg = document.getElementById("heroBg");
+      if(d.heroVideoUrl){
+        // Vídeo em loop como fundo
+        heroBg.innerHTML = `<video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="${d.heroVideoUrl}" type="video/mp4">
+        </video>`;
+      } else if(d.heroImageUrl){
+        // Imagem de fundo
+        heroBg.style.backgroundImage = `url('${d.heroImageUrl}')`;
+        heroBg.style.backgroundSize = "cover";
+        heroBg.style.backgroundPosition = "center";
+        heroBg.innerHTML = "";
+      }
+
+      // --- VÍDEO "NOSSA HISTÓRIA" ---
+      const vidInner = document.getElementById("vidInner");
+      if(d.historiaVideoUrl){
+        // Detecta se é YouTube, Vimeo ou link direto
+        const url = d.historiaVideoUrl;
+        let embedHtml = "";
+        const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/);
+        const vmMatch = url.match(/vimeo\.com\/(\d+)/);
+        if(ytMatch){
+          embedHtml = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>`;
+        } else if(vmMatch){
+          embedHtml = `<iframe src="https://player.vimeo.com/video/${vmMatch[1]}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>`;
+        } else {
+          embedHtml = `<video controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="${url}" type="video/mp4"></video>`;
+        }
+        document.getElementById("vidBox").style.position = "relative";
+        vidInner.style.display = "none";
+        document.getElementById("vidBox").insertAdjacentHTML("afterbegin", embedHtml);
+      }
+    } catch(e){ /* mantém placeholders */ }
+  }
+  loadSiteMedia();
 </script>
 </body>
 </html>
