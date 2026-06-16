@@ -21,7 +21,32 @@
    Trocar fonte: substitua "Inter" pelo nome da Google Font desejada
    e atualize o @import acima.
    ================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* ================================================================
+   1. FONTE
+   ================================================================ */
+@font-face {
+  font-family: 'Grift';
+  src: url('fonts/Grift-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Grift';
+  src: url('fonts/Grift-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Grift';
+  src: url('fonts/Grift-BoldItalic.otf') format('opentype');
+  font-weight: 600; /* Mapeado como semibold para os títulos */
+  font-style: italic;
+  font-display: swap;
+}
 
 
 /* ================================================================
@@ -39,7 +64,7 @@
   --border:            0 0% 82%;    /* bordas */
 
   /* --- Tipografia --- */
-  --font:        'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font: 'Grift', ui-sans-serif, system-ui, sans-serif;
   --font-size-body:   1rem;          /* 16px — texto de parágrafos */
   --font-size-small:  .875rem;       /* 14px — textos secundários */
   --font-size-xs:     .75rem;        /* 12px — labels, captions */
@@ -105,6 +130,20 @@ button, select, input, textarea { font-family: inherit; }
    ================================================================ */
 
 /* Eyebrow — pequena legenda acima de títulos */
+
+/* Títulos principais: Semibold, Itálico e Capslock (maiúsculas) */
+h1, .h-display {
+  font-weight: 600;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+/* Subtítulos: Bold normal */
+h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  font-style: normal;
+  text-transform: none;
+}
 .eyebrow {
   font-size: 10px;
   letter-spacing: .25em;
