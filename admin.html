@@ -192,7 +192,6 @@
       </div>
       <table class="tbl"><tbody id="userRows"></tbody></table>
     </div>
-  </div>
 
     <!-- CONFIG -->
     <div class="panel" id="panel-config">
@@ -200,27 +199,29 @@
         <div><h2>Configurações do Site</h2><p class="sub">Mídia da página inicial.</p></div>
         <button class="btn btn-solid btn-sm" id="cfgSave">Salvar configurações</button>
       </div>
-      <div style="max-width:42rem;padding-top:1.5rem">
-        <div id="cfgMsg" class="msg" style="margin-bottom:1rem"></div>
+      <div id="cfgMsg" class="msg" style="margin-bottom:1rem"></div>
+      <div style="max-width:42rem;display:flex;flex-direction:column;gap:1.5rem">
 
-        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem;margin-bottom:1.5rem">
+        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
           <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Hero — Vídeo ou imagem de fundo</h3>
           <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">O conteúdo que aparece atrás do título principal na Home. Vídeo tem prioridade sobre imagem.</p>
           <div class="fld"><label>URL do vídeo de fundo (MP4)</label><input id="cfgHeroVideo" type="url" placeholder="https://... .mp4"></div>
           <div style="text-align:center;font-size:.75rem;color:hsl(var(--muted-foreground));margin:.5rem 0">— ou —</div>
           <div class="fld"><label>URL da imagem de fundo (JPG/PNG/WebP)</label><input id="cfgHeroImage" type="url" placeholder="https://... .jpg"></div>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground))">💡 Para vídeos grandes, use um serviço de hospedagem (ex: Cloudflare Stream, Vimeo, ou link direto de storage). Para imagens, pode usar qualquer URL pública.</p>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Para vídeos grandes, use um serviço de hospedagem (ex: Cloudflare Stream, Vimeo, ou link direto de storage). Para imagens, pode usar qualquer URL pública.</p>
         </div>
 
         <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
           <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Vídeo "Nossa História"</h3>
           <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">O vídeo que aparece na seção "Conheça a nossa história" da Home. Aceita YouTube, Vimeo ou MP4 direto.</p>
           <div class="fld"><label>URL do vídeo</label><input id="cfgHistoriaVideo" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."></div>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground))">💡 Cole o link normal do YouTube ou Vimeo — o embed é gerado automaticamente.</p>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Cole o link normal do YouTube ou Vimeo — o embed é gerado automaticamente.</p>
         </div>
+
       </div>
     </div>
-  </div>
+
+  </div><!-- /container -->
 </div>
 
 <!-- ===== MODAL: AIRCRAFT ===== -->
