@@ -40,9 +40,10 @@
   .icon-btn:hover{ background:hsl(var(--muted)); }
   .icon-btn.danger{ color:#b42318; border-color:#f3c6c0; }
   .icon-btn.danger:hover{ background:#fdecea; }
-  .feat-toggle{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.35rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--muted-foreground)); display:inline-flex; align-items:center; transition:background .15s,color .15s,border-color .15s; }
-  .feat-toggle:hover:not([disabled]){ border-color:#f59e0b; color:#b45309; background:#fffbeb; }
-  .feat-toggle.feat-on{ border-color:#f59e0b; color:#b45309; background:#fffbeb; }
+  /* Toggle de destaque — preto/branco, estrela preta quando ativo */
+  .feat-toggle{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.35rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--muted-foreground)); display:inline-flex; align-items:center; gap:.25rem; transition:background .15s,color .15s,border-color .15s; white-space:nowrap; }
+  .feat-toggle:hover:not([disabled]){ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--muted)); }
+  .feat-toggle.feat-on{ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--foreground)/.05); font-weight:700; }
   .empty-row{ text-align:center; color:hsl(var(--muted-foreground)); padding:3rem 1rem; font-size:.875rem; }
 
   /* Modal */
@@ -266,7 +267,14 @@
         </div>
       </div>
       <div class="grid2">
-        <div class="fld"><label>Preço (só o número, ex: 850000)</label><input id="acPrice" type="number" min="0" placeholder="850000"></div>
+        <div class="fld">
+          <label>Preço (só o número, ex: 850000)</label>
+          <input id="acPrice" type="number" min="0" placeholder="850000">
+          <div class="check" style="margin-top:.5rem">
+            <input type="checkbox" id="acSobConsulta">
+            <label for="acSobConsulta" style="text-transform:none;letter-spacing:0;font-size:.8125rem;color:hsl(var(--muted-foreground))">Sob Consulta (oculta o preço)</label>
+          </div>
+        </div>
         <div class="fld"><label>Selo (tag)</label><input id="acTag" placeholder="EXCLUSIVO PLANE"></div>
       </div>
 
@@ -555,7 +563,7 @@
     const snap = await db.collection("aircraft").orderBy("createdAt","desc").get().catch(()=>null);
     if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; return; }
     const totalFeatured = snap.docs.filter(d=>d.data().featured).length;
-    const STAR_ON  = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:#f59e0b;stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    const STAR_ON  = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:hsl(var(--foreground));stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
     const STAR_OFF = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
     rows.innerHTML = "";
     snap.forEach(doc => {
@@ -569,9 +577,8 @@
         : `<button class="feat-toggle" data-id="${doc.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="M\u00e1ximo de 4"':''}>${STAR_OFF}Destacar</button>`;
       tr.innerHTML = `
         <td style="width:4rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.condition||"")} \u00b7 ${a.year||""} \u00b7 ${esc(a.location||"")}</div></td>
-        <td style="width:9.5rem">${featBtn}</td>
-        <td><div class="act"><button class="icon-btn">Editar</button><button class="icon-btn danger">Exclu\u00edr</button></div></td>`;
+        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
+        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn danger">Excluir</button></div></td>`;
       tr.querySelector(".icon-btn").onclick = () => openAircraft(doc.id, a);
       tr.querySelector(".danger").onclick = () => delDoc("aircraft", doc.id, a.model, loadAircraft);
       const ftBtn = tr.querySelector(".feat-toggle");
@@ -759,6 +766,7 @@
     $("acLocation").value=a.location||"";
     $("acCurrency").value=a.currency||"USD";
     $("acPrice").value=a.priceNum!=null?a.priceNum:(a.price&&!isNaN(Number(String(a.price).replace(/\D/g,"")))?String(a.price).replace(/\D/g,""):"");
+    $("acSobConsulta").checked = !!a.sobConsulta;
     $("acTag").value=a.tag||"";
     $("acDesc").value=a.description||"";
     editTranslations = a.translations || {};
@@ -786,6 +794,7 @@
       condition:$("acCondition").value,
       location:$("acLocation").value.trim(),
       currency, priceNum, price: priceNum!=null ? priceNum : null,
+      sobConsulta: !!$("acSobConsulta").checked,
       tag:$("acTag").value.trim(), tagSolid:true,
       description:$("acDesc").value.trim(),
       translations: withTranslations ? trData : (editTranslations||{}),

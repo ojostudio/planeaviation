@@ -245,7 +245,7 @@
 
   // Formata preço com moeda
   function fmtPreco(p){
-    if(!p.priceNum) return null;
+    if(p.sobConsulta || !p.priceNum) return null;
     return p.currency==="BRL"
       ? "R$ "+Number(p.priceNum).toLocaleString("pt-BR")
       : "USD "+Number(p.priceNum).toLocaleString("en-US");

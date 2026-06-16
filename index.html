@@ -9,23 +9,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   /* Home-specific */
-  .hero-home{ position:relative; min-height:88vh; display:flex; align-items:center; justify-content:center; background:hsl(var(--muted)); overflow:hidden; }
-  .hero-bg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, hsl(var(--muted)), hsl(var(--accent))); }
-  .hero-bg .vp{ display:flex; flex-direction:column; align-items:center; color:hsl(var(--muted-foreground)/.25); }
+  .hero-home{ position:relative; min-height:90vh; display:flex; align-items:flex-end; background:hsl(var(--foreground)); overflow:hidden; }
+  .hero-bg{ position:absolute; inset:0; background:linear-gradient(135deg, hsl(var(--muted)), hsl(var(--accent))); }
+  .hero-bg .vp{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)/.2); }
   .hero-bg .ring{ width:6rem; height:6rem; border:2px dashed currentColor; border-radius:9999px; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; }
   .hero-bg span{ font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; }
-  .hero-overlay{ position:absolute; inset:0; background:hsl(var(--foreground)/.08); }
-  .hero-content{ position:relative; z-index:10; max-width:48rem; margin:0 auto; padding:0 1rem; text-align:center; }
-  .hero-badge{ display:inline-block; border:1px solid hsl(var(--border)/.4); background:hsl(var(--card)/.6); backdrop-filter:blur(4px); border-radius:var(--radius-sm); padding:.375rem .75rem; margin-bottom:1.5rem; }
-  .hero-content h1{ font-size:1.875rem; font-weight:700; letter-spacing:-.025em; line-height:1.1; margin-bottom:1.5rem; }
-  @media(min-width:640px){ .hero-content h1{ font-size:2.25rem; } }
-  @media(min-width:768px){ .hero-content h1{ font-size:3rem; } }
-  @media(min-width:1024px){ .hero-content h1{ font-size:3.75rem; } }
-  .hero-cta{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; margin-top:2.5rem; }
-  @media(min-width:640px){ .hero-cta{ flex-direction:row; } }
-  .hero-cta .btn{ width:100%; }
-  @media(min-width:640px){ .hero-cta .btn{ width:auto; } }
-  .hero-cta .btn-outline{ background:hsl(var(--card)/.6); backdrop-filter:blur(4px); }
+  .hero-overlay{ position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,.6) 45%, rgba(0,0,0,.05) 100%); }
+  .hero-content{ position:relative; z-index:10; width:100%; max-width:var(--maxw); margin:0 auto; padding:0 1.5rem 5rem; text-align:left; }
+  .hero-content h1{ font-size:clamp(2rem,6vw,4.25rem); font-weight:700; letter-spacing:-.025em; line-height:1.05; margin-bottom:0; color:#fff; }
+  .hero-cta{ display:flex; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
+  .hero-cta .btn{ background:#d9202a; color:#fff; border:none; border-radius:0; font-size:11px; letter-spacing:.1em; padding:.875rem 1.75rem; font-weight:700; text-transform:uppercase; width:auto; }
+  .hero-cta .btn:hover{ background:#b51820; opacity:1; }
 
   .sec{ padding:5rem 0; }
   .sec-head{ text-align:center; margin-bottom:3.5rem; }
@@ -80,15 +74,9 @@
   <!-- HERO -->
   <section class="hero-home">
     <!-- Fundo dinâmico: vídeo ou imagem gerenciado pelo painel admin -->
-    <div class="hero-bg" id="heroBg">
-      <div class="vp">
-        <div class="ring"><svg class="icon" style="width:2.5rem;height:2.5rem" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
-        <span>[ Placeholder de Vídeo / Imagem de Fundo ]</span>
-      </div>
-    </div>
+    <div class="hero-bg" id="heroBg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-badge" id="heroBadge"><span class="eyebrow" id="heroTag">Representante exclusiva Cirrus no Brasil</span></div>
       <h1 id="heroTitle">O acesso definitivo à aviação executiva de alta performance.</h1>
       <div class="hero-cta">
         <a href="aeronaves.html" class="btn btn-solid btn-md" id="heroBtn">Ver Aeronaves Disponíveis</a>
@@ -285,14 +273,6 @@
       const doc = await PA.db.collection("siteConfig").doc("home").get();
       if(!doc.exists) return;
       const d = doc.data();
-
-      // --- Hero: tag ---
-      const badge  = document.getElementById("heroBadge");
-      const tagEl  = document.getElementById("heroTag");
-      if(d.heroTag !== undefined){
-        if(d.heroTag){ tagEl.textContent = d.heroTag; badge.style.display=""; }
-        else { badge.style.display="none"; }
-      }
 
       // --- Hero: título ---
       if(d.heroTitle) document.getElementById("heroTitle").textContent = d.heroTitle;

@@ -35,14 +35,19 @@
   }
 
   /* ---- Seletor de idioma ---- */
-  function langSelector(){
+  function langSelector(ctx=""){
     const lang = window.PA_I18N ? PA_I18N.getLang() : "pt";
-    return `<div class="lang-selector">
-      <button class="lang-btn${lang==="pt"?" active":""}" data-lang="pt">PT</button>
-      <span class="lang-sep" aria-hidden="true">|</span>
-      <button class="lang-btn${lang==="en"?" active":""}" data-lang="en">EN</button>
-      <span class="lang-sep" aria-hidden="true">|</span>
-      <button class="lang-btn${lang==="es"?" active":""}" data-lang="es">ES</button>
+    const label = lang.toUpperCase();
+    return `<div class="lang-selector ${ctx}" role="navigation" aria-label="Idioma">
+      <button class="lang-current" aria-haspopup="listbox" aria-expanded="false">
+        ${label}
+        <svg style="width:.625rem;height:.625rem;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;margin-left:.25rem" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="lang-dropdown" role="listbox">
+        <button class="lang-opt${lang==="pt"?" sel":""}" data-lang="pt" role="option">PT — Português</button>
+        <button class="lang-opt${lang==="en"?" sel":""}" data-lang="en" role="option">EN — English</button>
+        <button class="lang-opt${lang==="es"?" sel":""}" data-lang="es" role="option">ES — Español</button>
+      </div>
     </div>`;
   }
 
@@ -146,9 +151,32 @@
 
   /* ---- Seletor de idioma — delegação de evento ---- */
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".lang-btn");
-    if (btn && btn.dataset.lang && window.PA_I18N) {
-      PA_I18N.setLang(btn.dataset.lang);
+    // Toggle dropdown
+    const cur = e.target.closest(".lang-current");
+    if(cur){
+      const sel = cur.closest(".lang-selector");
+      const wasOpen = sel.classList.contains("open");
+      document.querySelectorAll(".lang-selector.open").forEach(s => s.classList.remove("open"));
+      if(!wasOpen) sel.classList.add("open");
+      return;
+    }
+    // Pick language
+    const opt = e.target.closest(".lang-opt");
+    if(opt && opt.dataset.lang && window.PA_I18N){
+      PA_I18N.setLang(opt.dataset.lang);
+      document.querySelectorAll(".lang-selector.open").forEach(s => s.classList.remove("open"));
+      // Update current label
+      document.querySelectorAll(".lang-current").forEach(b => {
+        const labelNode = b.childNodes[0];
+        if(labelNode) labelNode.textContent = opt.dataset.lang.toUpperCase()+" ";
+      });
+      // Update sel class
+      document.querySelectorAll(".lang-opt").forEach(o => o.classList.toggle("sel", o.dataset.lang===opt.dataset.lang));
+      return;
+    }
+    // Click outside — close all
+    if(!e.target.closest(".lang-selector")){
+      document.querySelectorAll(".lang-selector.open").forEach(s => s.classList.remove("open"));
     }
   });
 
