@@ -88,11 +88,10 @@
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-badge"><span class="eyebrow" data-i18n="home_badge">Representante exclusiva Cirrus no Brasil</span></div>
-      <h1 data-i18n="home_hero">O acesso definitivo à aviação executiva de alta performance.</h1>
+      <div class="hero-badge" id="heroBadge"><span class="eyebrow" id="heroTag">Representante exclusiva Cirrus no Brasil</span></div>
+      <h1 id="heroTitle">O acesso definitivo à aviação executiva de alta performance.</h1>
       <div class="hero-cta">
-        <a href="aeronaves.html" class="btn btn-solid btn-md" data-i18n="home_cta1">Ver Aeronaves Disponíveis</a>
-        <a href="contato.html" class="btn btn-outline btn-md" data-i18n="home_cta2">Falar com um Especialista</a>
+        <a href="aeronaves.html" class="btn btn-solid btn-md" id="heroBtn">Ver Aeronaves Disponíveis</a>
       </div>
     </div>
   </section>
@@ -259,9 +258,18 @@
     const grid = document.getElementById("invGrid");
     if (window.PA && PA.configured) {
       try {
-        const snap = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(4).get();
+        // Busca aeronaves marcadas como destaque, até 4
+        const snap = await PA.db.collection("aircraft")
+          .where("featured","==",true)
+          .limit(4).get();
         if (!snap.empty) {
           grid.innerHTML = snap.docs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
+          return;
+        }
+        // Fallback: se nenhuma estiver marcada, mostra as 4 mais recentes
+        const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(4).get();
+        if(!fallback.empty){
+          grid.innerHTML = fallback.docs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
           return;
         }
       } catch(e){ /* cai no estado vazio */ }
@@ -270,7 +278,7 @@
   }
   loadHighlights();
 
-  // Carrega mídia do hero e vídeo institucional do Firestore (coleção "siteConfig")
+  // Carrega configurações do hero e vídeos do Firestore
   async function loadSiteMedia(){
     if(!window.PA || !PA.configured) return;
     try {
@@ -278,41 +286,51 @@
       if(!doc.exists) return;
       const d = doc.data();
 
-      // --- HERO: vídeo de fundo ou imagem ---
+      // --- Hero: tag ---
+      const badge  = document.getElementById("heroBadge");
+      const tagEl  = document.getElementById("heroTag");
+      if(d.heroTag !== undefined){
+        if(d.heroTag){ tagEl.textContent = d.heroTag; badge.style.display=""; }
+        else { badge.style.display="none"; }
+      }
+
+      // --- Hero: título ---
+      if(d.heroTitle) document.getElementById("heroTitle").textContent = d.heroTitle;
+
+      // --- Hero: botão ---
+      const btn = document.getElementById("heroBtn");
+      if(d.btnText) btn.textContent = d.btnText;
+      if(d.btnUrl)  btn.href = d.btnUrl;
+
+      // --- Hero: vídeo ou imagem de fundo ---
       const heroBg = document.getElementById("heroBg");
       if(d.heroVideoUrl){
-        // Vídeo em loop como fundo
         heroBg.innerHTML = `<video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
           <source src="${d.heroVideoUrl}" type="video/mp4">
         </video>`;
       } else if(d.heroImageUrl){
-        // Imagem de fundo
-        heroBg.style.backgroundImage = `url('${d.heroImageUrl}')`;
-        heroBg.style.backgroundSize = "cover";
-        heroBg.style.backgroundPosition = "center";
+        heroBg.style.backgroundImage  = `url('${d.heroImageUrl}')`;
+        heroBg.style.backgroundSize    = "cover";
+        heroBg.style.backgroundPosition= "center";
         heroBg.innerHTML = "";
       }
 
-      // --- VÍDEO "NOSSA HISTÓRIA" ---
+      // --- Vídeo "Nossa História" ---
       const vidInner = document.getElementById("vidInner");
       if(d.historiaVideoUrl){
-        // Detecta se é YouTube, Vimeo ou link direto
         const url = d.historiaVideoUrl;
-        let embedHtml = "";
         const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/);
         const vmMatch = url.match(/vimeo\.com\/(\d+)/);
-        if(ytMatch){
-          embedHtml = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>`;
-        } else if(vmMatch){
-          embedHtml = `<iframe src="https://player.vimeo.com/video/${vmMatch[1]}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>`;
-        } else {
-          embedHtml = `<video controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="${url}" type="video/mp4"></video>`;
-        }
-        document.getElementById("vidBox").style.position = "relative";
-        vidInner.style.display = "none";
-        document.getElementById("vidBox").insertAdjacentHTML("afterbegin", embedHtml);
+        let embed = "";
+        if(ytMatch)      embed = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?rel=0" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>`;
+        else if(vmMatch) embed = `<iframe src="https://player.vimeo.com/video/${vmMatch[1]}" frameborder="0" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>`;
+        else             embed = `<video controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="${url}" type="video/mp4"></video>`;
+        const vidBox = document.getElementById("vidBox");
+        vidBox.style.position = "relative";
+        if(vidInner) vidInner.style.display = "none";
+        vidBox.insertAdjacentHTML("afterbegin", embed);
       }
-    } catch(e){ /* mantém placeholders */ }
+    } catch(e){ /* mantém padrão */ }
   }
   loadSiteMedia();
 </script>

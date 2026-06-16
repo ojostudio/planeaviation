@@ -40,6 +40,9 @@
   .icon-btn:hover{ background:hsl(var(--muted)); }
   .icon-btn.danger{ color:#b42318; border-color:#f3c6c0; }
   .icon-btn.danger:hover{ background:#fdecea; }
+  .feat-toggle{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.35rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--muted-foreground)); display:inline-flex; align-items:center; transition:background .15s,color .15s,border-color .15s; }
+  .feat-toggle:hover:not([disabled]){ border-color:#f59e0b; color:#b45309; background:#fffbeb; }
+  .feat-toggle.feat-on{ border-color:#f59e0b; color:#b45309; background:#fffbeb; }
   .empty-row{ text-align:center; color:hsl(var(--muted-foreground)); padding:3rem 1rem; font-size:.875rem; }
 
   /* Modal */
@@ -158,7 +161,6 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
-      <button class="tab" data-tab="cirrus">Frota Cirrus</button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Configurações</button>
     </div>
@@ -170,18 +172,6 @@
         <button class="btn btn-solid btn-sm" id="addAircraft">+ Nova aeronave</button>
       </div>
       <table class="tbl"><tbody id="aircraftRows"></tbody></table>
-    </div>
-
-    <!-- CIRRUS -->
-    <div class="panel" id="panel-cirrus">
-      <div class="row-head">
-        <div><h2>Frota de demonstração Cirrus</h2><p class="sub">Aparece em <b>Universo Cirrus → Linha de modelos</b>.</p></div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          <button class="btn btn-outline btn-sm" id="seedCirrus">↓ Popular modelos padrão</button>
-          <button class="btn btn-solid btn-sm" id="addCirrus">+ Novo modelo</button>
-        </div>
-      </div>
-      <table class="tbl"><tbody id="cirrusRows"></tbody></table>
     </div>
 
     <!-- USERS -->
@@ -202,18 +192,41 @@
       <div id="cfgMsg" class="msg" style="margin-bottom:1rem"></div>
       <div style="max-width:42rem;display:flex;flex-direction:column;gap:1.5rem">
 
+        <!-- Hero: Textos e botão -->
+        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
+          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:1rem">Hero — Textos e botão</h3>
+          <div class="fld">
+            <label>Tag (eyebrow) — deixe vazio para ocultar</label>
+            <input id="cfgHeroTag" placeholder="Ex: Representante exclusiva Cirrus no Brasil">
+          </div>
+          <div class="fld">
+            <label>Título principal *</label>
+            <textarea id="cfgHeroTitle" rows="2" style="resize:none">O acesso definitivo à aviação executiva de alta performance.</textarea>
+          </div>
+          <div class="fld">
+            <label>Texto do botão</label>
+            <input id="cfgBtnText" placeholder="Ex: Ver Aeronaves Disponíveis">
+          </div>
+          <div class="fld">
+            <label>Link do botão</label>
+            <input id="cfgBtnUrl" type="url" placeholder="Ex: aeronaves.html ou https://...">
+          </div>
+        </div>
+
+        <!-- Hero: Mídia de fundo -->
         <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
           <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Hero — Vídeo ou imagem de fundo</h3>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">O conteúdo que aparece atrás do título principal na Home. Vídeo tem prioridade sobre imagem.</p>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">Vídeo tem prioridade sobre imagem se os dois forem preenchidos.</p>
           <div class="fld"><label>URL do vídeo de fundo (MP4)</label><input id="cfgHeroVideo" type="url" placeholder="https://... .mp4"></div>
           <div style="text-align:center;font-size:.75rem;color:hsl(var(--muted-foreground));margin:.5rem 0">— ou —</div>
           <div class="fld"><label>URL da imagem de fundo (JPG/PNG/WebP)</label><input id="cfgHeroImage" type="url" placeholder="https://... .jpg"></div>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Para vídeos grandes, use um serviço de hospedagem (ex: Cloudflare Stream, Vimeo, ou link direto de storage). Para imagens, pode usar qualquer URL pública.</p>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Para vídeos grandes use Cloudflare Stream, Vimeo ou link direto de storage. Para imagens, qualquer URL pública serve.</p>
         </div>
 
+        <!-- Vídeo Nossa História -->
         <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
           <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Vídeo "Nossa História"</h3>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">O vídeo que aparece na seção "Conheça a nossa história" da Home. Aceita YouTube, Vimeo ou MP4 direto.</p>
+          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">Aceita YouTube, Vimeo ou MP4 direto.</p>
           <div class="fld"><label>URL do vídeo</label><input id="cfgHistoriaVideo" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."></div>
           <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Cole o link normal do YouTube ou Vimeo — o embed é gerado automaticamente.</p>
         </div>
@@ -529,8 +542,8 @@
     document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".overlay").classList.remove("open"));
     document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e=>{ if(e.target===o) o.classList.remove("open"); }));
 
-    loadAircraft(); loadCirrus(); if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
-    wireAircraftModal(); wireCirrusModal(); wireUserModal();
+    loadAircraft(); if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
+    wireAircraftModal(); wireUserModal();
   }
 
   /* ============================================================
@@ -538,20 +551,36 @@
      ============================================================ */
   async function loadAircraft(){
     const rows = $("aircraftRows");
-    rows.innerHTML = `<tr><td class="empty-row">Carregando…</td></tr>`;
+    rows.innerHTML = `<tr><td class="empty-row" colspan="4">Carregando…</td></tr>`;
     const snap = await db.collection("aircraft").orderBy("createdAt","desc").get().catch(()=>null);
-    if(!snap || snap.empty){ rows.innerHTML = `<tr><td class="empty-row">Nenhuma aeronave cadastrada. Clique em “Nova aeronave”.</td></tr>`; return; }
+    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; return; }
+    const totalFeatured = snap.docs.filter(d=>d.data().featured).length;
+    const STAR_ON  = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:#f59e0b;stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    const STAR_OFF = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
     rows.innerHTML = "";
     snap.forEach(doc => {
       const a = doc.data();
-      const img = (a.images && a.images[0]) ? `<img class="thumb" src="${a.images[0]}">` : `<div class="thumb"></div>`;
+      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb"></div>`;
+      const isFeatured = !!a.featured;
+      const canFeature  = !isFeatured && totalFeatured >= 4;
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td style="width:4rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
-        <td style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.tag||"")}</td>
-        <td><div class="act"><button class="icon-btn">Editar</button><button class="icon-btn danger">Excluir</button></div></td>`;
+      const featBtn = isFeatured
+        ? `<button class="feat-toggle feat-on" data-id="${doc.id}" data-feat="true">${STAR_ON}Em destaque</button>`
+        : `<button class="feat-toggle" data-id="${doc.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="M\u00e1ximo de 4"':''}>${STAR_OFF}Destacar</button>`;
+      tr.innerHTML = `
+        <td style="width:4rem">${img}</td>
+        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.condition||"")} \u00b7 ${a.year||""} \u00b7 ${esc(a.location||"")}</div></td>
+        <td style="width:9.5rem">${featBtn}</td>
+        <td><div class="act"><button class="icon-btn">Editar</button><button class="icon-btn danger">Exclu\u00edr</button></div></td>`;
       tr.querySelector(".icon-btn").onclick = () => openAircraft(doc.id, a);
       tr.querySelector(".danger").onclick = () => delDoc("aircraft", doc.id, a.model, loadAircraft);
+      const ftBtn = tr.querySelector(".feat-toggle");
+      if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async function(){
+        const newVal = this.dataset.feat !== "true";
+        if(!newVal && totalFeatured<=1){ alert("\u00c9 necess\u00e1rio pelo menos 1 aeronave em destaque."); return; }
+        try{ await db.collection("aircraft").doc(this.dataset.id).update({featured:newVal}); loadAircraft(); }
+        catch(e){ alert(e.message); }
+      };
       rows.appendChild(tr);
     });
   }
@@ -1011,22 +1040,31 @@
       const doc = await db.collection("siteConfig").doc("home").get();
       if(!doc.exists) return;
       const d = doc.data();
-      $("cfgHeroVideo").value     = d.heroVideoUrl     || "";
-      $("cfgHeroImage").value     = d.heroImageUrl     || "";
-      $("cfgHistoriaVideo").value = d.historiaVideoUrl || "";
+      $("cfgHeroTag").value       = d.heroTag       ?? "Representante exclusiva Cirrus no Brasil";
+      $("cfgHeroTitle").value     = d.heroTitle      ?? "O acesso definitivo à aviação executiva de alta performance.";
+      $("cfgBtnText").value       = d.btnText        ?? "Ver Aeronaves Disponíveis";
+      $("cfgBtnUrl").value        = d.btnUrl         ?? "aeronaves.html";
+      $("cfgHeroVideo").value     = d.heroVideoUrl   ?? "";
+      $("cfgHeroImage").value     = d.heroImageUrl   ?? "";
+      $("cfgHistoriaVideo").value = d.historiaVideoUrl ?? "";
     } catch(e){ /* silencioso */ }
   }
   function wireConfigPanel(){
     $("cfgSave").onclick = async () => {
       const data = {
-        heroVideoUrl:     $("cfgHeroVideo").value.trim(),
-        heroImageUrl:     $("cfgHeroImage").value.trim(),
-        historiaVideoUrl: $("cfgHistoriaVideo").value.trim(),
+        heroTag:         $("cfgHeroTag").value.trim(),
+        heroTitle:       $("cfgHeroTitle").value.trim(),
+        btnText:         $("cfgBtnText").value.trim(),
+        btnUrl:          $("cfgBtnUrl").value.trim(),
+        heroVideoUrl:    $("cfgHeroVideo").value.trim(),
+        heroImageUrl:    $("cfgHeroImage").value.trim(),
+        historiaVideoUrl:$("cfgHistoriaVideo").value.trim(),
         updatedAt: ts(), updatedBy: me.email
       };
+      if(!data.heroTitle){ alert("O título principal não pode ficar vazio."); return; }
       try {
         await db.collection("siteConfig").doc("home").set(data, { merge:true });
-        msg($("cfgMsg"),"Configurações salvas com sucesso! Recarregue o site para ver as mudanças.","ok");
+        msg($("cfgMsg"),"Configurações salvas! Recarregue o site para ver as mudanças.","ok");
       } catch(e){ msg($("cfgMsg"),"Erro ao salvar: "+e.message,"err"); }
     };
   }
