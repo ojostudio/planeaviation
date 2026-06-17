@@ -24,7 +24,7 @@
     <div class="container">
       <span class="eyebrow" data-i18n="ac_eyebrow">Estoque</span>
       <h1 class="h-display" style="margin-top:.5rem" data-i18n="ac_title">Aeronaves Disponíveis</h1>
-      <p class="muted" style="font-size:.875rem;margin-top:.75rem;max-width:32rem">Unidades certificadas, inspecionadas e prontas para entrega. Exclusividade e segurança Plane Aviation.</p>
+      <p class="muted" style="font-size:.875rem;margin-top:.75rem;max-width:32rem" data-i18n="ac_sub">Unidades certificadas, inspecionadas e prontas para entrega. Exclusividade e segurança Plane Aviation.</p>
     </div>
   </section>
 
@@ -54,10 +54,10 @@
 
 <script src="firebase-config.js"></script>
 <script>
-  let allListings = []; // só populado pelo Firestore — nada fixo do wireframe
+  let allListings = [];
 
-  const ARROW = '<svg class="icon i-3" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
-  const XICO  = '<svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+  const ARROW   = '<svg class="icon i-3" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+  const XICO    = '<svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
   const ARROW35 = '<svg class="icon i-35" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 
   const elModelo=document.getElementById("fModelo"), elCond=document.getElementById("fCondicao"),
@@ -65,91 +65,124 @@
         elCount=document.getElementById("count"), elFilters=document.querySelector(".filters");
   const fill=(el,o)=>el.innerHTML=o.map(x=>`<option>${x}</option>`).join("");
 
+  function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
+  function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
+
+  // Retorna campo localizado do listing (condition, hours label, price)
+  function localItem(item){
+    const lang = getLang();
+    const tr = item.translations?.[lang];
+    return {
+      condition: (lang!=="pt" && tr?.condition) || item.condition || "",
+      tag:       item.tag || "",
+    };
+  }
+
   function formatPrice(item){
-    if (item.priceNum) {
-      return item.currency === "BRL"
-        ? "R$ " + Number(item.priceNum).toLocaleString("pt-BR")
-        : "USD " + Number(item.priceNum).toLocaleString("en-US");
-    }
-    return "Sob Consulta";
+    if(item.sobConsulta || !item.priceNum) return t("ac_consult");
+    return item.currency === "BRL"
+      ? "R$ " + Number(item.priceNum).toLocaleString("pt-BR")
+      : "USD " + Number(item.priceNum).toLocaleString("en-US");
+  }
+
+  function hoursLabel(item){
+    if(item.hoursNum==null) return "";
+    return `${Number(item.hoursNum).toLocaleString("pt-BR")} ${t("det_hours")}`;
   }
 
   function card(item){
+    const loc = localItem(item);
     const media = (item.images && item.images[0])
       ? `<img src="${item.images[0]}" alt="${item.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`
       : `<div class="ph" style="aspect-ratio:4/3">${XICO}<span class="lbl">[Foto ${item.model}]</span></div>`;
+    const hours = hoursLabel(item);
     return `<a href="aeronave.html?id=${item.id}" class="lcard">
       <div class="img">
         ${media}
-        ${item.tag ? `<span class="tag solid">${item.tag}</span>` : ""}
+        ${loc.tag ? `<span class="tag solid">${loc.tag}</span>` : ""}
       </div>
       <div class="body">
-        <div class="cond">${item.condition||""}</div>
+        <div class="cond">${loc.condition}</div>
         <h3>${item.model}</h3>
-        <div class="meta"><span>${item.year||""}</span>${item.hoursNum!=null?`<span class="div"></span><span>${Number(item.hoursNum).toLocaleString("pt-BR")} horas</span>`:""}</div>
+        <div class="meta">
+          ${item.year?`<span>${item.year}</span>`:""}
+          ${item.year && hours?`<span class="div"></span>`:""}
+          ${hours?`<span>${hours}</span>`:""}
+        </div>
         <div style="font-size:.8125rem;font-weight:600;margin-top:.375rem">${formatPrice(item)}</div>
-        <span class="more">Ver detalhes ${ARROW}</span>
+        <span class="more">${t("ac_details")} ${ARROW}</span>
       </div>
     </a>`;
   }
-  const sell = `<div class="sell">
+
+  function sell(){
+    return `<div class="sell">
       <div>
-        <p class="sell-title">Pensando em vender?</p>
-        <p class="sell-desc">Deixe a Plane cuidar de todo o processo comercial da sua aeronave.</p>
+        <p class="sell-title" data-i18n="ac_sell_title">${t("ac_sell_title")}</p>
+        <p class="sell-desc" data-i18n="ac_sell_desc">${t("ac_sell_desc")}</p>
       </div>
-      <a href="contato.html?motivo=vender" class="btn btn-solid btn-sm">Avaliar minha aeronave ${ARROW35}</a>
+      <a href="contato.html?motivo=vender" class="btn btn-solid btn-sm">${t("ac_sell_btn")} ${ARROW35}</a>
     </div>`;
+  }
 
-  function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
-
-  // Monta as opções dos filtros a partir dos dados reais (nada fixo)
   function buildFilters(){
-    if (allListings.length === 0){
-      elFilters.style.display = "none";
-      return;
-    }
+    if (allListings.length === 0){ elFilters.style.display="none"; return; }
     elFilters.style.display = "";
-    const models = [...new Set(allListings.map(l=>l.model).filter(Boolean))].sort();
-    const conditions = [...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort();
-    const years = [...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a);
+    const models    = [...new Set(allListings.map(l=>l.model).filter(Boolean))].sort();
+    const conditions= [...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort();
+    const years     = [...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a);
     const all = t("ac_all");
     fill(elModelo, [all, ...models]);
-    fill(elCond, [all, ...conditions]);
-    fill(elAno, [all, ...years]);
+    fill(elCond,   [all, ...conditions]);
+    fill(elAno,    [all, ...years]);
   }
 
   function render(){
     const all = t("ac_all");
     if (allListings.length === 0){
       elGrid.innerHTML = `<div class="empty">${t("ac_empty")}</div>`;
-      elCount.textContent = "0";
+      elCount.textContent = "";
       return;
     }
     const fm=elModelo.value, fc=elCond.value, fy=elAno.value;
-    const filtered=allListings.filter(l=>{
-      const m=fm===all||l.model===fm;
-      const c=fc===all||l.condition===fc;
-      const y=fy===all||String(l.year)===fy;
+    const filtered = allListings.filter(l=>{
+      const m = fm===all || l.model===fm;
+      const c = fc===all || l.condition===fc;
+      const y = fy===all || String(l.year)===fy;
       return m&&c&&y;
     });
-    let html="";
-    filtered.forEach((item,idx)=>{ if(idx===3) html+=sell; html+=card(item); });
+    let html = "";
+    filtered.forEach((item,idx)=>{ if(idx===3) html+=sell(); html+=card(item); });
     if(filtered.length===0) html=`<div class="empty">${t("ac_noresult")}</div>`;
-    elGrid.innerHTML=html;
-    elCount.textContent=`${filtered.length}`;
+    elGrid.innerHTML = html;
+    // Contador: "9 aeronaves disponíveis"
+    const noun = t("ac_count_noun") || "aeronaves disponíveis";
+    elCount.textContent = `${filtered.length} ${noun}`;
   }
+
   [elModelo,elCond,elAno].forEach(el=>el.addEventListener("change",render));
+
+  // Re-renderiza tudo quando idioma muda
+  document.addEventListener("pa:langchange", ()=>{ buildFilters(); render(); });
 
   async function init(){
     if (window.PA && PA.configured) {
       try {
-        const snap = await PA.db.collection("aircraft").orderBy("createdAt","desc").get();
-        allListings = snap.docs.map(d => {
+        // Ordena por campo 'order' (definido no admin por drag-and-drop)
+        const snap = await PA.db.collection("aircraft").get();
+        const docs = snap.docs.slice().sort((a,b)=>{
+          const ao=a.data().order, bo=b.data().order;
+          if(ao!=null&&bo!=null) return ao-bo;
+          if(ao!=null) return -1; if(bo!=null) return 1;
+          return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0);
+        });
+        allListings = docs.map(d => {
           const a = d.data();
-          return { id:d.id, tag:a.tag||"", tagSolid:true, model:a.model||"", year:a.year||"",
-            hoursNum:a.hoursNum!=null?a.hoursNum:null, hours:a.hours||"",
-            condition:a.condition||"", currency:a.currency||"USD", priceNum:a.priceNum||null,
-            images:a.images||[] };
+          return { id:d.id, tag:a.tag||"", model:a.model||"", year:a.year||"",
+            hoursNum:a.hoursNum!=null?a.hoursNum:null,
+            condition:a.condition||"", currency:a.currency||"USD",
+            priceNum:a.priceNum||null, sobConsulta:!!a.sobConsulta,
+            images:a.images||[], translations:a.translations||{} };
         });
       } catch(e){ allListings = []; }
     }
@@ -157,8 +190,6 @@
     render();
   }
   init();
-  // Re-renderiza cards e filtros quando idioma muda
-  document.addEventListener("pa:langchange", () => { buildFilters(); render(); });
 </script>
 </body>
 </html>

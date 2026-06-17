@@ -34,7 +34,7 @@
   .tbl th{ text-align:left; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:hsl(var(--muted-foreground)); font-weight:600; padding:.75rem 1rem; border-bottom:1px solid hsl(var(--border)); background:hsl(var(--muted)); }
   .tbl td{ padding:.75rem 1rem; font-size:.875rem; border-bottom:1px solid hsl(var(--border)); vertical-align:middle; }
   .tbl tr:last-child td{ border-bottom:none; }
-  .tbl .thumb{ width:3.5rem; height:2.5rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); background:hsl(var(--muted)); display:block; }
+  .tbl .thumb{ width:5rem; height:3.75rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); background:hsl(var(--muted)); display:block; }
   .tbl .act{ display:flex; gap:.5rem; justify-content:flex-end; }
   .icon-btn{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.4rem .75rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--foreground)); line-height:1.4; display:inline-flex; align-items:center; }
   .icon-btn:hover{ background:hsl(var(--muted)); }
@@ -44,6 +44,10 @@
   .feat-toggle{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.35rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--muted-foreground)); display:inline-flex; align-items:center; gap:.25rem; transition:background .15s,color .15s,border-color .15s; white-space:nowrap; }
   .feat-toggle:hover:not([disabled]){ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--muted)); }
   .feat-toggle.feat-on{ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--foreground)/.05); font-weight:700; }
+  .drag-handle{ cursor:grab; color:hsl(var(--muted-foreground)); font-size:1.1rem; display:inline-block; padding:.25rem .375rem; border-radius:var(--radius-sm); transition:background .1s; }
+  .drag-handle:hover{ background:hsl(var(--muted)); color:hsl(var(--foreground)); }
+  .draggable-row.dragging{ opacity:.4; }
+  tr[draggable] td:first-child{ cursor:grab; }
   .empty-row{ text-align:center; color:hsl(var(--muted-foreground)); padding:3rem 1rem; font-size:.875rem; }
 
   /* Modal */
@@ -557,26 +561,48 @@
   /* ============================================================
      AERONAVES À VENDA
      ============================================================ */
+  // Ordem atual dos IDs (para drag-and-drop)
+  let aircraftOrder = [];
+
   async function loadAircraft(){
     const rows = $("aircraftRows");
     rows.innerHTML = `<tr><td class="empty-row" colspan="4">Carregando…</td></tr>`;
-    const snap = await db.collection("aircraft").orderBy("createdAt","desc").get().catch(()=>null);
+    // Ordena por campo 'order' se existir, senão por createdAt
+    const snap = await db.collection("aircraft").get().catch(()=>null);
     if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; return; }
-    const totalFeatured = snap.docs.filter(d=>d.data().featured).length;
-    const STAR_ON  = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:hsl(var(--foreground));stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-    const STAR_OFF = '<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+    // Ordena: quem tem 'order' numérico vem primeiro, resto por createdAt desc
+    const docs = snap.docs.slice().sort((a,b)=>{
+      const ao = a.data().order, bo = b.data().order;
+      if(ao!=null && bo!=null) return ao - bo;
+      if(ao!=null) return -1;
+      if(bo!=null) return 1;
+      const at = a.data().createdAt?.seconds||0, bt = b.data().createdAt?.seconds||0;
+      return bt - at;
+    });
+
+    aircraftOrder = docs.map(d=>d.id);
+    const totalFeatured = docs.filter(d=>d.data().featured).length;
+    const DRAG_HANDLE = `<span class="drag-handle" title="Arrastar para reordenar">⠿</span>`;
+    const STAR_ON  = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:hsl(var(--foreground));stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    const STAR_OFF = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     rows.innerHTML = "";
-    snap.forEach(doc => {
+
+    docs.forEach(doc => {
       const a = doc.data();
-      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb"></div>`;
+      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
       const isFeatured = !!a.featured;
       const canFeature  = !isFeatured && totalFeatured >= 4;
-      const tr = document.createElement("tr");
       const featBtn = isFeatured
         ? `<button class="feat-toggle feat-on" data-id="${doc.id}" data-feat="true">${STAR_ON}Em destaque</button>`
-        : `<button class="feat-toggle" data-id="${doc.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="M\u00e1ximo de 4"':''}>${STAR_OFF}Destacar</button>`;
+        : `<button class="feat-toggle" data-id="${doc.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 4"':''}>${STAR_OFF}Destacar</button>`;
+      const tr = document.createElement("tr");
+      tr.draggable = true;
+      tr.dataset.id = doc.id;
+      tr.className = "draggable-row";
       tr.innerHTML = `
-        <td style="width:4rem">${img}</td>
+        <td style="width:2rem;text-align:center;cursor:grab;color:hsl(var(--muted-foreground));font-size:1.1rem;user-select:none">${DRAG_HANDLE}</td>
+        <td style="width:5rem;padding:.5rem">${img}</td>
         <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
         <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn danger">Excluir</button></div></td>`;
       tr.querySelector(".icon-btn").onclick = () => openAircraft(doc.id, a);
@@ -584,11 +610,42 @@
       const ftBtn = tr.querySelector(".feat-toggle");
       if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async function(){
         const newVal = this.dataset.feat !== "true";
-        if(!newVal && totalFeatured<=1){ alert("\u00c9 necess\u00e1rio pelo menos 1 aeronave em destaque."); return; }
+        if(!newVal && totalFeatured<=1){ alert("É necessário pelo menos 1 aeronave em destaque."); return; }
         try{ await db.collection("aircraft").doc(this.dataset.id).update({featured:newVal}); loadAircraft(); }
         catch(e){ alert(e.message); }
       };
       rows.appendChild(tr);
+    });
+
+    // Drag-and-drop reordering
+    wireDragRows(rows);
+  }
+
+  function wireDragRows(tbody){
+    let dragging = null;
+    tbody.querySelectorAll(".draggable-row").forEach(row => {
+      row.addEventListener("dragstart", e => {
+        dragging = row;
+        row.style.opacity = ".4";
+        e.dataTransfer.effectAllowed = "move";
+      });
+      row.addEventListener("dragend", async () => {
+        row.style.opacity = "";
+        dragging = null;
+        // Save new order to Firestore
+        const newOrder = [...tbody.querySelectorAll(".draggable-row")].map(r=>r.dataset.id);
+        const batch = db.batch();
+        newOrder.forEach((id,i) => batch.update(db.collection("aircraft").doc(id), {order:i}));
+        await batch.commit().catch(e=>console.error("Erro ao salvar ordem:",e));
+      });
+      row.addEventListener("dragover", e => {
+        e.preventDefault();
+        if(!dragging || dragging===row) return;
+        const rect = row.getBoundingClientRect();
+        const after = e.clientY > rect.top + rect.height/2;
+        tbody.insertBefore(dragging, after ? row.nextSibling : row);
+      });
+      row.addEventListener("dragenter", e => e.preventDefault());
     });
   }
 

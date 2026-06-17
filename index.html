@@ -84,6 +84,10 @@
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
+      <!-- Tag eyebrow: aparece só se preenchida no painel admin (Configurações → Tag) -->
+      <div id="heroBadge" style="display:none;margin-bottom:1rem">
+        <span id="heroTag" style="display:inline-block;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.75)"></span>
+      </div>
       <h1 id="heroTitle">O acesso definitivo à aviação executiva de alta performance.</h1>
       <div class="hero-cta">
         <a href="aeronaves.html" class="btn btn-solid btn-md" id="heroBtn">Ver Aeronaves Disponíveis</a>
@@ -278,6 +282,14 @@
       const doc = await PA.db.collection("siteConfig").doc("home").get();
       if(!doc.exists) return;
       const d = doc.data();
+
+      // --- Hero: tag (eyebrow) --- mostra se preenchida, some se vazia
+      const badge = document.getElementById("heroBadge");
+      const tagEl = document.getElementById("heroTag");
+      if(badge && tagEl){
+        if(d.heroTag){ tagEl.textContent = d.heroTag; badge.style.display="block"; }
+        else { badge.style.display="none"; }
+      }
 
       // --- Hero: título ---
       if(d.heroTitle) document.getElementById("heroTitle").textContent = d.heroTitle;

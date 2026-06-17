@@ -66,6 +66,7 @@
     ac_eyebrow:  { pt:"Estoque",       en:"Inventory",      es:"Inventario" },
     ac_title:    { pt:"Aeronaves Disponíveis", en:"Available Aircraft", es:"Aeronaves Disponibles" },
     ac_sub:      { pt:"Unidades certificadas, inspecionadas e prontas para entrega.", en:"Certified, inspected units ready for delivery.", es:"Unidades certificadas, inspeccionadas y listas para entrega." },
+    ac_count_noun:{ pt:"aeronaves disponíveis", en:"aircraft available", es:"aeronaves disponibles" },
     ac_filters:  { pt:"Filtros",       en:"Filters",         es:"Filtros" },
     ac_model:    { pt:"Modelo:",       en:"Model:",          es:"Modelo:" },
     ac_condition:{ pt:"Condição:",     en:"Condition:",      es:"Condición:" },
