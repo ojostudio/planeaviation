@@ -86,7 +86,7 @@
   /* --- Botões (edite para mudar cor/tamanho global) --- */
   --btn-bg:         hsl(var(--foreground));
   --btn-fg:         hsl(var(--background));
-  --btn-font-size:  .75rem;
+  --btn-font-size:  .875rem;
   --btn-padding:    .75rem 1.75rem;
   --btn-weight:     700;
   --btn-tracking:   .06em;
