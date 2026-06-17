@@ -5,318 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aeronaves Disponíveis | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="i18n.js" defer></script>
 <script src="site.js" defer></script>
-<!-- Reserva espaço do header antes do JS rodar -->
 <style>
   #site-header { display: block; height: 4rem; }
   body { min-height: 100vh; }
-</style>
-<style>
-/* ============================================================
-   AERONAVES — Dark Theme
-   ============================================================ */
-body {
-  background: #0a0a0a;
-  color: #fff;
-}
 
-/* Override header for dark pages */
-header.site {
-  background: rgba(10,10,10,0.92) !important;
-  border-bottom-color: rgba(255,255,255,0.08) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-}
-header.site .nav a,
-header.site .logo,
-header.site .hd-toggle,
-header.site .lang-current { color: #fff !important; }
-header.site .nav a:hover { opacity:.5 !important; }
-header.site .hd-actions .btn-solid {
-  background: #d9202a !important;
-  color: #fff !important;
-}
-.mobile-nav {
-  background: rgba(10,10,10,0.96) !important;
-  border-bottom-color: rgba(255,255,255,0.08) !important;
-}
-.mobile-nav a { color: rgba(255,255,255,0.7) !important; }
-.mobile-nav a.active { color: #fff !important; }
+  /* ============================================================
+     AERONAVES — Layout Customizado (Tema Claro / Illustrator)
+     ============================================================ */
 
-/* ---- PAGE HERO ---- */
-.ac-hero {
-  padding: 4rem 0 3rem;
-}
-.ac-eyebrow {
-  font-size: 10px;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
-  font-weight: 500;
-  margin-bottom: .875rem;
-}
-.ac-title {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 800;
-  font-style: italic;
-  text-transform: uppercase;
-  letter-spacing: -.01em;
-  line-height: .95;
-  color: #fff;
-  margin-bottom: 1.25rem;
-}
-.ac-sub {
-  font-size: .9375rem;
-  font-style: italic;
-  color: rgba(255,255,255,0.5);
-  font-weight: 400;
-}
+  /* ---- PAGE HERO ---- */
+  .ac-hero { padding: 4rem 0 3rem; background: hsl(var(--muted)); text-align: center; }
+  .ac-eyebrow { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: hsl(var(--muted-foreground)); font-weight: 600; margin-bottom: .875rem; }
+  .ac-title { font-size: clamp(2.5rem, 6vw, 4.25rem); font-weight: 600; font-style: italic; text-transform: uppercase; letter-spacing: -.01em; line-height: 1; color: hsl(var(--foreground)); margin-bottom: 1rem; }
+  .ac-sub { font-size: 1.125rem; color: hsl(var(--muted-foreground)); }
 
-/* ---- FILTERS ---- */
-.ac-filters-bar {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: .875rem 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  margin-bottom: 2.5rem;
-}
-.ac-filters-label {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #fff;
-}
-.ac-fgroup {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-.ac-fgroup > span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-}
-.ac-fgroup select {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 6px;
-  color: #fff;
-  font-size: .8125rem;
-  font-weight: 500;
-  padding: .375rem .75rem;
-  cursor: pointer;
-  appearance: none;
-  outline: none;
-  min-width: 9rem;
-}
-.ac-fgroup select:focus { border-color: rgba(255,255,255,0.4); }
-.ac-fgroup select option { background: #1a1a1a; color: #fff; }
-.ac-count {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  white-space: nowrap;
-}
+  /* ---- FILTERS ---- */
+  .ac-filters-bar { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .ac-filters-label { display: flex; align-items: center; gap: .5rem; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--foreground)); }
+  .ac-fgroup { display: flex; align-items: center; gap: .5rem; }
+  .ac-fgroup > span { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
+  .ac-fgroup select { background: hsl(var(--background)); border: 1px solid hsl(var(--border)); border-radius: 4px; color: hsl(var(--foreground)); font-size: .8125rem; font-weight: 600; padding: .375rem .75rem; cursor: pointer; appearance: none; outline: none; min-width: 9rem; }
+  .ac-fgroup select:focus { border-color: hsl(var(--foreground)/.4); }
+  .ac-count { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: hsl(var(--muted-foreground)); white-space: nowrap; }
 
-/* ---- CARD GRID ---- */
-.ac-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
-}
-@media(min-width:640px)  { .ac-grid { grid-template-columns: repeat(2,1fr); gap:1.5rem; } }
-@media(min-width:1024px) { .ac-grid { grid-template-columns: repeat(4,1fr); } }
+  /* ---- CARD GRID ---- */
+  .ac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+  @media(min-width:640px)  { .ac-grid { grid-template-columns: repeat(2,1fr); gap:1.5rem; } }
+  @media(min-width:1024px) { .ac-grid { grid-template-columns: repeat(4,1fr); } }
 
-/* ---- CARD ---- */
-.ac-card {
-  display: block;
-  background: rgba(255,255,255,0.04);
-  border-radius: 16px;
-  overflow: hidden;
-  /* Bevel/emboss light effect */
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.08) inset,
-    0 -1px 0 rgba(0,0,0,0.4) inset,
-    0 24px 48px rgba(0,0,0,0.5);
-  transition: transform .2s, box-shadow .2s, border-color .2s;
-  text-decoration: none;
-  color: inherit;
-  padding: .625rem;
-  cursor: pointer;
-}
-.ac-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,255,255,0.22);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.12) inset,
-    0 -1px 0 rgba(0,0,0,0.5) inset,
-    0 32px 64px rgba(0,0,0,0.6);
-}
-.ac-card-img {
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  aspect-ratio: 4/3;
-  background: rgba(255,255,255,0.06);
-  margin-bottom: .875rem;
-}
-.ac-card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.ac-card-img .ph-dark {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255,255,255,0.15);
-  font-size: .7rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.ac-card-body {
-  padding: .25rem .375rem .5rem;
-}
-.ac-card-cond {
-  font-size: 9px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: .25rem;
-}
-.ac-card-title {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: 1.1875rem;
-  font-weight: 800;
-  font-style: italic;
-  text-transform: uppercase;
-  letter-spacing: .01em;
-  line-height: 1.1;
-  color: #fff;
-  margin-bottom: .25rem;
-}
-.ac-card-title span {
-  font-weight: 400; /* variante lighter para parte do nome */
-  font-style: italic;
-}
-.ac-card-meta {
-  font-size: .75rem;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: .625rem;
-}
-.ac-card-price {
-  font-size: .9375rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: .875rem;
-  letter-spacing: -.01em;
-}
-.ac-card-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 6px;
-  padding: .5rem .875rem;
-  transition: background .15s, border-color .15s;
-  white-space: nowrap;
-}
-.ac-card:hover .ac-card-btn {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.3);
-}
-.ac-card-btn svg { flex-shrink: 0; }
+  /* ---- CARD ---- */
+  .ac-card { display: block; background: hsl(var(--card)); border-radius: var(--radius-sm); overflow: hidden; border: 1px solid hsl(var(--border)); transition: transform .2s, box-shadow .2s, border-color .2s; text-decoration: none; color: inherit; padding: .75rem; cursor: pointer; }
+  .ac-card:hover { transform: translateY(-3px); border-color: hsl(var(--foreground)/.3); box-shadow: 0 12px 24px rgba(0,0,0,.06); }
+  .ac-card-img { position: relative; border-radius: 4px; overflow: hidden; aspect-ratio: 4/3; background: hsl(var(--muted)); margin-bottom: 1rem; }
+  .ac-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ac-card-img .ph-dark { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: hsl(var(--muted-foreground)/.5); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; border: 2px dashed hsl(var(--border)); box-sizing: border-box;}
+  .ac-card-body { padding: .25rem .375rem .5rem; }
+  .ac-card-cond { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: .25rem; font-weight: 600; }
+  .ac-card-title { font-size: 1.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: -.02em; line-height: 1.1; color: hsl(var(--foreground)); margin-bottom: .25rem; }
+  .ac-card-title span { font-weight: 400; }
+  .ac-card-meta { font-size: .75rem; color: hsl(var(--muted-foreground)); margin-bottom: .75rem; }
+  .ac-card-price { font-size: 1rem; font-weight: 700; color: hsl(var(--foreground)); margin-bottom: 1rem; letter-spacing: -.01em; }
+  .ac-card-btn { display: inline-flex; align-items: center; gap: .5rem; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--foreground)); background: transparent; border: 1px solid hsl(var(--border)); border-radius: 4px; padding: .5rem .875rem; transition: background .15s, border-color .15s; white-space: nowrap; }
+  .ac-card:hover .ac-card-btn { background: hsl(var(--muted)); border-color: hsl(var(--foreground)/.3); }
+  .ac-card-btn svg { flex-shrink: 0; }
 
-/* ---- SELL BAND ---- */
-.ac-sell-band {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 1.5rem 1.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin: 0 0 1.5rem;
-  grid-column: 1 / -1;
-}
-.ac-sell-band p:first-child {
-  font-size: .9375rem;
-  font-style: italic;
-  font-weight: 700;
-  color: rgba(255,255,255,0.7);
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  margin-bottom: .25rem;
-}
-.ac-sell-band p:first-child b {
-  color: #fff;
-  font-weight: 800;
-}
-.ac-sell-band p:last-of-type {
-  font-size: .8125rem;
-  font-style: italic;
-  color: rgba(255,255,255,0.4);
-}
-.ac-sell-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #fff;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 6px;
-  padding: .625rem 1.125rem;
-  transition: background .15s, border-color .15s;
-  white-space: nowrap;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.ac-sell-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
+  /* ---- SELL BAND ---- */
+  .ac-sell-band { background: hsl(var(--muted)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm); padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin: 0 0 1.5rem; grid-column: 1 / -1; }
+  .ac-sell-band p:first-child { font-size: 1rem; font-weight: 600; color: hsl(var(--muted-foreground)); text-transform: uppercase; letter-spacing: .03em; margin-bottom: .25rem; }
+  .ac-sell-band p:first-child b { color: hsl(var(--foreground)); font-weight: 800; }
+  .ac-sell-band p:last-of-type { font-size: .875rem; color: hsl(var(--muted-foreground)); }
+  .ac-sell-btn { display: inline-flex; align-items: center; gap: .5rem; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--background)); background: hsl(var(--foreground)); border-radius: var(--radius-sm); padding: .75rem 1.25rem; transition: opacity .15s; white-space: nowrap; text-decoration: none; flex-shrink: 0; }
+  .ac-sell-btn:hover { opacity: .85; }
 
-/* ---- EMPTY ---- */
-.ac-empty {
-  grid-column: 1/-1;
-  padding: 5rem 0;
-  text-align: center;
-  color: rgba(255,255,255,0.3);
-  font-size: .875rem;
-  font-style: italic;
-}
+  /* ---- EMPTY ---- */
+  .ac-empty { grid-column: 1/-1; padding: 5rem 0; text-align: center; color: hsl(var(--muted-foreground)); font-size: .875rem; }
 </style>
 </head>
 <body>
@@ -330,9 +76,8 @@ header.site .hd-actions .btn-solid {
     </div>
   </section>
 
-  <section style="padding-bottom:5rem">
+  <section style="padding: 3rem 0 5rem;">
     <div class="container">
-      <!-- Filtros -->
       <div class="ac-filters-bar" id="filtersBar" style="display:none">
         <div class="ac-filters-label">
           <svg style="width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
@@ -353,14 +98,13 @@ header.site .hd-actions .btn-solid {
         <span class="ac-count" id="count"></span>
       </div>
 
-      <!-- Grid -->
       <div class="ac-grid" id="grid"></div>
     </div>
   </section>
 </main>
 <div id="site-footer"></div>
 
-<script src="firebase-config.js" defer></script>
+<script src="firebase-config.js"></script>
 <script>
 const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
@@ -388,7 +132,7 @@ function getLocalizedCondition(item){
 function formatPrice(item){
   if(item.sobConsulta || !item.priceNum) return t("ac_consult");
   return item.currency === "BRL"
-    ? "R$" + Number(item.priceNum).toLocaleString("pt-BR")
+    ? "R$ " + Number(item.priceNum).toLocaleString("pt-BR")
     : "USD " + Number(item.priceNum).toLocaleString("en-US");
 }
 
@@ -404,12 +148,11 @@ function cardHTML(item){
   const meta = [item.year, hours].filter(Boolean).join(" • ");
   const media = (item.images && item.images[0])
     ? `<img src="${item.images[0]}" alt="${item.model}" loading="lazy">`
-    : `<div class="ph-dark">[Foto]</div>`;
-  // Title: bold italic + lighter italic for variant part
-  // e.g. "VISION JET G3+" → bold+italic "VISION JET" + lighter "G3+"
+    : `<div class="ph-dark">[Sem Imagem]</div>`;
   const titleParts = item.model.match(/^(.*?)(\s[A-Z0-9+]+)?$/);
   const titleMain = titleParts ? titleParts[1] : item.model;
   const titleSub  = titleParts && titleParts[2] ? titleParts[2] : "";
+  
   return `<a href="aeronave.html?id=${item.id}" class="ac-card">
     <div class="ac-card-img">${media}</div>
     <div class="ac-card-body">
@@ -486,12 +229,14 @@ async function init(){
           priceNum:a.priceNum||null, sobConsulta:!!a.sobConsulta,
           images:a.images||[], translations:a.translations||{} };
       });
-    } catch(e){ allListings = []; }
+    } catch(e){ allListings = []; console.error(e); }
   }
   buildFilters();
   render();
 }
-init();
+
+// Inicia logo após o carregamento do DOM
+document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
