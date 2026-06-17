@@ -77,14 +77,14 @@
       <div class="cgrid">
         <!-- Form -->
         <div class="form">
-          <h2 class="label" style="margin-bottom:1.5rem">Envie uma mensagem</h2>
+          <h2 class="label" style="margin-bottom:1.5rem" data-i18n="ct_form_title">Envie uma mensagem</h2>
           <form class="form-rows" onsubmit="event.preventDefault()">
             <div class="two">
-              <div class="field"><label>Nome *</label><input type="text" placeholder="Seu nome completo"></div>
-              <div class="field"><label>Telefone *</label><input type="tel" placeholder="(11) 99999-0000"></div>
+              <div class="field"><label data-i18n="ct_name">Nome *</label><input type="text" placeholder="Seu nome completo"></div>
+              <div class="field"><label data-i18n="ct_phone">Telefone *</label><input type="tel" placeholder="(11) 99999-0000"></div>
             </div>
-            <div class="field"><label>E-mail *</label><input type="email" placeholder="seu@email.com"></div>
-            <div class="field"><label>Assunto *</label>
+            <div class="field"><label data-i18n="ct_email">E-mail *</label><input type="email" placeholder="seu@email.com"></div>
+            <div class="field"><label data-i18n="ct_subject">Assunto *</label>
               <select id="motivo">
                 <option value="">Selecione o assunto</option>
                 <option value="comprar-novo">Quero comprar uma aeronave nova</option>
@@ -94,14 +94,14 @@
                 <option value="outro">Outros assuntos</option>
               </select>
             </div>
-            <div class="field"><label>Mensagem</label><textarea rows="4" placeholder="Descreva sua necessidade ou dúvida..."></textarea></div>
+            <div class="field"><label data-i18n="ct_msg">Mensagem</label><textarea rows="4" placeholder="Descreva sua necessidade ou dúvida..."></textarea></div>
             <button type="submit" class="btn btn-solid btn-md" style="width:100%" data-i18n="ct_send">Enviar Mensagem</button>
           </form>
         </div>
 
         <!-- Info -->
         <div class="info cinfo">
-          <h2 class="label" style="margin-bottom:1.5rem">Informações de Contato</h2>
+          <h2 class="label" style="margin-bottom:1.5rem" data-i18n="ct_info">Informações de Contato</h2>
           <div class="item">
             <div class="ibox"><svg class="icon i-4" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div><p class="t">Hangar Plane Aviation</p><p>Aeroporto de Jundiaí</p><p>Jundiaí — SP, Brasil</p></div>
