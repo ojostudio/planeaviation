@@ -65,9 +65,9 @@
 
   /* --- Tipografia --- */
   --font: 'Grift', ui-sans-serif, system-ui, sans-serif;
-  --font-size-body:   1rem;          /* 16px — texto de parágrafos */
-  --font-size-small:  .875rem;       /* 14px — textos secundários */
-  --font-size-xs:     .75rem;        /* 12px — labels, captions */
+  --font-size-body:   1.125rem;          /* 16px — texto de parágrafos */
+  --font-size-small:  1rem;       /* 14px — textos secundários */
+  --font-size-xs:     .875rem;        /* 12px — labels, captions */
   --font-size-hero:   clamp(1.875rem, 5vw, 3.75rem); /* hero responsivo */
   --font-size-h2:     clamp(1.5rem, 3vw, 2.25rem);
   --font-size-h3:     1.125rem;
