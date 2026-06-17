@@ -5,8 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aeronaves Disponíveis | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
+  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
+  <style>
+    #site-header { display: block; height: 4rem; }
+    body { min-height: 100vh; }
+  </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="i18n.js" defer></script>
+  <script src="site.js" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
@@ -45,8 +52,6 @@
 </main>
 <div id="site-footer"></div>
 
-<script src="i18n.js"></script>
-<script src="site.js"></script>
 <script src="firebase-config.js"></script>
 <script>
   let allListings = []; // só populado pelo Firestore — nada fixo do wireframe

@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Serviços &amp; Suporte | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
+  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
+  <style>
+    #site-header { display: block; height: 4rem; }
+    body { min-height: 100vh; }
+  </style>
 <style>
   .svc{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:2rem; display:flex; flex-direction:column; }
   .svc > svg{ color:hsl(var(--foreground)/.7); margin-bottom:1.25rem; }
@@ -12,6 +17,8 @@
   .svc p{ font-size:.875rem; color:hsl(var(--muted-foreground)); margin-bottom:1.5rem; flex:1; }
   .svc .arrow-link{ align-self:flex-start; }
 </style>
+  <script src="i18n.js" defer></script>
+  <script src="site.js" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
@@ -54,7 +61,5 @@
 
 </main>
 <div id="site-footer"></div>
-<script src="i18n.js"></script>
-<script src="site.js"></script>
 </body>
 </html>

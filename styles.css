@@ -476,7 +476,7 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
    ================================================================ */
 .filters {
   position: sticky;
-  top: calc(var(--header-top) * 2 + var(--header-h));
+  top: var(--header-h);
   z-index: 30;
   background: hsl(var(--card));
   border-bottom: 1px solid hsl(var(--border));

@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Configurador | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
+  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
+  <style>
+    #site-header { display: block; height: 4rem; }
+    body { min-height: 100vh; }
+  </style>
 <style>
   .prog{ border-bottom:1px solid hsl(var(--border)); background:hsl(var(--card)); }
   .prog .container{ padding-top:1rem; padding-bottom:1rem; }
@@ -49,6 +54,8 @@
   .cfg-foot .stepcount{ font-size:.75rem; color:hsl(var(--muted-foreground)); display:none; }
   @media(min-width:640px){ .cfg-foot .stepcount{ display:inline; } }
 </style>
+  <script src="i18n.js" defer></script>
+  <script src="site.js" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
@@ -119,8 +126,6 @@
 
 <div id="site-footer"></div>
 
-<script src="i18n.js"></script>
-<script src="site.js"></script>
 <script>
   const steps = ["Modelo","Exterior","Interior","Resumo"];
   document.getElementById("steps").innerHTML = steps.map((s,i)=>{
