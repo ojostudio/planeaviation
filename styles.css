@@ -15,6 +15,38 @@
    11. UTILITÁRIOS
    ================================================================ */
 
+/* ================================================================
+   COMPONENTES (Botões, etc)
+   ================================================================ */
+/* Substitua o bloco da classe .btn por este: */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* Espaço entre texto e ícone */
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--btn-padding);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-weight);
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* Estilo para a setinha dentro do botão: um pouco maior que o texto */
+.btn svg {
+  height: 1.15em; /* Ligeiramente maior que a altura do texto */
+  width: auto;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+/* ... resto dos estilos dos botões (.btn-solid, .btn-xs, etc) ... */
+
+
+
 
 /* ================================================================
    1. FONTE
