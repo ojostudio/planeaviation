@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
 <script src="i18n.js" defer></script>
 <script src="site.js" defer></script>
 <!-- Reserva espaço do header antes do JS rodar -->
@@ -25,28 +23,7 @@ body {
   color: #fff;
 }
 
-/* Override header for dark pages */
-header.site {
-  background: rgba(10,10,10,0.92) !important;
-  border-bottom-color: rgba(255,255,255,0.08) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-}
-header.site .nav a,
-header.site .logo,
-header.site .hd-toggle,
-header.site .lang-current { color: #fff !important; }
-header.site .nav a:hover { opacity:.5 !important; }
-header.site .hd-actions .btn-solid {
-  background: #d9202a !important;
-  color: #fff !important;
-}
-.mobile-nav {
-  background: rgba(10,10,10,0.96) !important;
-  border-bottom-color: rgba(255,255,255,0.08) !important;
-}
-.mobile-nav a { color: rgba(255,255,255,0.7) !important; }
-.mobile-nav a.active { color: #fff !important; }
+/* Header: mantém padrão branco do site */
 
 /* ---- PAGE HERO ---- */
 .ac-hero {
@@ -62,7 +39,7 @@ header.site .hd-actions .btn-solid {
 }
 .ac-title {
   font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-size: var(--font-size-h2, clamp(1.5rem, 3vw, 2.25rem));
   font-weight: 800;
   font-style: italic;
   text-transform: uppercase;
@@ -360,7 +337,10 @@ header.site .hd-actions .btn-solid {
 </main>
 <div id="site-footer"></div>
 
-<script src="firebase-config.js" defer></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
