@@ -154,3 +154,87 @@
     justify-content: center;
   }
 }
+
+/* ================================================================
+   SEÇÃO: A CASA DO SEU CIRRUS (HOME)
+   ================================================================ */
+.home-casa-cirrus {
+  position: relative;
+  background-image: url('../images/background-cirrus.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.casa-cirrus-card {
+  position: relative;
+  background-color: #151515; /* Fundo bem escuro, quase preto */
+  border-radius: 24px;
+  padding: 4rem 3rem;
+  max-width: 460px;
+  margin: 0 auto;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  z-index: 1;
+}
+
+/* Marca d'água de fundo com opacidade baixa */
+.casa-cirrus-card .cirrus-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140%; /* Tamanho para vazar pelas bordas do card */
+  height: auto;
+  opacity: 0.04;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Selo Superior (Cirrus Authorized) */
+.casa-cirrus-card .cirrus-badge {
+  display: inline-flex;
+  margin-bottom: 2.5rem;
+}
+.casa-cirrus-card .cirrus-badge img {
+  height: 36px;
+  width: auto;
+}
+
+/* Textos */
+.casa-cirrus-card .eyebrow {
+  display: block;
+  color: #fff;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: .1em;
+  margin-bottom: 1rem;
+}
+
+.casa-cirrus-card .title {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: clamp(3rem, 6vw, 4rem);
+  line-height: 0.95;
+}
+
+.casa-cirrus-card .muted {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .casa-cirrus-card {
+    padding: 3rem 2rem;
+  }
+  .home-casa-cirrus {
+    padding: 5rem 1rem;
+  }
+}
