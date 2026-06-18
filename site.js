@@ -61,7 +61,7 @@
     <nav class="nav" aria-label="Principal">${navHTML()}</nav>
     <div class="hd-actions">
       ${langSelector()}
-      <a href="contato.html" class="btn btn-solid btn-xs" data-i18n="nav_cta">${t("nav_cta")}</a>
+      <a href="contato.html" class="btn btn-solid btn-xs" data-i18n="nav_cta">${t("nav_cta")} <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
     </div>
     <button class="hd-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
       <svg class="icon i-5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
