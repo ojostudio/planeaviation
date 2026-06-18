@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plane Aviation — Representante exclusiva Cirrus no Brasil</title>
 <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
   <style>
     #site-header { display: block; height: 4rem; }
@@ -31,11 +32,104 @@
   .sec-head h2{ font-size:1.875rem; font-weight:700; letter-spacing:-.025em; margin-top:.5rem; }
   @media(min-width:640px){ .sec-head h2{ font-size:2.25rem; } }
 
-  /* inventory */
-  .inv-head{ display:flex; flex-direction:column; gap:1rem; margin-bottom:3rem; }
-  @media(min-width:640px){ .inv-head{ flex-direction:row; align-items:flex-end; justify-content:space-between; } }
-  .inv-head h2{ font-size:1.875rem; font-weight:700; letter-spacing:-.025em; margin-top:.5rem; }
-  @media(min-width:640px){ .inv-head h2{ font-size:2.25rem; } }
+  /* inventory dark section */
+  .inv-dark-section {
+    background: #0a0a0a;
+    padding: 5rem 0;
+  }
+  .inv-dark-head {
+    display: flex; flex-direction: column; gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  @media(min-width:640px){
+    .inv-dark-head { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  }
+  .inv-dark-eyebrow {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4); font-weight: 500; margin-bottom: .5rem;
+  }
+  .inv-dark-title {
+    font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800; font-style: italic;
+    text-transform: uppercase; letter-spacing: -.01em;
+    line-height: 1; color: #fff; margin: 0;
+  }
+  .inv-dark-see-all {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.4);
+    text-decoration: none; white-space: nowrap;
+    transition: color .15s;
+  }
+  .inv-dark-see-all:hover { color: #fff; }
+  .inv-dark-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media(min-width:1024px) { .inv-dark-grid { grid-template-columns: repeat(4,1fr); gap: 1.25rem; } }
+  /* Reuse ac-card from aeronaves */
+  .inv-dark-grid .ac-card {
+    display: block;
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 -1px 0 rgba(0,0,0,0.4) inset,
+      0 24px 48px rgba(0,0,0,0.5);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    text-decoration: none; color: inherit;
+    padding: .625rem; cursor: pointer;
+  }
+  .inv-dark-grid .ac-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.22);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 -1px 0 rgba(0,0,0,0.5) inset, 0 32px 64px rgba(0,0,0,0.6);
+  }
+  .inv-dark-grid .ac-card-img {
+    position: relative; border-radius: 10px; overflow: hidden;
+    aspect-ratio: 4/3; background: rgba(255,255,255,0.06);
+    margin-bottom: .875rem;
+  }
+  .inv-dark-grid .ac-card-img img { width:100%;height:100%;object-fit:cover;display:block; }
+  .inv-dark-grid .ac-card-img .ph-dark {
+    width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    color:rgba(255,255,255,0.15);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  }
+  .inv-dark-grid .ac-card-tag {
+    position:absolute;top:.625rem;left:.625rem;
+    font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.2);border-radius:4px;
+    color:#fff;padding:.25rem .5rem;
+  }
+  .inv-dark-grid .ac-card-body { padding: .25rem .375rem .5rem; }
+  .inv-dark-grid .ac-card-cond { font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:.25rem; }
+  .inv-dark-grid .ac-card-title {
+    font-family:'Grift','Bebas Neue','Inter',sans-serif;
+    font-size:1.125rem;font-weight:800;font-style:italic;
+    text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:.25rem;
+  }
+  .inv-dark-grid .ac-card-title span { font-weight:400;font-style:italic; }
+  .inv-dark-grid .ac-card-meta { font-size:.75rem;color:rgba(255,255,255,0.4);margin-bottom:.5rem; }
+  .inv-dark-grid .ac-card-price { font-size:.9375rem;font-weight:700;color:#fff;margin-bottom:.875rem; }
+  .inv-dark-grid .ac-card-btn {
+    display:inline-flex;align-items:center;gap:.5rem;
+    font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:#fff;background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);border-radius:6px;
+    padding:.5rem .875rem;white-space:nowrap;
+  }
+  .inv-dark-grid .ac-card:hover .ac-card-btn {
+    background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.3);
+  }
+  /* Empty state */
+  .inv-dark-empty {
+    grid-column: 1/-1; padding: 4rem 0; text-align: center;
+    color: rgba(255,255,255,0.25); font-size: .875rem; font-style: italic;
+  }
 
   /* video institucional */
   .vid-sec{ padding:4rem 0; background:hsl(var(--card)); }
@@ -95,17 +189,17 @@
     </div>
   </section>
 
-  <!-- INVENTORY HIGHLIGHTS -->
-  <section class="sec">
+  <!-- INVENTORY HIGHLIGHTS — dark section -->
+  <section class="inv-dark-section">
     <div class="container">
-      <div class="inv-head">
+      <div class="inv-dark-head">
         <div>
-          <span class="eyebrow" data-i18n="home_inv_eyebrow">Estoque disponível</span>
-          <h2 data-i18n="home_inv_title">Oportunidades em Destaque</h2>
+          <p class="inv-dark-eyebrow" data-i18n="home_inv_eyebrow">Estoque disponível</p>
+          <h2 class="inv-dark-title" data-i18n="home_inv_title">Oportunidades em Destaque</h2>
         </div>
-        <a href="aeronaves.html" class="arrow-link" data-i18n="home_inv_all">Ver todo estoque <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
+        <a href="aeronaves.html" class="inv-dark-see-all" data-i18n="home_inv_all">Ver todo estoque <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
       </div>
-      <div class="grid g1 sm-g2 lg-g4" id="invGrid" style="gap:1.25rem"></div>
+      <div class="inv-dark-grid" id="invGrid"></div>
     </div>
   </section>
 
@@ -231,22 +325,33 @@
 <script src="firebase-config.js"></script>
 <script>
   const ARROW3 = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
-  const XICO = '<svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 
-  function cardHTML(i){
-    const media = (i.images && i.images[0])
-      ? `<img src="${i.images[0]}" alt="${i.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`
-      : `<div class="ph" style="aspect-ratio:4/3">${XICO}<span class="lbl">[Foto ${i.model}]</span></div>`;
-    return `<a href="aeronave.html?id=${i.id}" class="lcard">
-      <div class="img">
+  function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
+
+  function cardHTML(a){
+    const id = a.id || a._id;
+    const media = (a.images && a.images[0])
+      ? `<img src="${a.images[0]}" alt="${a.model}">`
+      : `<div class="ph-dark">[Foto]</div>`;
+    const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/);
+    const main = parts?.[1] || a.model || "";
+    const sub  = parts?.[2] || "";
+    const hours = a.hoursNum != null ? Number(a.hoursNum).toLocaleString("pt-BR")+"h" : (a.hours ? a.hours+"h" : "");
+    const meta  = [a.year, hours].filter(Boolean).join(" · ");
+    const price = (a.sobConsulta || !a.priceNum)
+      ? t("ac_consult")
+      : (a.currency==="BRL" ? "R$"+Number(a.priceNum).toLocaleString("pt-BR") : "USD "+Number(a.priceNum).toLocaleString("en-US"));
+    return `<a href="aeronave.html?id=${id}" class="ac-card">
+      <div class="ac-card-img">
         ${media}
-        ${i.tag ? `<span class="tag ${i.tagSolid!==false?'solid':'outline'}">${i.tag}</span>` : ""}
+        ${a.tag ? `<span class="ac-card-tag">${a.tag}</span>` : ""}
       </div>
-      <div class="body compact">
-        <div class="cond">${i.condition||""}</div>
-        <h3>${i.model}</h3>
-        <div class="meta"><span>${i.year||""}</span>${i.hours?`<span class="div"></span><span>${i.hours}</span>`:""}</div>
-        <span class="more">Consultar Condições ${ARROW3}</span>
+      <div class="ac-card-body">
+        <div class="ac-card-cond">${a.condition||""}</div>
+        <div class="ac-card-title">${main}<span>${sub}</span></div>
+        ${meta ? `<div class="ac-card-meta">${meta}</div>` : ""}
+        <div class="ac-card-price">${price}</div>
+        <span class="ac-card-btn">${t("ac_details")} ${ARROW3}</span>
       </div>
     </a>`;
   }
@@ -255,23 +360,19 @@
     const grid = document.getElementById("invGrid");
     if (window.PA && PA.configured) {
       try {
-        // Busca aeronaves marcadas como destaque, até 4
-        const snap = await PA.db.collection("aircraft")
-          .where("featured","==",true)
-          .limit(4).get();
+        const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(4).get();
         if (!snap.empty) {
           grid.innerHTML = snap.docs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
           return;
         }
-        // Fallback: se nenhuma estiver marcada, mostra as 4 mais recentes
         const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(4).get();
         if(!fallback.empty){
           grid.innerHTML = fallback.docs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
           return;
         }
-      } catch(e){ /* cai no estado vazio */ }
+      } catch(e){ /* estado vazio */ }
     }
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Nenhuma aeronave cadastrada no momento. Em breve novas unidades estarão disponíveis.</div>';
+    grid.innerHTML = `<div class="inv-dark-empty">${t("ac_empty")}</div>`;
   }
   loadHighlights();
   loadSiteMedia();
