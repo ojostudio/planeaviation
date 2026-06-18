@@ -3,391 +3,631 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detalhe da Aeronave | Plane Aviation</title>
+<title>Aeronave | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
-  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
-  <style>
-    #site-header { display: block; height: 4rem; }
-    body { min-height: 100vh; }
-  </style>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="i18n.js" defer></script>
+<script src="site.js" defer></script>
 <style>
-  /* ---- Breadcrumb ---- */
-  .crumb{ border-bottom:1px solid hsl(var(--border)); }
-  .crumb .container{ padding-top:.75rem; padding-bottom:.75rem; display:flex; align-items:center; gap:.5rem; font-size:.75rem; color:hsl(var(--muted-foreground)); }
-  .crumb a:hover{ color:hsl(var(--foreground)); }
-  .crumb .cur{ color:hsl(var(--foreground)); font-weight:500; }
-
-  /* ---- Layout principal ---- */
-  .det-wrap{ padding:2.5rem 0 4rem; }
-  .det-grid{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:2.5rem;
-    align-items:start;
-  }
-  @media(min-width:1024px){ .det-grid{ grid-template-columns:55% 1fr; } }
-
-  /* ---- Galeria ---- */
-  .gal-main{ position:relative; border-radius:var(--radius-sm); overflow:hidden; }
-  .gal-nav{
-    position:absolute; top:50%; transform:translateY(-50%);
-    width:2.25rem; height:2.25rem;
-    background:rgba(255,255,255,.85); backdrop-filter:blur(4px);
-    border:1px solid hsl(var(--border)); border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; transition:background .15s;
-  }
-  .gal-nav:hover{ background:#fff; }
-  .gal-nav.prev{ left:.75rem; } .gal-nav.next{ right:.75rem; }
-  .thumbs{ display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-top:.625rem; }
-  .thumbs button{ background:none; border:2px solid transparent; border-radius:var(--radius-sm); padding:0; cursor:pointer; overflow:hidden; transition:border-color .15s; }
-  .thumbs button.active{ border-color:hsl(var(--foreground)); }
-
-  /* ---- Info lateral ---- */
-  .det-info{ display:flex; flex-direction:column; gap:0; }
-
-  /* Condição + localização */
-  .det-badge{ font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:hsl(var(--muted-foreground)); margin-bottom:.375rem; }
-
-  /* Nome da aeronave */
-  .det-info h1{ font-size:1.875rem; font-weight:700; letter-spacing:-.025em; line-height:1.1; margin-bottom:.875rem; }
-  @media(min-width:640px){ .det-info h1{ font-size:2.25rem; } }
-
-  /* Metas: Ano · Motor · Célula · Hélice */
-  .det-metas{ display:flex; flex-wrap:wrap; gap:.375rem; margin-bottom:1.25rem; }
-  .det-meta-item{
-    display:inline-flex; align-items:center; gap:.375rem;
-    font-size:.75rem; font-weight:500;
-    background:hsl(var(--muted));
-    border:1px solid hsl(var(--border));
-    border-radius:var(--radius-sm);
-    padding:.3rem .625rem;
-    color:hsl(var(--foreground));
-    white-space:nowrap;
-  }
-  .det-meta-item .meta-label{ color:hsl(var(--muted-foreground)); font-weight:400; }
-
-  /* Preço */
-  .det-price{
-    font-size:1.5rem; font-weight:700; letter-spacing:-.025em;
-    margin-bottom:1.25rem; color:hsl(var(--foreground));
-  }
-  .det-price.consult{ font-size:1rem; color:hsl(var(--muted-foreground)); font-weight:500; }
-
-  /* Botões CTA */
-  .det-actions{ display:flex; gap:.625rem; margin-bottom:2rem; flex-wrap:wrap; }
-  .det-actions .btn{ flex:1; min-width:10rem; padding:.75rem 1rem; font-size:.75rem; }
-
-  /* Descrição (abaixo dos botões, alinhada à imagem) */
-  .det-desc-section{ margin-top:2rem; }
-  .det-desc-section p{
-    font-size:var(--font-size-small);
-    color:hsl(var(--muted-foreground));
-    line-height:1.8;
-    white-space:pre-wrap;
-  }
-
-  /* Ficha técnica */
-  .specs{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); overflow:hidden; }
-  .specs .r{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; font-size:var(--font-size-small); border-bottom:1px solid hsl(var(--border)); }
-  .specs .r:last-child{ border-bottom:none; }
-  .specs .r .v{ font-weight:600; }
-
-  /* Tecnologias */
-  .feats-section{ padding:3rem 0; border-top:1px solid hsl(var(--border)); margin-top:3rem; }
-  .feat{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:1.25rem; background:hsl(var(--card)); }
-  .feat svg{ color:hsl(var(--foreground)/.6); margin-bottom:.75rem; }
-  .feat h3{ font-size:var(--font-size-small); font-weight:700; margin-bottom:.25rem; }
-  .feat p{ font-size:var(--font-size-xs); color:hsl(var(--muted-foreground)); }
-
-  /* Outras opções */
-  .other-section{ padding:3rem 0; border-top:1px solid hsl(var(--border)); }
-  .other-grid{ display:grid; grid-template-columns:1fr; gap:1.25rem; }
-  @media(min-width:640px){ .other-grid{ grid-template-columns:repeat(2,1fr); } }
-  @media(min-width:1024px){ .other-grid{ grid-template-columns:repeat(4,1fr); } }
+  #site-header { display: block; height: 4rem; }
+  body { min-height: 100vh; }
 </style>
-  <script src="i18n.js" defer></script>
-  <script src="site.js" defer></script>
+<style>
+/* ============================================================
+   AERONAVE DETALHE — Dark Theme
+   ============================================================ */
+body { background: #0a0a0a; color: #fff; }
+
+/* Breadcrumb */
+.crumb {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: .625rem 0;
+}
+.crumb .container {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .75rem;
+  color: rgba(255,255,255,0.35);
+}
+.crumb a { color: rgba(255,255,255,0.35); }
+.crumb a:hover { color: rgba(255,255,255,0.7); }
+.crumb .sep { opacity: .3; }
+.crumb .cur { color: rgba(255,255,255,0.6); font-weight: 500; }
+
+/* ---- MAIN LAYOUT ---- */
+.det-wrap { padding: 2.5rem 0 5rem; }
+.det-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+@media(min-width:1024px) {
+  .det-grid { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; }
+}
+
+/* ---- GALLERY ---- */
+.gal-main {
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255,255,255,0.05);
+  aspect-ratio: 4/3;
+  /* Bevel effect matching cards */
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 -1px 0 rgba(0,0,0,0.4) inset,
+    0 32px 64px rgba(0,0,0,0.6);
+}
+.gal-main img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.gal-main .ph-dark {
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,0.15);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+}
+.gal-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 2.25rem; height: 2.25rem;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #fff;
+  transition: background .15s;
+  z-index: 2;
+}
+.gal-nav:hover { background: rgba(0,0,0,0.75); }
+.gal-nav.prev { left: .75rem; }
+.gal-nav.next { right: .75rem; }
+.gal-tag {
+  position: absolute; top: .875rem; left: .875rem;
+  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: rgba(255,255,255,0.12); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+  color: #fff; padding: .3rem .625rem;
+}
+/* Thumbnails */
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: .5rem;
+  margin-top: .625rem;
+}
+.thumbs button {
+  background: none; padding: 0; cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 8px; overflow: hidden;
+  transition: border-color .15s;
+}
+.thumbs button.active { border-color: rgba(255,255,255,0.5); }
+.thumbs button img {
+  width: 100%; aspect-ratio: 4/3;
+  object-fit: cover; display: block;
+}
+.thumbs button .ph-thumb {
+  aspect-ratio: 4/3;
+  background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.15); font-size: .6rem;
+}
+
+/* ---- INFO COLUMN ---- */
+.det-badge {
+  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: .5rem;
+}
+.det-title {
+  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800; font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -.01em; line-height: 1;
+  color: #fff; margin-bottom: 1rem;
+}
+.det-title span { font-weight: 400; font-style: italic; }
+
+/* Metas pills */
+.det-metas {
+  display: flex; flex-wrap: wrap; gap: .375rem;
+  margin-bottom: 1.25rem;
+}
+.det-meta-pill {
+  display: inline-flex; align-items: center; gap: .375rem;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: .3rem .75rem;
+  font-size: .75rem; font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  white-space: nowrap;
+}
+.det-meta-pill .ml { color: rgba(255,255,255,0.4); font-weight: 400; margin-right: .125rem; }
+
+/* Price */
+.det-price {
+  font-size: 1.625rem; font-weight: 700;
+  letter-spacing: -.02em; color: #fff;
+  margin-bottom: 1.5rem;
+}
+.det-price.consult {
+  font-size: 1rem; font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  font-style: italic;
+}
+
+/* CTAs */
+.det-actions {
+  display: flex; gap: .75rem; flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.det-btn-primary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: #fff; color: #0a0a0a;
+  border: none; border-radius: 6px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .75rem 1.5rem; cursor: pointer;
+  text-decoration: none; transition: opacity .15s;
+  flex: 1;
+}
+.det-btn-primary:hover { opacity: .88; }
+.det-btn-secondary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .75rem 1.5rem; cursor: pointer;
+  text-decoration: none; transition: background .15s, border-color .15s;
+  flex: 1;
+}
+.det-btn-secondary:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
+
+/* Divider */
+.det-divider {
+  border: none; border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 1.5rem 0;
+}
+
+/* Description */
+.det-section-label {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-bottom: .875rem;
+}
+.det-desc-text {
+  font-size: .875rem; line-height: 1.75;
+  color: rgba(255,255,255,0.55);
+  white-space: pre-wrap;
+}
+
+/* Specs table */
+.det-specs {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; overflow: hidden;
+}
+.det-spec-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .625rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: .8125rem;
+}
+.det-spec-row:last-child { border-bottom: none; }
+.det-spec-key { color: rgba(255,255,255,0.4); }
+.det-spec-val { font-weight: 600; color: #fff; }
+
+/* Technologies */
+.det-tech-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+}
+@media(min-width:640px) { .det-tech-grid { grid-template-columns: repeat(4,1fr); } }
+.det-tech-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 1rem;
+}
+.det-tech-card svg { color: rgba(255,255,255,0.5); margin-bottom: .625rem; }
+.det-tech-card h3 {
+  font-size: .8125rem; font-weight: 700;
+  color: #fff; margin-bottom: .25rem;
+}
+.det-tech-card p {
+  font-size: .75rem; color: rgba(255,255,255,0.4);
+  line-height: 1.5;
+}
+
+/* Other options */
+.other-section {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 4rem; padding-top: 3rem;
+}
+.other-section-head {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem; flex-wrap: wrap; gap: .75rem;
+}
+.other-section-head h2 {
+  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
+  font-size: 1.25rem; font-weight: 800; font-style: italic;
+  text-transform: uppercase; color: #fff;
+}
+.other-see-all {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); text-decoration: none;
+  display: inline-flex; align-items: center; gap: .375rem;
+  transition: color .15s;
+}
+.other-see-all:hover { color: #fff; }
+.other-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 1rem;
+}
+@media(min-width:640px)  { .other-grid { grid-template-columns: repeat(2,1fr); } }
+@media(min-width:1024px) { .other-grid { grid-template-columns: repeat(4,1fr); } }
+
+/* Reuse ac-card styles from aeronaves */
+.ac-card {
+  display: block;
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 -1px 0 rgba(0,0,0,0.4) inset,
+    0 24px 48px rgba(0,0,0,0.5);
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+  text-decoration: none; color: inherit;
+  padding: .5rem; cursor: pointer;
+}
+.ac-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.22);
+}
+.ac-card-img {
+  position: relative; border-radius: 10px; overflow: hidden;
+  aspect-ratio: 4/3; background: rgba(255,255,255,0.06);
+  margin-bottom: .75rem;
+}
+.ac-card-img img { width:100%;height:100%;object-fit:cover;display:block; }
+.ac-card-img .ph-dark {
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,0.15);font-size:.6rem;
+}
+.ac-card-tag {
+  position:absolute;top:.5rem;left:.5rem;
+  font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.2);border-radius:4px;
+  color:#fff;padding:.2rem .4rem;
+}
+.ac-card-body { padding: .125rem .25rem .375rem; }
+.ac-card-cond { font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:.2rem; }
+.ac-card-title {
+  font-family:'Grift','Bebas Neue','Inter',sans-serif;
+  font-size:1rem;font-weight:800;font-style:italic;
+  text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:.2rem;
+}
+.ac-card-title span { font-weight:400; }
+.ac-card-meta { font-size:.7rem;color:rgba(255,255,255,0.35);margin-bottom:.5rem; }
+.ac-card-price { font-size:.875rem;font-weight:700;color:#fff;margin-bottom:.625rem; }
+.ac-card-btn {
+  display:inline-flex;align-items:center;gap:.375rem;
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#fff;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);border-radius:5px;
+  padding:.4rem .75rem;white-space:nowrap;
+}
+</style>
 </head>
 <body>
 <div id="site-header"></div>
 <main>
-
   <!-- Breadcrumb -->
   <div class="crumb">
     <div class="container">
       <a href="aeronaves.html" data-i18n="det_crumb">Aeronaves Disponíveis</a>
-      <span>/</span>
+      <span class="sep">/</span>
       <span class="cur" id="crumbModel"></span>
     </div>
   </div>
 
-  <!-- Conteúdo principal -->
-  <div class="det-wrap">
+  <!-- Main -->
+  <div class="det-wrap" id="detWrap">
     <div class="container">
       <div class="det-grid">
 
-        <!-- COLUNA ESQUERDA: Galeria + Descrição + Specs + Tecnologias -->
+        <!-- LEFT: Gallery + Description + Specs -->
         <div>
-          <!-- Galeria -->
-          <div class="gal-main">
-            <div class="ph rounded" id="galMain" style="aspect-ratio:4/3"></div>
-            <button class="gal-nav prev" id="galPrev" aria-label="Anterior"><svg class="icon i-4" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-            <button class="gal-nav next" id="galNext" aria-label="Próxima"><svg class="icon i-4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-            <span class="tag solid" id="galTag" style="display:none"></span>
+          <div class="gal-main" id="galMain">
+            <div class="ph-dark">[Imagem]</div>
+            <button class="gal-nav prev" id="galPrev" aria-label="Anterior">
+              <svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button class="gal-nav next" id="galNext" aria-label="Próxima">
+              <svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <span class="gal-tag" id="galTag" style="display:none"></span>
           </div>
           <div class="thumbs" id="thumbs"></div>
 
-          <!-- Descrição (alinhada à imagem) -->
-          <div id="descBlock" style="display:none" class="det-desc-section">
-            <h2 class="label" id="descLabel" style="margin-bottom:.75rem;margin-top:2rem">Sobre esta aeronave</h2>
-            <p id="descText"></p>
+          <!-- Description (below gallery) -->
+          <div id="descBlock" style="display:none;margin-top:2rem">
+            <p class="det-section-label" id="descLabel" data-i18n="det_about">Sobre esta aeronave</p>
+            <p class="det-desc-text" id="descText"></p>
           </div>
 
-          <!-- Ficha técnica -->
+          <!-- Specs (below description) -->
           <div id="specsBlock" style="display:none;margin-top:2rem">
-            <h2 class="label" id="specsLabel" style="margin-bottom:.75rem">Ficha Técnica</h2>
-            <div class="specs" id="specs"></div>
+            <p class="det-section-label" id="specsLabel" data-i18n="det_specs">Ficha Técnica</p>
+            <div class="det-specs" id="specs"></div>
           </div>
         </div>
 
-        <!-- COLUNA DIREITA: Info, metas, preço, CTAs -->
-        <div class="det-info">
+        <!-- RIGHT: Info -->
+        <div>
           <p class="det-badge" id="condLoc"></p>
-          <h1 id="model"></h1>
-
-          <!-- Metas: Ano · Motor · Célula · Hélice (só aparece o que tiver preenchido) -->
+          <h1 class="det-title" id="model"></h1>
           <div class="det-metas" id="detMetas"></div>
-
-          <!-- Preço -->
           <div class="det-price" id="detPrice"></div>
-
-          <!-- CTAs -->
           <div class="det-actions">
-            <a href="contato.html?motivo=comprar" class="btn btn-solid" data-i18n="det_cta1">Solicitar Proposta</a>
-            <a href="contato.html?motivo=visita" class="btn btn-outline" data-i18n="det_cta2">Agendar Visita / Call</a>
+            <a href="contato.html?motivo=comprar" class="det-btn-primary" data-i18n="det_cta1">Solicitar Proposta</a>
+            <a href="contato.html?motivo=visita" class="det-btn-secondary" data-i18n="det_cta2">Agendar Visita</a>
           </div>
         </div>
       </div>
 
-      <!-- Tecnologias a bordo (largura total, abaixo do grid) -->
-      <div class="feats-section" id="featsSection" style="display:none">
-        <h2 class="label" id="featsLabel" style="margin-bottom:1.5rem">Tecnologias a bordo</h2>
-        <div class="grid g1 sm-g2 lg-g4" id="feats" style="gap:1rem"></div>
+      <!-- Technologies (full width below grid) -->
+      <div id="featsSection" style="display:none;margin-top:3rem">
+        <hr class="det-divider">
+        <p class="det-section-label" id="featsLabel" data-i18n="det_tech">Tecnologias a bordo</p>
+        <div class="det-tech-grid" id="feats"></div>
       </div>
 
-      <!-- Outras aeronaves disponíveis -->
+      <!-- Other options -->
       <div class="other-section" id="otherSection" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
-          <h2 style="font-size:1.125rem;font-weight:700;letter-spacing:-.025em">Outras opções disponíveis</h2>
-          <a href="aeronaves.html" class="arrow-link">Ver todas <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
+        <div class="other-section-head">
+          <h2>Outras opções</h2>
+          <a href="aeronaves.html" class="other-see-all">Ver todas
+            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.8em;height:.8em;fill:currentColor"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          </a>
         </div>
         <div class="other-grid" id="otherGrid"></div>
       </div>
     </div>
   </div>
-
 </main>
 <div id="site-footer"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-  const ICONS = {
-    Shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
-    Monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
-    Navigation:'<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
-    Gauge:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
-    Zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-    Wind:'<path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/>',
-    Award:'<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>'
+const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
+
+const ICONS = {
+  Shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  Monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+  Navigation:'<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+  Gauge:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  Zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  Wind:'<path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/>',
+  Award:'<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>'
+};
+
+function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
+function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
+function getLocalized(p,f){ const l=getLang(); return l==="pt"?p[f]||"":(p.translations?.[l]?.[f]||p[f]||""); }
+function getLocalizedArray(p,f){ const l=getLang(); return l==="pt"?p[f]||[]:(p.translations?.[l]?.[f]||p[f]||[]); }
+
+const pageId = new URLSearchParams(location.search).get("id");
+let P = null, activeImg = 0, galleryCount = 0;
+
+document.addEventListener("pa:langchange", () => { if(P) renderPage(P); });
+
+// Gallery
+const galMainEl = document.getElementById("galMain");
+const thumbsEl  = document.getElementById("thumbs");
+
+function hasImgs(){ return P && P.images && P.images.length; }
+
+function paintMain(){
+  const existing = galMainEl.querySelector("img, .ph-dark");
+  if(existing) existing.remove();
+  if(hasImgs()){
+    const img = document.createElement("img");
+    img.src = P.images[activeImg];
+    img.alt = P.model;
+    galMainEl.prepend(img);
+  }
+}
+function paintThumbs(){
+  if(!hasImgs()){ thumbsEl.innerHTML=""; return; }
+  thumbsEl.innerHTML = P.images.map((url,i) =>
+    `<button class="${i===activeImg?"active":""}" data-i="${i}">
+      <img src="${url}" alt="${P.model} ${i+1}">
+    </button>`).join("");
+  thumbsEl.querySelectorAll("button").forEach(b =>
+    b.addEventListener("click", () => { activeImg=+b.dataset.i; paintMain(); paintThumbs(); }));
+}
+document.getElementById("galPrev").addEventListener("click", () => {
+  if(!hasImgs()) return;
+  activeImg=(activeImg-1+P.images.length)%P.images.length; paintMain(); paintThumbs();
+});
+document.getElementById("galNext").addEventListener("click", () => {
+  if(!hasImgs()) return;
+  activeImg=(activeImg+1)%P.images.length; paintMain(); paintThumbs();
+});
+
+function fmtPrice(p){
+  if(p.sobConsulta || !p.priceNum) return null;
+  return p.currency==="BRL"
+    ? "R$"+Number(p.priceNum).toLocaleString("pt-BR")
+    : "USD "+Number(p.priceNum).toLocaleString("en-US");
+}
+function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
+
+function renderPage(p){
+  P = p;
+  // Don't reset gallery position on lang change
+  if(!P._init){ activeImg=0; P._init=true; paintMain(); paintThumbs(); }
+
+  const loc_cond  = getLocalized(p,"condition");
+  const loc_loc   = getLocalized(p,"location");
+  const loc_desc  = getLocalized(p,"description");
+  const loc_specs = getLocalizedArray(p,"specs");
+  const loc_feats = getLocalizedArray(p,"features");
+
+  // Breadcrumb + title
+  document.getElementById("crumbModel").textContent = p.model + (p.year ? " — "+p.year : "");
+  document.getElementById("condLoc").textContent = [loc_cond, loc_loc].filter(Boolean).join(" · ");
+  document.title = `${p.model} | Plane Aviation`;
+
+  // Title (bold + lighter variant)
+  const parts = p.model.match(/^(.*?)(\s[A-Z0-9+]+)?$/);
+  const main = parts?.[1] || p.model;
+  const sub  = parts?.[2] || "";
+  document.getElementById("model").innerHTML = `${main}<span>${sub}</span>`;
+
+  // Tag
+  const tagEl = document.getElementById("galTag");
+  if(p.tag){ tagEl.textContent=p.tag; tagEl.style.display=""; }
+  else { tagEl.style.display="none"; }
+
+  // Metas
+  const metas = [];
+  if(p.year)              metas.push({ l:t("det_meta_year"),   v:String(p.year) });
+  if(p.hoursNum!=null)    metas.push({ l:t("det_meta_cell"),   v:fmtHoras(p.hoursNum) });
+  if(p.motorHours!=null)  metas.push({ l:t("det_meta_engine"), v:fmtHoras(p.motorHours) });
+  if(p.heliceHours!=null) metas.push({ l:t("det_meta_prop"),   v:fmtHoras(p.heliceHours) });
+  document.getElementById("detMetas").innerHTML = metas.map(m =>
+    `<span class="det-meta-pill"><span class="ml">${m.l}</span>${m.v}</span>`).join("");
+
+  // Price
+  const priceEl = document.getElementById("detPrice");
+  const price = fmtPrice(p);
+  if(price){ priceEl.textContent=price; priceEl.className="det-price"; }
+  else { priceEl.textContent=t("ac_consult"); priceEl.className="det-price consult"; }
+
+  // Description
+  const descBlock = document.getElementById("descBlock");
+  if(loc_desc){
+    document.getElementById("descLabel").textContent = t("det_about");
+    document.getElementById("descText").textContent  = loc_desc;
+    descBlock.style.display="block";
+  } else { descBlock.style.display="none"; }
+
+  // Specs
+  const specsBlock = document.getElementById("specsBlock");
+  const specsHTML = loc_specs.filter(s=>s[0]||s[1]).map(s =>
+    `<div class="det-spec-row"><span class="det-spec-key">${s[0]||""}</span><span class="det-spec-val">${s[1]||""}</span></div>`).join("");
+  if(specsHTML){
+    document.getElementById("specs").innerHTML = specsHTML;
+    document.getElementById("specsLabel").textContent = t("det_specs");
+    specsBlock.style.display="block";
+  } else { specsBlock.style.display="none"; }
+
+  // Technologies
+  const featsSection = document.getElementById("featsSection");
+  const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f =>
+    `<div class="det-tech-card">
+      <svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg>
+      <h3>${f[1]||""}</h3>
+      <p>${f[2]||""}</p>
+    </div>`).join("");
+  if(featsHTML){
+    document.getElementById("feats").innerHTML = featsHTML;
+    document.getElementById("featsLabel").textContent = t("det_tech");
+    featsSection.style.display="block";
+  } else { featsSection.style.display="none"; }
+}
+
+function notFound(){
+  document.getElementById("detWrap").innerHTML = `
+    <div class="container" style="padding:5rem 0;text-align:center">
+      <p style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem" data-i18n="ac_eyebrow">Estoque</p>
+      <h1 style="font-family:'Grift','Bebas Neue','Inter',sans-serif;font-size:2.5rem;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1>
+      <a href="aeronaves.html" style="display:inline-flex;align-items:center;gap:.5rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:.75rem 1.5rem;text-decoration:none" data-i18n="det_back">Ver Aeronaves Disponíveis</a>
+    </div>`;
+  if(window.PA_I18N) PA_I18N.applyLang();
+}
+
+function fromFirestore(a){
+  return {
+    tag:a.tag||"", model:a.model||"", year:a.year||"",
+    hoursNum:a.hoursNum!=null?a.hoursNum:null,
+    motorHours:a.motorHours!=null?a.motorHours:null,
+    heliceHours:a.heliceHours!=null?a.heliceHours:null,
+    condition:a.condition||"", currency:a.currency||"USD",
+    priceNum:a.priceNum!=null?a.priceNum:null,
+    sobConsulta:!!a.sobConsulta,
+    location:a.location||"", description:a.description||"",
+    translations:a.translations||{},
+    images:a.images||[],
+    specs:(a.specs||[]).map(s=>[s.label,s.value]),
+    features:(a.features||[]).map(f=>[f.icon,f.title,f.desc])
   };
+}
 
-  function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
-  function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
-  function getLocalized(p,f){ const l=getLang(); return l==="pt"?p[f]||"":(p.translations?.[l]?.[f]||p[f]||""); }
-  function getLocalizedArray(p,f){ const l=getLang(); return l==="pt"?p[f]||[]:(p.translations?.[l]?.[f]||p[f]||[]); }
+function otherCardHTML(id, a){
+  const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/);
+  const main = parts?.[1]||a.model||"";
+  const sub  = parts?.[2]||"";
+  const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult")
+    : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
+  const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" • ");
+  const img = (a.images&&a.images[0])
+    ? `<img src="${a.images[0]}" alt="${a.model}">`
+    : `<div class="ph-dark">[Foto]</div>`;
+  return `<a href="aeronave.html?id=${id}" class="ac-card">
+    <div class="ac-card-img">
+      ${img}
+      ${a.tag?`<span class="ac-card-tag">${a.tag}</span>`:""}
+    </div>
+    <div class="ac-card-body">
+      <div class="ac-card-cond">${a.condition||""}</div>
+      <div class="ac-card-title">${main}<span>${sub}</span></div>
+      ${meta?`<div class="ac-card-meta">${meta}</div>`:""}
+      <div class="ac-card-price">${price}</div>
+      <span class="ac-card-btn">Ver ${ARROW}</span>
+    </div>
+  </a>`;
+}
 
-  const id = new URLSearchParams(location.search).get("id");
-  let activeImg=0, galleryCount=4, P=null;
+async function init(){
+  if(!window.PA || !PA.configured || !pageId){ notFound(); return; }
+  try {
+    const doc = await PA.db.collection("aircraft").doc(pageId).get();
+    if(!doc.exists){ notFound(); return; }
+    renderPage(fromFirestore(doc.data()));
 
-  document.addEventListener("pa:langchange", ()=>{ if(P) render(P); });
-
-  const galMainEl = document.getElementById("galMain");
-  const thumbsEl  = document.getElementById("thumbs");
-
-  function hasImgs(){ return P && P.images && P.images.length; }
-
-  function paintMain(){
-    if(hasImgs())
-      galMainEl.innerHTML=`<img src="${P.images[activeImg]}" alt="${P.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`;
-    else
-      galMainEl.innerHTML=`<svg class="icon" style="width:3rem;height:3rem;opacity:.2" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
-  }
-  function paintThumbs(){
-    if(!hasImgs()){ thumbsEl.innerHTML=""; return; }
-    thumbsEl.innerHTML = P.images.map((url,i)=>
-      `<button data-i="${i}" class="${i===activeImg?"active":""}">
-        <img src="${url}" alt="${P.model} foto ${i+1}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">
-      </button>`).join("");
-    thumbsEl.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
-      activeImg=+b.dataset.i; paintMain(); paintThumbs();
-    }));
-  }
-
-  document.getElementById("galPrev").addEventListener("click",()=>{
-    if(!hasImgs()) return;
-    activeImg=(activeImg-1+galleryCount)%galleryCount; paintMain(); paintThumbs();
-  });
-  document.getElementById("galNext").addEventListener("click",()=>{
-    if(!hasImgs()) return;
-    activeImg=(activeImg+1)%galleryCount; paintMain(); paintThumbs();
-  });
-
-  // Formata número de horas
-  function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+" "+t("det_hours") : null; }
-
-  // Formata preço com moeda
-  function fmtPreco(p){
-    if(p.sobConsulta || !p.priceNum) return null;
-    return p.currency==="BRL"
-      ? "R$ "+Number(p.priceNum).toLocaleString("pt-BR")
-      : "USD "+Number(p.priceNum).toLocaleString("en-US");
-  }
-
-  function render(p){
-    P=p;
-    galleryCount = hasImgs() ? p.images.length : 4;
-    if(!P._rendered){ activeImg=0; P._rendered=true; }
-
-    const loc_condition   = getLocalized(p,"condition");
-    const loc_location    = getLocalized(p,"location");
-    const loc_description = getLocalized(p,"description");
-    const loc_specs       = getLocalizedArray(p,"specs");
-    const loc_features    = getLocalizedArray(p,"features");
-
-    // Breadcrumb + título
-    document.getElementById("crumbModel").textContent = `${p.model}${p.year?" — "+p.year:""}`;
-    document.getElementById("condLoc").textContent    = [loc_condition, loc_location].filter(Boolean).join(" · ");
-    document.getElementById("model").textContent      = p.model;
-
-    // --- Metas (Ano · Motor · Célula · Hélice) ---
-    const metas = [];
-    if(p.year)             metas.push({ label:t("det_meta_year"),   value:p.year });
-    if(p.hoursNum!=null)   metas.push({ label:t("det_meta_cell"),   value:fmtHoras(p.hoursNum) });
-    if(p.motorHours!=null) metas.push({ label:t("det_meta_engine"), value:fmtHoras(p.motorHours) });
-    if(p.heliceHours!=null)metas.push({ label:t("det_meta_prop"),   value:fmtHoras(p.heliceHours) });
-
-    document.getElementById("detMetas").innerHTML = metas.map(m=>
-      `<span class="det-meta-item"><span class="meta-label">${m.label}</span>${m.value}</span>`
-    ).join("");
-
-    // --- Preço ---
-    const preco = fmtPreco(p);
-    const priceEl = document.getElementById("detPrice");
-    if(preco){ priceEl.textContent=preco; priceEl.className="det-price"; }
-    else { priceEl.textContent=t("ac_consult"); priceEl.className="det-price consult"; }
-
-    // --- Tag/Selo ---
-    const galTag = document.getElementById("galTag");
-    if(p.tag){ galTag.textContent=p.tag; galTag.style.display=""; }
-    else { galTag.style.display="none"; }
-
-    // --- Descrição ---
-    const descBlock = document.getElementById("descBlock");
-    const descLabel = document.getElementById("descLabel");
-    const descText  = document.getElementById("descText");
-    if(loc_description){
-      descText.textContent  = loc_description;
-      descLabel.textContent = t("det_about");
-      descBlock.style.display="block";
-    } else { descBlock.style.display="none"; }
-
-    // --- Ficha técnica ---
-    const specsBlock = document.getElementById("specsBlock");
-    const specsLabel = document.getElementById("specsLabel");
-    const specsEl    = document.getElementById("specs");
-    const specsHTML  = loc_specs.filter(s=>s[0]||s[1]).map(s=>
-      `<div class="r"><span class="muted">${s[0]||""}</span><span class="v">${s[1]||""}</span></div>`).join("");
-    if(specsHTML){ specsEl.innerHTML=specsHTML; specsLabel.textContent=t("det_specs"); specsBlock.style.display="block"; }
-    else { specsBlock.style.display="none"; }
-
-    // --- Tecnologias ---
-    const featsSection = document.getElementById("featsSection");
-    const featsLabel   = document.getElementById("featsLabel");
-    const featsEl      = document.getElementById("feats");
-    const featsHTML    = loc_features.filter(f=>f[1]||f[2]).map(f=>
-      `<div class="feat"><svg class="icon i-5" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
-    if(featsHTML){ featsEl.innerHTML=featsHTML; featsLabel.textContent=t("det_tech"); featsSection.style.display="block"; }
-    else { featsSection.style.display="none"; }
-
-    paintMain(); paintThumbs();
-  }
-
-  function fromFirestore(a){
-    return {
-      tag:a.tag||"", model:a.model||"", year:a.year||"",
-      hoursNum:   a.hoursNum!=null   ? a.hoursNum   : null,
-      motorHours: a.motorHours!=null ? a.motorHours : null,
-      heliceHours:a.heliceHours!=null? a.heliceHours: null,
-      condition:a.condition||"", currency:a.currency||"USD",
-      priceNum:a.priceNum!=null?a.priceNum:null,
-      location:a.location||"", description:a.description||"",
-      translations:a.translations||{},
-      images:a.images||[],
-      specs:(a.specs||[]).map(s=>[s.label,s.value]),
-      features:(a.features||[]).map(f=>[f.icon,f.title,f.desc])
-    };
-  }
-
-  // Pequeno card para seção "Outras opções"
-  function otherCard(d,a){
-    const preco = a.priceNum
-      ? (a.currency==="BRL"?"R$ ":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US")
-      : t("ac_consult");
-    const img = (a.images&&a.images[0])
-      ? `<img src="${a.images[0]}" alt="${a.model}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">`
-      : `<div class="ph" style="aspect-ratio:4/3"><svg class="icon" style="width:2rem;height:2rem;opacity:.2" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>`;
-    return `<a href="aeronave.html?id=${d.id}" class="lcard">
-      <div class="img">${img}${a.tag?`<span class="tag solid">${a.tag}</span>`:""}</div>
-      <div class="body compact">
-        <div class="cond">${a.condition||""}</div>
-        <h3>${a.model}</h3>
-        <div class="meta">${a.year?`<span>${a.year}</span>`:""}${a.hoursNum!=null?`<span class="div"></span><span>${Number(a.hoursNum).toLocaleString("pt-BR")} ${t("det_hours")}</span>`:""}</div>
-        <div style="font-size:.8125rem;font-weight:600;margin-top:.375rem">${preco}</div>
-      </div>
-    </a>`;
-  }
-
-  function notFound(){
-    document.querySelector(".det-wrap").innerHTML=`
-      <div class="container" style="padding:4rem 0;text-align:center">
-        <span class="eyebrow">Estoque</span>
-        <h1 class="h-display" style="margin-top:.5rem" data-i18n="det_notfound">Aeronave não encontrada</h1>
-        <p class="muted" style="font-size:var(--font-size-small);margin-top:.75rem;max-width:28rem;margin-left:auto;margin-right:auto" data-i18n="det_notfound_p">Este anúncio não existe mais ou foi removido.</p>
-        <a href="aeronaves.html" class="btn btn-solid btn-md" style="margin-top:1.5rem;display:inline-flex" data-i18n="det_back">Ver Aeronaves Disponíveis</a>
-      </div>`;
-    if(window.PA_I18N) PA_I18N.applyLang();
-  }
-
-  async function init(){
-    if(!window.PA || !PA.configured || !id){ notFound(); return; }
-    try {
-      const doc = await PA.db.collection("aircraft").doc(id).get();
-      if(!doc.exists){ notFound(); return; }
-      render(fromFirestore(doc.data()));
-
-      // Carrega outras aeronaves (exclui a atual, pega até 4)
-      const others = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(10).get();
-      const otherDocs = others.docs.filter(d=>d.id!==id).slice(0,4);
-      if(otherDocs.length){
-        document.getElementById("otherSection").style.display="block";
-        document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCard(d,d.data())).join("");
-      }
-    } catch(e){ notFound(); }
-  }
-  init();
+    // Other options
+    const others = await PA.db.collection("aircraft").get();
+    const otherDocs = others.docs
+      .filter(d=>d.id!==pageId)
+      .sort((a,b)=>{
+        const ao=a.data().order,bo=b.data().order;
+        if(ao!=null&&bo!=null) return ao-bo;
+        if(ao!=null) return -1; if(bo!=null) return 1;
+        return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0);
+      })
+      .slice(0,4);
+    if(otherDocs.length){
+      document.getElementById("otherSection").style.display="block";
+      document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCardHTML(d.id,d.data())).join("");
+    }
+  } catch(e){ notFound(); }
+}
+init();
 </script>
 </body>
 </html>
