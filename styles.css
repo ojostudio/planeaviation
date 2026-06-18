@@ -570,7 +570,7 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
    12. PARALAXE CIRRUS (HOMEPAGE)
    ================================================================ */
 .cp-section {
-  background-color: #0a0a0a;
+  background-color: #000000;
   color: white;
   overflow: hidden;
 }
@@ -625,7 +625,28 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 .cp-model-title { font-size: 4.5rem; font-weight: 700; font-style: italic; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px white; margin-bottom: 10px; }
 .cp-subtitle { font-size: 1.1rem; font-weight: 500; line-height: 1.4; }
 .cp-description { font-size: 0.9rem; color: #ccc; line-height: 1.5; margin-top: 10px; margin-bottom: 20px; }
-.cp-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 260px; }
+/* Container dos botões */
+.cp-buttons { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  width: 100%; 
+  max-width: max-content; /* Impede que o botão estique demais */
+}
+
+/* Reduzindo o "gordura" interna apenas dos botões do paralaxe */
+.cp-buttons .btn {
+  padding: 0.625rem 1.25rem;
+  gap: 0.4rem;
+}
+
+/* Ajuste do tamanho da seta APENAS nos botões do paralaxe */
+.cp-buttons .btn svg {
+  height: 1em; /* Ajuste este valor se precisar dela um pouquinho maior, ex: 1.1em */
+  width: auto;
+  flex-shrink: 0;
+}
+
 .cp-card-right { flex: 0.8; display: flex; flex-direction: column; justify-content: center; gap: 25px; }
 .cp-stat { display: flex; flex-direction: column; }
 .cp-stat-label { font-size: 0.8rem; font-weight: 400; margin-bottom: 2px; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
