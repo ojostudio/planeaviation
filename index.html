@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plane Aviation — Representante exclusiva Cirrus no Brasil</title>
@@ -203,6 +205,51 @@
       <div class="inv-dark-grid" id="invGrid"></div>
     </div>
   </section>
+
+<!-- SCROLL PARALAXE -->
+<section class="cp-section">
+  <div class="cp-container">
+    <div class="cp-camada cp-fundo">
+      <h1 class="cp-title" id="cp-texto-aviao">CIRRUS</h1>
+    </div>
+
+    <div class="cp-camada cp-canvas-container">
+      <canvas id="cp-aviao-canvas"></canvas>
+    </div>
+
+    <div class="cp-camada cp-frente">
+      <h1 class="cp-title" id="cp-texto-modelo">SR22 G7</h1>
+      
+      <div id="cp-card-glass">
+        <div class="cp-card-content">
+          <div class="cp-card-left">
+            <span class="cp-brand">CIRRUS</span>
+            <h2 class="cp-model-title">SR22G7</h2>
+            <p class="cp-subtitle">Estilo, praticidade e conforto.<br>A aeronave pessoal mais moderna e segura do mundo.</p>
+            <p class="cp-description">O carro-chefe da linha SR com motor turbo normalizado, ideal para voos em cruzeiro de longa distância com máxima performance.</p>
+            <div class="cp-buttons">
+              <a href="universo-cirrus.html" class="btn btn-invert">
+                CONHEÇA O SR22 G7
+                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+              </a>
+              <a href="configurador.html" class="btn btn-outline-dark">
+                CONFIGURADOR
+                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="cp-card-right">
+            <div class="cp-stat"><span class="cp-stat-label">velocidade máxima</span><span class="cp-stat-value">214 ktas</span></div>
+            <div class="cp-stat"><span class="cp-stat-label">alcance</span><span class="cp-stat-value">1.100 nm</span></div>
+            <div class="cp-stat"><span class="cp-stat-label">altitude máxima</span><span class="cp-stat-value">25.000 ft</span></div>
+            <div class="cp-stat"><span class="cp-stat-label">motor</span><span class="cp-stat-value">IO 550 turbo</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
   <!-- VIDEO INSTITUCIONAL -->
   <section class="vid-sec">
