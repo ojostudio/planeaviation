@@ -1,0 +1,41 @@
+/* ================================================================
+   2. TIPOGRAFIA E TEXTOS
+   ================================================================ */
+h1, .h-display {
+  font-weight: 600;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  font-style: normal;
+  text-transform: none;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  font-weight: 500;
+}
+.eyebrow.dark { color: hsl(var(--background) / .5); }
+
+.label {
+  font-size: var(--font-size-xs);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  font-weight: 600;
+}
+
+.h-display {
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+  font-size: var(--font-size-hero);
+}
+
+.muted  { color: hsl(var(--muted-foreground)); }
+.center { text-align: center; }
