@@ -1,139 +1,219 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contato | Plane Aviation</title>
-<link rel="stylesheet" href="styles.css">
-  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato — Plane Aviation</title>
+  
+  <link rel="stylesheet" href="styles.css">
+  
   <style>
-    #site-header { display: block; height: 4rem; }
-    body { min-height: 100vh; }
+    /* Estilos customizados e refinados específicos para os campos do Formulário de Contato */
+    .contact-form-container {
+      background: hsl(var(--card));
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius-sm);
+      padding: 2.5rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: hsl(var(--foreground));
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      font-family: var(--font);
+      font-size: var(--font-size-small);
+      background: hsl(var(--background) / 0.3);
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius-sm);
+      color: hsl(var(--foreground));
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: hsl(var(--foreground));
+      background: hsl(var(--card));
+    }
+    
+    /* Customização do card estilo ".sell" para o WhatsApp */
+    .whatsapp-card {
+      background: #050505;
+      color: #fff;
+      border-radius: var(--radius-sm);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    @media(min-width: 768px) {
+      .whatsapp-card {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+    
+    .whatsapp-card .btn-outline-dark:hover {
+      background: #25d366; /* Cor do WhatsApp no hover para dar um charme */
+      border-color: #25d366;
+      color: #fff;
+    }
   </style>
-<style>
-  .wa{ background:hsl(var(--foreground)); color:hsl(var(--background)); padding:2.5rem 0; }
-  .wa .row{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:1.5rem; }
-  @media(min-width:640px){ .wa .row{ flex-direction:row; } }
-  .wa .left{ display:flex; align-items:center; gap:1.25rem; }
-  .wa .ico-box{ width:3.5rem; height:3.5rem; background:hsl(var(--background)/.1); border:1px solid hsl(var(--background)/.2); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:hsl(var(--background)); }
-  .wa h2{ font-size:1.125rem; font-weight:700; letter-spacing:-.025em; color:hsl(var(--background)); }
-  .wa .sub{ font-size:.875rem; color:hsl(var(--background)/.6); margin-top:.125rem; }
-
-  .cgrid{ display:grid; grid-template-columns:1fr; gap:3rem; }
-  @media(min-width:1024px){ .cgrid{ grid-template-columns:repeat(5,1fr); } .cgrid .form{ grid-column:span 3; } .cgrid .info{ grid-column:span 2; } }
-
-  .field label{ font-size:.75rem; font-weight:500; letter-spacing:.025em; text-transform:uppercase; color:hsl(var(--muted-foreground)); margin-bottom:.375rem; display:block; }
-  .field input, .field select, .field textarea{ width:100%; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.75rem 1rem; font-size:.875rem; background:hsl(var(--card)); color:hsl(var(--foreground)); transition:border-color .15s; }
-  .field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:hsl(var(--foreground)/.4); }
-  .field textarea{ resize:none; }
-  .field select{ appearance:none; }
-  .form-rows{ display:flex; flex-direction:column; gap:1rem; }
-  .two{ display:grid; grid-template-columns:1fr; gap:1rem; }
-  @media(min-width:640px){ .two{ grid-template-columns:repeat(2,1fr); } }
-
-  .cinfo .item{ display:flex; align-items:flex-start; gap:1rem; margin-bottom:1.5rem; }
-  .cinfo .ibox{ width:2.25rem; height:2.25rem; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.125rem; color:hsl(var(--foreground)/.6); }
-  .cinfo .item .t{ font-size:.875rem; font-weight:600; margin-bottom:.125rem; }
-  .cinfo .item p{ font-size:.875rem; color:hsl(var(--muted-foreground)); }
-  .map{ margin-top:2rem; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); background:hsl(var(--muted)); display:flex; align-items:center; justify-content:center; height:12rem; color:hsl(var(--muted-foreground)/.4); }
-  .map .lbl{ font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; }
-</style>
-  <script src="js/i18n.js" defer></script>
-  <script src="js/site.js" defer></script>
 </head>
 <body>
-<div id="site-header"></div>
-<main>
 
-  <!-- HERO -->
-  <section class="page-hero center">
-    <div class="container">
-      <span class="eyebrow" data-i18n="ct_eyebrow">Fale conosco</span>
-      <h1 class="h-display" data-i18n="ct_title">Contato</h1>
-      <p style="max-width:28rem">Nossa equipe de especialistas está pronta para atender você.</p>
-    </div>
-  </section>
+  <div id="site-header"></div>
 
-  <!-- WHATSAPP -->
-  <section class="wa">
-    <div class="container">
-      <div class="row">
-        <div class="left">
-          <div class="ico-box"><svg class="icon i-7" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
+  <main>
+    
+    <section class="page-hero tall">
+      <div class="container">
+        <span class="eyebrow" data-i18n="contact_eyebrow">FALE CONOSCO</span>
+        <h1 class="h-display" style="margin-top: 0.5rem;" data-i18n="contact_title">CONTATO</h1>
+        <p class="muted" style="max-width: 500px; margin-top: 1rem;" data-i18n="contact_subtitle">
+          Entre em contato com nossa equipe de especialistas para tirar dúvidas, solicitar orçamentos ou agendar uma consultoria.
+        </p>
+      </div>
+    </section>
+
+    <section style="padding: var(--section-py) 0; background: hsl(var(--background));">
+      <div class="container">
+        
+        <div class="grid md-g2" style="gap: 3rem; align-items: start;">
+          
           <div>
-            <p class="eyebrow dark" style="margin-bottom:.125rem">Canal Prioritário</p>
-            <h2 data-i18n="ct_wa_title">Atendimento rápido via WhatsApp</h2>
-            <p class="sub">Resposta em até 1 hora útil. Fale diretamente com um especialista.</p>
+            
+            <div class="whatsapp-card">
+              <div>
+                <span class="eyebrow" style="color: #25d366; font-weight: 700;">RESPOSTA IMEDIATA</span>
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 0.25rem; letter-spacing: -0.025em;">CONVERSAR VIA WHATSAPP</h3>
+                <p style="font-size: var(--font-size-small); color: rgba(255,255,255,0.6); margin-top: 0.25rem;">Fale diretamente com um consultor de vendas agora mesmo.</p>
+              </div>
+              <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
+                ABRIR CHAT
+                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width: 1em; height: 1em;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+              </a>
+            </div>
+
+            <div class="grid g1" style="gap: 1.5rem;">
+              
+              <div class="icard">
+                <div class="iconbox">
+                  <svg class="icon i-5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <h3>CANAIS DIRETOS</h3>
+                <p style="margin-top: 0.25rem;">+55 (11) 0000-0000</p>
+                <p class="muted">contato@planeaviation.com.br</p>
+              </div>
+
+              <div class="icard">
+                <div class="iconbox">
+                  <svg class="icon i-5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h3>NOSSA BASE</h3>
+                <p style="margin-top: 0.25rem;">Hangar Plane Aviation</p>
+                <p class="muted">Aeroporto Jundiaí (SDJD) — Jundiaí, SP</p>
+                <p class="muted" style="font-size: 11px; margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Atendimento: Seg a Sex, das 8h às 18h</p>
+              </div>
+
+            </div>
+
           </div>
+
+          <div class="contact-form-container">
+            <span class="label" style="display: block; margin-bottom: 1.5rem;" data-i18n="contact_form_title">ENVIE UMA MENSAGEM</span>
+            
+            <form id="contactForm">
+              <div class="form-group">
+                <label for="name" data-i18n="form_name">Nome Completo</label>
+                <input type="text" id="name" required placeholder="Ex: João Silva">
+              </div>
+
+              <div class="form-group">
+                <label for="email" data-i18n="form_email">E-mail Corporativo</label>
+                <input type="email" id="email" required placeholder="joao@empresa.com">
+              </div>
+
+              <div class="form-group">
+                <label for="phone" data-i18n="form_phone">Telefone / WhatsApp</label>
+                <input type="tel" id="phone" required placeholder="(11) 99999-0000">
+              </div>
+
+              <div class="form-group">
+                <label for="subject" data-i18n="form_subject">Assunto de Interesse</label>
+                <select id="subject" required>
+                  <option value="" disabled selected>Selecione uma opção...</option>
+                  <option value="comprar">Comprar uma Aeronave</option>
+                  <option value="vender">Vender minha Aeronave</option>
+                  <option value="hangaragem">Hangaragem Premium</option>
+                  <option value="consultoria">Consultoria e Importação</option>
+                  <option value="outros">Outros Assuntos</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message" data-i18n="form_message">Mensagem</label>
+                <textarea id="message" rows="5" required placeholder="Como podemos ajudar você ou sua empresa?"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-solid btn-lg" style="width: 100%; margin-top: 1rem;">
+                ENVIAR MENSAGEM
+                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width: 1em; height: 1em;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+              </button>
+            </form>
+          </div>
+
         </div>
-        <a href="https://wa.me/5511999990000" target="_blank" rel="noopener noreferrer" class="btn btn-invert btn-wide"><svg class="icon i-4" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg data-i18n="ct_wa_btn"> Abrir WhatsApp</a>
+
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FORM + INFO -->
-  <section style="padding:4rem 0">
-    <div class="container">
-      <div class="cgrid">
-        <!-- Form -->
-        <div class="form">
-          <h2 class="label" style="margin-bottom:1.5rem" data-i18n="ct_form_title">Envie uma mensagem</h2>
-          <form class="form-rows" onsubmit="event.preventDefault()">
-            <div class="two">
-              <div class="field"><label data-i18n="ct_name">Nome *</label><input type="text" placeholder="Seu nome completo"></div>
-              <div class="field"><label data-i18n="ct_phone">Telefone *</label><input type="tel" placeholder="(11) 99999-0000"></div>
-            </div>
-            <div class="field"><label data-i18n="ct_email">E-mail *</label><input type="email" placeholder="seu@email.com"></div>
-            <div class="field"><label data-i18n="ct_subject">Assunto *</label>
-              <select id="motivo">
-                <option value="">Selecione o assunto</option>
-                <option value="comprar-novo">Quero comprar uma aeronave nova</option>
-                <option value="comprar-seminovo">Quero comprar uma aeronave seminova</option>
-                <option value="vender">Quero anunciar / vender meu avião</option>
-                <option value="hangaragem-importacao">Dúvidas sobre Hangaragem ou Importação</option>
-                <option value="outro">Outros assuntos</option>
-              </select>
-            </div>
-            <div class="field"><label data-i18n="ct_msg">Mensagem</label><textarea rows="4" placeholder="Descreva sua necessidade ou dúvida..."></textarea></div>
-            <button type="submit" class="btn btn-solid btn-md" style="width:100%" data-i18n="ct_send"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Enviar Mensagem</button>
-          </form>
-        </div>
+  </main>
 
-        <!-- Info -->
-        <div class="info cinfo">
-          <h2 class="label" style="margin-bottom:1.5rem" data-i18n="ct_info">Informações de Contato</h2>
-          <div class="item">
-            <div class="ibox"><svg class="icon i-4" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
-            <div><p class="t">Hangar Plane Aviation</p><p>Aeroporto de Jundiaí</p><p>Jundiaí — SP, Brasil</p></div>
-          </div>
-          <div class="item">
-            <div class="ibox"><svg class="icon i-4" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
-            <div><p class="t">E-mail</p><p>contato@planeaviation.com.br</p></div>
-          </div>
-          <div class="item">
-            <div class="ibox"><svg class="icon i-4" viewBox="0 0 24 24"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384z"/></svg></div>
-            <div><p class="t">Telefone / WhatsApp</p><p>+55 (11) 9999-0000</p></div>
-          </div>
-          <div class="map">
-            <div class="center">
-              <svg class="icon i-8" style="margin:0 auto .5rem" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
-              <span class="lbl">[ Mapa / Google Maps ]</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div id="site-footer"></div>
 
-</main>
-<div id="site-footer"></div>
-<script>
-  // Prefill "Assunto" a partir de ?motivo=
-  const motivo = new URLSearchParams(location.search).get("motivo");
-  if (motivo) {
-    const sel = document.getElementById("motivo");
-    if ([...sel.options].some(o => o.value === motivo)) sel.value = motivo;
-  }
-</script>
+  <script src="js/i18n.js" defer></script>
+  <script src="js/firebase-config.js" defer></script>
+  <script src="js/site.js" defer></script>
+
+  <script>
+    // Captura parâmetros da URL (Ex: se vier da home clicando em "Quero Anunciar")
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const motivo = urlParams.get('motivo');
+      if (motivo) {
+        const selectSubject = document.getElementById('subject');
+        if (selectSubject) selectSubject.value = motivo;
+      }
+    });
+
+    // Lógica básica de envio do formulário (Pronta para plugar no Firestore se necessário)
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Obrigado! Sua mensagem foi enviada com sucesso. Nossa equipe entrará em contato em breve.');
+      e.target.reset();
+    });
+  </script>
 </body>
 </html>
