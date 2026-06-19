@@ -473,9 +473,8 @@ async function init(){
     try {
       const snap = await PA.db.collection("aircraft").get();
       const docs = snap.docs.filter(d => !d.data().archived).slice().sort((a,b) => {
-        const ao=a.data().order, bo=b.data().order;
-        if(ao!=null&&bo!=null) return ao-bo;
-        if(ao!=null) return -1; if(bo!=null) return 1;
+        const ay = Number(a.data().year)||0, by = Number(b.data().year)||0;
+        if(ay !== by) return by - ay; // mais novo primeiro
         return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0);
       });
       allListings = docs.map(d => {

@@ -44,10 +44,7 @@
   .feat-toggle{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.35rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--muted-foreground)); display:inline-flex; align-items:center; gap:.25rem; transition:background .15s,color .15s,border-color .15s; white-space:nowrap; }
   .feat-toggle:hover:not([disabled]){ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--muted)); }
   .feat-toggle.feat-on{ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--foreground)/.05); font-weight:700; }
-  .drag-handle{ cursor:grab; color:hsl(var(--muted-foreground)); font-size:1.1rem; display:inline-block; padding:.25rem .375rem; border-radius:var(--radius-sm); transition:background .1s; }
-  .drag-handle:hover{ background:hsl(var(--muted)); color:hsl(var(--foreground)); }
-  .draggable-row.dragging{ opacity:.4; }
-  tr[draggable] td:first-child{ cursor:grab; }
+  /* (estilos de drag-and-drop removidos — não usados mais) */
   .empty-row{ text-align:center; color:hsl(var(--muted-foreground)); padding:3rem 1rem; font-size:.875rem; }
 
   /* Modal */
@@ -173,8 +170,11 @@
     <!-- AIRCRAFT -->
     <div class="panel active" id="panel-aircraft">
       <div class="row-head">
-        <div><h2>Aeronaves à venda</h2><p class="sub">Aparecem na página <b>Aeronaves Disponíveis</b>.</p></div>
+        <div><h2>Aeronaves à venda</h2><p class="sub">Aparecem na página <b>Aeronaves Disponíveis</b>, ordenadas automaticamente por ano (mais novas primeiro).</p></div>
         <button class="btn btn-solid btn-sm" id="addAircraft">+ Nova aeronave</button>
+      </div>
+      <div style="margin-bottom:1rem">
+        <input id="aircraftSearch" type="search" placeholder="Buscar por nome, código interno ou prefixo..." style="width:100%;max-width:28rem;padding:.625rem .875rem;border:1px solid hsl(var(--border));border-radius:var(--radius-sm);font-size:.875rem">
       </div>
       <table class="tbl"><tbody id="aircraftRows"></tbody></table>
 
@@ -601,63 +601,56 @@
       sec.style.display = open ? "none" : "block";
       $("archivedChevron").style.transform = open ? "" : "rotate(90deg)";
     };
+
+    // Busca de aeronaves (nome, código interno, prefixo)
+    $("aircraftSearch").addEventListener("input", (e) => {
+      aircraftSearchTerm = e.target.value.trim();
+      const filtered = aircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm));
+      renderAircraftRows(filtered);
+    });
   }
 
   /* ============================================================
      AERONAVES À VENDA
      ============================================================ */
-  // Ordem atual dos IDs (para drag-and-drop)
-  let aircraftOrder = [];
+  // Termo de busca atual (nome, código interno ou prefixo)
+  let aircraftSearchTerm = "";
+  let aircraftCache = []; // cache dos docs ativos para filtrar localmente sem nova consulta
 
-  async function loadAircraft(){
+  function matchesSearch(a, term){
+    if(!term) return true;
+    const t = term.toLowerCase();
+    return (a.model||"").toLowerCase().includes(t)
+        || (a.codigoInterno||"").toLowerCase().includes(t)
+        || (a.prefixo||"").toLowerCase().includes(t);
+  }
+
+  function renderAircraftRows(docs){
     const rows = $("aircraftRows");
-    rows.innerHTML = `<tr><td class="empty-row" colspan="4">Carregando…</td></tr>`;
-    // Ordena por campo 'order' se existir, senão por createdAt
-    const snap = await db.collection("aircraft").get().catch(()=>null);
-    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; loadArchivedAircraft(); return; }
-
-    // Filtra arquivadas fora da lista principal
-    const activeDocs = snap.docs.filter(d => !d.data().archived);
-
-    // Ordena: quem tem 'order' numérico vem primeiro, resto por createdAt desc
-    const docs = activeDocs.slice().sort((a,b)=>{
-      const ao = a.data().order, bo = b.data().order;
-      if(ao!=null && bo!=null) return ao - bo;
-      if(ao!=null) return -1;
-      if(bo!=null) return 1;
-      const at = a.data().createdAt?.seconds||0, bt = b.data().createdAt?.seconds||0;
-      return bt - at;
-    });
-
-    if(!docs.length){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave ativa. Clique em "Nova aeronave".</td></tr>`; loadArchivedAircraft(); return; }
-
-    aircraftOrder = docs.map(d=>d.id);
-    const totalFeatured = docs.filter(d=>d.data().featured).length;
-    const DRAG_HANDLE = `<span class="drag-handle" title="Arrastar para reordenar">⠿</span>`;
+    if(!docs.length){
+      rows.innerHTML = `<tr><td class="empty-row" colspan="3">${aircraftSearchTerm ? "Nenhuma aeronave encontrada para essa busca." : 'Nenhuma aeronave ativa. Clique em "Nova aeronave".'}</td></tr>`;
+      return;
+    }
+    const totalFeatured = aircraftCache.filter(d=>d.featured).length;
     const STAR_ON  = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:hsl(var(--foreground));stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     const STAR_OFF = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     rows.innerHTML = "";
 
-    docs.forEach(doc => {
-      const a = doc.data();
+    docs.forEach(a => {
       const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
       const isFeatured = !!a.featured;
       const canFeature  = !isFeatured && totalFeatured >= 4;
       const featBtn = isFeatured
-        ? `<button class="feat-toggle feat-on" data-id="${doc.id}" data-feat="true">${STAR_ON}Em destaque</button>`
-        : `<button class="feat-toggle" data-id="${doc.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 4"':''}>${STAR_OFF}Destacar</button>`;
+        ? `<button class="feat-toggle feat-on" data-id="${a.id}" data-feat="true">${STAR_ON}Em destaque</button>`
+        : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 4"':''}>${STAR_OFF}Destacar</button>`;
       const tr = document.createElement("tr");
-      tr.draggable = true;
-      tr.dataset.id = doc.id;
-      tr.className = "draggable-row";
       tr.innerHTML = `
-        <td style="width:2rem;text-align:center;cursor:grab;color:hsl(var(--muted-foreground));font-size:1.1rem;user-select:none">${DRAG_HANDLE}</td>
         <td style="width:5rem;padding:.5rem">${img}</td>
         <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
         <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
-      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = () => openAircraft(doc.id, a);
-      tr.querySelector(".dup-btn").onclick = () => duplicateAircraft(doc.id, a);
-      tr.querySelector(".archive-btn").onclick = () => archiveAircraft(doc.id, a.model);
+      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = () => openAircraft(a.id, a);
+      tr.querySelector(".dup-btn").onclick = () => duplicateAircraft(a.id, a);
+      tr.querySelector(".archive-btn").onclick = () => archiveAircraft(a.id, a.model);
       const ftBtn = tr.querySelector(".feat-toggle");
       if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async function(){
         const newVal = this.dataset.feat !== "true";
@@ -667,9 +660,28 @@
       };
       rows.appendChild(tr);
     });
+  }
 
-    // Drag-and-drop reordering
-    wireDragRows(rows);
+  async function loadAircraft(){
+    const rows = $("aircraftRows");
+    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
+    const snap = await db.collection("aircraft").get().catch(()=>null);
+    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; loadArchivedAircraft(); return; }
+
+    // Filtra arquivadas, ordena por ano de fabricação (mais novas primeiro)
+    const activeDocs = snap.docs.filter(d => !d.data().archived);
+    const docs = activeDocs
+      .map(d => ({ id:d.id, ...d.data() }))
+      .sort((a,b) => {
+        const ay = Number(a.year)||0, by = Number(b.year)||0;
+        if(ay !== by) return by - ay; // mais novo primeiro
+        // desempate: cadastro mais recente primeiro
+        return (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0);
+      });
+
+    aircraftCache = docs;
+    const filtered = docs.filter(a => matchesSearch(a, aircraftSearchTerm));
+    renderAircraftRows(filtered);
     loadArchivedAircraft();
   }
 
@@ -723,33 +735,7 @@
     });
   }
 
-  function wireDragRows(tbody){
-    let dragging = null;
-    tbody.querySelectorAll(".draggable-row").forEach(row => {
-      row.addEventListener("dragstart", e => {
-        dragging = row;
-        row.style.opacity = ".4";
-        e.dataTransfer.effectAllowed = "move";
-      });
-      row.addEventListener("dragend", async () => {
-        row.style.opacity = "";
-        dragging = null;
-        // Save new order to Firestore
-        const newOrder = [...tbody.querySelectorAll(".draggable-row")].map(r=>r.dataset.id);
-        const batch = db.batch();
-        newOrder.forEach((id,i) => batch.update(db.collection("aircraft").doc(id), {order:i}));
-        await batch.commit().catch(e=>console.error("Erro ao salvar ordem:",e));
-      });
-      row.addEventListener("dragover", e => {
-        e.preventDefault();
-        if(!dragging || dragging===row) return;
-        const rect = row.getBoundingClientRect();
-        const after = e.clientY > rect.top + rect.height/2;
-        tbody.insertBefore(dragging, after ? row.nextSibling : row);
-      });
-      row.addEventListener("dragenter", e => e.preventDefault());
-    });
-  }
+  /* (drag-and-drop removido — ordenação agora é automática por ano de fabricação) */
 
   function specRow(label="", value=""){
     const d=document.createElement("div"); d.className="rrow";
