@@ -180,21 +180,34 @@
 <main>
 
   <!-- HERO -->
-  <section class="hero-home">
-    <!-- Fundo dinâmico: vídeo ou imagem gerenciado pelo painel admin -->
-    <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <!-- Tag eyebrow: aparece só se preenchida no painel admin (Configurações → Tag) -->
-      <div id="heroBadge" style="display:none;margin-bottom:1rem">
-        <span id="heroTag" style="display:inline-block;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.75)"></span>
+  <section class="hero-glass-section">
+  <div class="hero-bg" id="heroBg"></div>
+  
+  <div class="hero-glass-mask"></div>
+
+  <div class="container hero-content-wrapper">
+    <div class="hero-text-box">
+      
+      <div id="heroBadge" style="display:none; margin-bottom: 1.25rem;">
+        <span id="heroTag" style="display:inline-block; font-size:11px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.75)"></span>
       </div>
-      <h1 id="heroTitle" data-i18n="home_hero">O acesso definitivo à aviação executiva de alta performance.</h1>
-      <div class="hero-cta">
-        <a href="aeronaves.html" class="btn btn-solid btn-md" id="heroBtn" data-i18n="home_cta1">Ver Aeronaves Disponíveis <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
+      
+      <h1 class="hero-title-glass" id="heroTitle" data-i18n="home_hero">O acesso definitivo à aviação executiva de alta performance.</h1>
+      
+      <div class="hero-cta" style="margin-top: 2rem;">
+        <a href="aeronaves.html" class="btn btn-solid" id="heroBtn" data-i18n="home_cta1" style="background-color: #000; color: #fff; padding: 1rem 2rem;">
+          Ver Aeronaves Disponíveis
+          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+        </a>
       </div>
     </div>
-  </section>
+    
+    <div class="hero-badge-glass">
+      <img src="images/cirrus-authorized.svg" alt="Cirrus Authorized">
+      <span>Representante exclusiva Cirrus<br>Aircraft no Brasil desde 2003</span>
+    </div>
+  </div>
+</section>
 
   <!-- INVENTORY HIGHLIGHTS — dark section -->
   <section class="inv-dark-section">
