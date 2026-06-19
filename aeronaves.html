@@ -472,7 +472,7 @@ async function init(){
   if(window.PA && PA.configured){
     try {
       const snap = await PA.db.collection("aircraft").get();
-      const docs = snap.docs.slice().sort((a,b) => {
+      const docs = snap.docs.filter(d => !d.data().archived).slice().sort((a,b) => {
         const ao=a.data().order, bo=b.data().order;
         if(ao!=null&&bo!=null) return ao-bo;
         if(ao!=null) return -1; if(bo!=null) return 1;

@@ -177,6 +177,17 @@
         <button class="btn btn-solid btn-sm" id="addAircraft">+ Nova aeronave</button>
       </div>
       <table class="tbl"><tbody id="aircraftRows"></tbody></table>
+
+      <!-- Anúncios Arquivados — colapsável -->
+      <div style="margin-top:2.5rem">
+        <button id="archivedToggle" style="display:flex;align-items:center;gap:.5rem;background:none;border:none;cursor:pointer;font-size:.8125rem;font-weight:700;color:hsl(var(--muted-foreground));text-transform:uppercase;letter-spacing:.05em;padding:.5rem 0">
+          <svg id="archivedChevron" style="width:.875rem;height:.875rem;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform .15s" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          Anúncios Arquivados <span id="archivedCount" style="font-weight:400;color:hsl(var(--muted-foreground))"></span>
+        </button>
+        <div id="archivedSection" style="display:none;margin-top:.75rem">
+          <table class="tbl"><tbody id="archivedRows"></tbody></table>
+        </div>
+      </div>
     </div>
 
     <!-- USERS -->
@@ -248,6 +259,13 @@
     <div class="modal-head"><h3 id="acTitle">Nova aeronave</h3><button class="x-btn" data-close>✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="acId">
+
+      <!-- Código interno — gerado automaticamente, editável -->
+      <div class="fld">
+        <label>Código Interno *</label>
+        <input id="acCodigo" placeholder="PA-0001" style="font-family:monospace;font-weight:700;letter-spacing:.05em">
+      </div>
+
       <div class="grid2">
         <div class="fld"><label>Modelo *</label><input id="acModel" placeholder="SR22T"></div>
         <div class="fld"><label>Ano *</label><input id="acYear" type="number" placeholder="2022"></div>
@@ -307,6 +325,25 @@
         <label>Tecnologias a bordo</label>
         <div class="repeater" id="acFeats"></div>
         <button class="mini" id="acAddFeat">+ Adicionar tecnologia</button>
+      </div>
+
+      <!-- ============================================================
+           USO INTERNO — nunca aparece no site público
+           ============================================================ -->
+      <div style="margin-top:1.5rem;padding:1.25rem;background:hsl(var(--muted));border:1px dashed hsl(var(--border));border-radius:var(--radius-sm)">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem">
+          <svg style="width:1rem;height:1rem;stroke:hsl(var(--muted-foreground));fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l7-3 7 3z"/></svg>
+          <b style="font-size:.8125rem;text-transform:uppercase;letter-spacing:.05em">Uso Interno — não aparece no site</b>
+        </div>
+        <div class="grid2">
+          <div class="fld"><label>Prefixo (matrícula)</label><input id="acPrefixo" placeholder="PR-ABC"></div>
+          <div class="fld"><label>Telefone do proprietário</label><input id="acProprietarioTel" placeholder="(11) 99999-0000"></div>
+        </div>
+        <div class="fld"><label>Nome do proprietário atual</label><input id="acProprietarioNome" placeholder="Nome completo"></div>
+        <div class="fld">
+          <label>Anotações internas</label>
+          <textarea id="acNotasInternas" rows="4" style="resize:vertical" placeholder="Observações que só a equipe Plane deve ver: negociação, histórico de contato, condições especiais, etc."></textarea>
+        </div>
       </div>
     </div>
     <div class="modal-foot">
@@ -556,6 +593,14 @@
 
     loadAircraft(); if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
     wireAircraftModal(); wireUserModal();
+
+    // Toggle da seção de arquivados
+    $("archivedToggle").onclick = () => {
+      const sec = $("archivedSection");
+      const open = sec.style.display !== "none";
+      sec.style.display = open ? "none" : "block";
+      $("archivedChevron").style.transform = open ? "" : "rotate(90deg)";
+    };
   }
 
   /* ============================================================
@@ -569,10 +614,13 @@
     rows.innerHTML = `<tr><td class="empty-row" colspan="4">Carregando…</td></tr>`;
     // Ordena por campo 'order' se existir, senão por createdAt
     const snap = await db.collection("aircraft").get().catch(()=>null);
-    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; return; }
+    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; loadArchivedAircraft(); return; }
+
+    // Filtra arquivadas fora da lista principal
+    const activeDocs = snap.docs.filter(d => !d.data().archived);
 
     // Ordena: quem tem 'order' numérico vem primeiro, resto por createdAt desc
-    const docs = snap.docs.slice().sort((a,b)=>{
+    const docs = activeDocs.slice().sort((a,b)=>{
       const ao = a.data().order, bo = b.data().order;
       if(ao!=null && bo!=null) return ao - bo;
       if(ao!=null) return -1;
@@ -580,6 +628,8 @@
       const at = a.data().createdAt?.seconds||0, bt = b.data().createdAt?.seconds||0;
       return bt - at;
     });
+
+    if(!docs.length){ rows.innerHTML=`<tr><td class="empty-row" colspan="4">Nenhuma aeronave ativa. Clique em "Nova aeronave".</td></tr>`; loadArchivedAircraft(); return; }
 
     aircraftOrder = docs.map(d=>d.id);
     const totalFeatured = docs.filter(d=>d.data().featured).length;
@@ -603,10 +653,11 @@
       tr.innerHTML = `
         <td style="width:2rem;text-align:center;cursor:grab;color:hsl(var(--muted-foreground));font-size:1.1rem;user-select:none">${DRAG_HANDLE}</td>
         <td style="width:5rem;padding:.5rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
-        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn danger">Excluir</button></div></td>`;
-      tr.querySelector(".icon-btn").onclick = () => openAircraft(doc.id, a);
-      tr.querySelector(".danger").onclick = () => delDoc("aircraft", doc.id, a.model, loadAircraft);
+        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
+        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
+      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = () => openAircraft(doc.id, a);
+      tr.querySelector(".dup-btn").onclick = () => duplicateAircraft(doc.id, a);
+      tr.querySelector(".archive-btn").onclick = () => archiveAircraft(doc.id, a.model);
       const ftBtn = tr.querySelector(".feat-toggle");
       if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async function(){
         const newVal = this.dataset.feat !== "true";
@@ -619,6 +670,57 @@
 
     // Drag-and-drop reordering
     wireDragRows(rows);
+    loadArchivedAircraft();
+  }
+
+  /* ---- Arquivar / Republicar / Duplicar ---- */
+  async function archiveAircraft(id, name){
+    if(!confirm(`Arquivar "${name||"esta aeronave"}"? Ela sai do site público mas continua salva. Você pode republicar depois.`)) return;
+    try{ await db.collection("aircraft").doc(id).update({ archived:true, archivedAt:ts(), featured:false }); loadAircraft(); }
+    catch(e){ alert(e.message); }
+  }
+  async function unarchiveAircraft(id, name){
+    try{ await db.collection("aircraft").doc(id).update({ archived:false, archivedAt:null }); loadAircraft(); }
+    catch(e){ alert(e.message); }
+  }
+  async function duplicateAircraft(id, a){
+    const novoCodigo = gerarCodigoInterno();
+    const copia = { ...a };
+    delete copia.featured; // a cópia não herda destaque
+    delete copia.order;    // a cópia vai pro fim, sem posição fixa
+    copia.codigoInterno = novoCodigo;
+    copia.model = a.model ? `${a.model} (cópia)` : "Nova aeronave (cópia)";
+    copia.createdAt = ts();
+    copia.createdBy = me.email;
+    copia.archived = false;
+    try{
+      const ref = await db.collection("aircraft").add(copia);
+      loadAircraft();
+      openAircraft(ref.id, copia); // já abre pra edição
+    }catch(e){ alert("Erro ao duplicar: "+e.message); }
+  }
+
+  async function loadArchivedAircraft(){
+    const rows = $("archivedRows");
+    const snap = await db.collection("aircraft").get().catch(()=>null);
+    if(!snap){ return; }
+    const archived = snap.docs.filter(d => d.data().archived);
+    $("archivedCount").textContent = archived.length ? `(${archived.length})` : "";
+    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
+    rows.innerHTML = "";
+    archived.forEach(doc => {
+      const a = doc.data();
+      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
+      const tr = document.createElement("tr");
+      tr.style.opacity = ".65";
+      tr.innerHTML = `
+        <td style="width:5rem;padding:.5rem">${img}</td>
+        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""}</div></td>
+        <td><div class="act"><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
+      tr.querySelector(".republish-btn").onclick = () => unarchiveAircraft(doc.id, a.model);
+      tr.querySelector(".del-btn").onclick = () => delDoc("aircraft", doc.id, a.model, () => { loadAircraft(); });
+      rows.appendChild(tr);
+    });
   }
 
   function wireDragRows(tbody){
@@ -811,10 +913,18 @@
     $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t"><img src="${u}"><button class="del" data-i="${i}">×</button></div>`).join("");
     $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=()=>{ editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
   }
+  function gerarCodigoInterno(){
+    // PA-XXXX onde XXXX é sequencial baseado em timestamp curto (sem precisar consultar o banco antes de abrir o modal)
+    const n = Date.now().toString().slice(-4);
+    return `PA-${n}`;
+  }
+
   function openAircraft(id, a){
     a = a || {};
     $("acTitle").textContent = id ? "Editar aeronave" : "Nova aeronave";
     $("acId").value = id || "";
+    // Código interno: se já existe, mantém; se é nova aeronave, gera automaticamente
+    $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
     $("acModel").value=a.model||""; $("acYear").value=a.year||"";
     $("acHours").value=a.hoursNum!=null?a.hoursNum:(a.hours?String(a.hours).replace(/\D/g,""):"");
     $("acMotor").value=a.motorHours!=null?a.motorHours:"";
@@ -833,11 +943,18 @@
     if(!(a.specs||[]).length) $("acSpecs").appendChild(specRow());
     $("acFeats").innerHTML=""; (a.features||[]).forEach(f=>$("acFeats").appendChild(featRow(f.icon,f.title,f.desc)));
     if(!(a.features||[]).length) $("acFeats").appendChild(featRow());
+    // Campos internos
+    $("acPrefixo").value = a.prefixo || "";
+    $("acProprietarioNome").value = a.proprietarioNome || "";
+    $("acProprietarioTel").value = a.proprietarioTelefone || "";
+    $("acNotasInternas").value = a.notasInternas || "";
     $("ovAircraft").classList.add("open");
   }
   async function saveAircraft(withTranslations=false){
     const model=$("acModel").value.trim();
     if(!model) return alert("Informe o modelo.");
+    const codigoInterno = $("acCodigo").value.trim();
+    if(!codigoInterno) return alert("Informe o código interno.");
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
     const hoursNum   = $("acHours").value  ? Number($("acHours").value)  : null;
@@ -846,6 +963,7 @@
     const priceNum   = $("acPrice").value  ? Number($("acPrice").value)  : null;
     const currency   = $("acCurrency").value || "USD";
     const data={ model, year:Number($("acYear").value)||null,
+      codigoInterno,
       hoursNum, hours: hoursNum!=null ? hoursNum : null,
       motorHours, heliceHours,
       condition:$("acCondition").value,
@@ -855,7 +973,13 @@
       tag:$("acTag").value.trim(), tagSolid:true,
       description:$("acDesc").value.trim(),
       translations: withTranslations ? trData : (editTranslations||{}),
-      images:editImages, specs, features, updatedAt:ts(), updatedBy:me.email };
+      images:editImages, specs, features,
+      // Campos internos — nunca exibidos no site público
+      prefixo: $("acPrefixo").value.trim(),
+      proprietarioNome: $("acProprietarioNome").value.trim(),
+      proprietarioTelefone: $("acProprietarioTel").value.trim(),
+      notasInternas: $("acNotasInternas").value.trim(),
+      updatedAt:ts(), updatedBy:me.email };
     const id=$("acId").value;
     if (PA.IMAGE_MODE === "inline" && inlineBytes(editImages) > INLINE_MAX_BYTES) {
       return alert(`As imagens somam mais de ~750 KB e podem estourar o limite do Firestore.\nRemova algumas fotos ou ative o Storage (plano Blaze) e troque IMAGE_MODE para "storage".`);

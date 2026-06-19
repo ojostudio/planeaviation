@@ -498,14 +498,16 @@
     const grid = document.getElementById("invGrid");
     if (window.PA && PA.configured) {
       try {
-        const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(4).get();
-        if (!snap.empty) {
-          grid.innerHTML = snap.docs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
+        const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(8).get();
+        const activeDocs = snap.docs.filter(d => !d.data().archived).slice(0,4);
+        if (activeDocs.length) {
+          grid.innerHTML = activeDocs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
           return;
         }
-        const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(4).get();
-        if(!fallback.empty){
-          grid.innerHTML = fallback.docs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
+        const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(8).get();
+        const fallbackActive = fallback.docs.filter(d => !d.data().archived).slice(0,4);
+        if(fallbackActive.length){
+          grid.innerHTML = fallbackActive.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
           return;
         }
       } catch(e){ /* estado vazio */ }

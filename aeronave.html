@@ -607,13 +607,13 @@ async function init(){
   if(!window.PA || !PA.configured || !pageId){ notFound(); return; }
   try {
     const doc = await PA.db.collection("aircraft").doc(pageId).get();
-    if(!doc.exists){ notFound(); return; }
+    if(!doc.exists || doc.data().archived){ notFound(); return; }
     renderPage(fromFirestore(doc.data()));
 
     // Other options
     const others = await PA.db.collection("aircraft").get();
     const otherDocs = others.docs
-      .filter(d=>d.id!==pageId)
+      .filter(d=>d.id!==pageId && !d.data().archived)
       .sort((a,b)=>{
         const ao=a.data().order,bo=b.data().order;
         if(ao!=null&&bo!=null) return ao-bo;
