@@ -63,6 +63,26 @@
   .fld input, .fld select, .fld textarea{ width:100%; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.625rem .75rem; font-size:.875rem; background:hsl(var(--card)); color:hsl(var(--foreground)); }
   .fld input:focus, .fld select:focus, .fld textarea:focus{ outline:none; border-color:hsl(var(--foreground)/.4); }
   .fld select{ appearance:none; }
+
+  /* ---- Modal de visualização (somente leitura) ---- */
+  .av-section{ display:flex; flex-direction:column; gap:.5rem; }
+  .av-section-title{ font-size:.6875rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:hsl(var(--muted-foreground)); padding-bottom:.375rem; border-bottom:1px solid hsl(var(--border)); }
+  .av-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:.875rem 1.5rem; }
+  .av-item label{ display:block; font-size:.6875rem; font-weight:500; letter-spacing:.02em; text-transform:uppercase; color:hsl(var(--muted-foreground)); margin-bottom:.25rem; }
+  .av-item .val{ font-size:.875rem; color:hsl(var(--foreground)); word-break:break-word; }
+  .av-item .val.empty{ color:hsl(var(--muted-foreground)); font-style:italic; }
+  .av-internal{ background:hsl(var(--muted)); border:1px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:1rem 1.25rem; }
+  .av-internal .av-section-title{ display:flex; align-items:center; gap:.5rem; border:none; padding-bottom:0; }
+  .av-thumbs{ display:flex; gap:.5rem; flex-wrap:wrap; }
+  .av-thumbs img{ width:5rem; height:3.75rem; object-fit:cover; border-radius:var(--radius-sm); border:1px solid hsl(var(--border)); }
+  .av-badge{ display:inline-block; font-size:.6875rem; font-weight:700; padding:.25rem .625rem; border-radius:999px; background:hsl(var(--foreground)); color:hsl(var(--background)); }
+  .av-badge.archived{ background:#9a3412; color:#fff; }
+  .av-desc{ font-size:.875rem; line-height:1.6; color:hsl(var(--foreground)); white-space:pre-wrap; }
+  .av-spec-row{ display:flex; justify-content:space-between; font-size:.8125rem; padding:.375rem 0; border-bottom:1px solid hsl(var(--border)); }
+  .av-spec-row:last-child{ border-bottom:none; }
+  .av-feat{ display:flex; flex-direction:column; gap:.125rem; padding:.625rem; background:hsl(var(--muted)); border-radius:var(--radius-sm); }
+  .av-feat b{ font-size:.8125rem; }
+  .av-feat span{ font-size:.75rem; color:hsl(var(--muted-foreground)); }
   .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
   @media(max-width:560px){ .grid2{ grid-template-columns:1fr; } }
   .check{ display:flex; align-items:center; gap:.5rem; font-size:.875rem; }
@@ -354,6 +374,25 @@
   </div>
 </div>
 
+<!-- ===== MODAL: VISUALIZAR AERONAVE (somente leitura) ===== -->
+<div class="overlay" id="ovAircraftView">
+  <div class="modal" style="max-width:42rem">
+    <div class="modal-head">
+      <h3 id="avTitle">Aeronave</h3>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <button class="btn btn-solid btn-sm" id="avEditBtn">Editar</button>
+        <button class="x-btn" data-close>✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="avBody" style="display:flex;flex-direction:column;gap:1.5rem">
+      <!-- preenchido dinamicamente por renderAircraftView() -->
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== MODAL: TRADUÇÕES DE AERONAVE ===== -->
 <div class="overlay" id="ovTranslate">
   <div class="modal" style="max-width:52rem">
@@ -592,7 +631,7 @@
     document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e=>{ if(e.target===o) o.classList.remove("open"); }));
 
     loadAircraft(); if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
-    wireAircraftModal(); wireUserModal();
+    wireAircraftModal(); wireUserModal(); wireAircraftViewModal();
 
     // Toggle da seção de arquivados
     $("archivedToggle").onclick = () => {
@@ -644,18 +683,22 @@
         ? `<button class="feat-toggle feat-on" data-id="${a.id}" data-feat="true">${STAR_ON}Em destaque</button>`
         : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 8"':''}>${STAR_OFF}Destacar</button>`;
       const tr = document.createElement("tr");
+      tr.style.cursor = "pointer";
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>
         <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
         <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
-      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = () => openAircraft(a.id, a);
-      tr.querySelector(".dup-btn").onclick = () => duplicateAircraft(a.id, a);
-      tr.querySelector(".archive-btn").onclick = () => archiveAircraft(a.id, a.model);
+      // Clique na linha (fora dos botões) abre a visualização completa
+      tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
+      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".dup-btn").onclick = (e) => { e.stopPropagation(); duplicateAircraft(a.id, a); };
+      tr.querySelector(".archive-btn").onclick = (e) => { e.stopPropagation(); archiveAircraft(a.id, a.model); };
       const ftBtn = tr.querySelector(".feat-toggle");
-      if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async function(){
-        const newVal = this.dataset.feat !== "true";
+      if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async (e) => {
+        e.stopPropagation();
+        const newVal = ftBtn.dataset.feat !== "true";
         if(!newVal && totalFeatured<=1){ alert("É necessário pelo menos 1 aeronave em destaque."); return; }
-        try{ await db.collection("aircraft").doc(this.dataset.id).update({featured:newVal}); loadAircraft(); }
+        try{ await db.collection("aircraft").doc(ftBtn.dataset.id).update({featured:newVal}); loadAircraft(); }
         catch(e){ alert(e.message); }
       };
       rows.appendChild(tr);
@@ -716,21 +759,24 @@
     const rows = $("archivedRows");
     const snap = await db.collection("aircraft").get().catch(()=>null);
     if(!snap){ return; }
-    const archived = snap.docs.filter(d => d.data().archived);
+    const archived = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
     $("archivedCount").textContent = archived.length ? `(${archived.length})` : "";
     if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
     rows.innerHTML = "";
-    archived.forEach(doc => {
-      const a = doc.data();
+    archived.forEach(a => {
       const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
       const tr = document.createElement("tr");
       tr.style.opacity = ".65";
+      tr.style.cursor = "pointer";
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>
         <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""}</div></td>
-        <td><div class="act"><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
-      tr.querySelector(".republish-btn").onclick = () => unarchiveAircraft(doc.id, a.model);
-      tr.querySelector(".del-btn").onclick = () => delDoc("aircraft", doc.id, a.model, () => { loadAircraft(); });
+        <td><div class="act"><button class="icon-btn edit-archived-btn">Editar</button><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
+      // Clique na linha (fora dos botões) abre a visualização — funciona mesmo arquivada
+      tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
+      tr.querySelector(".edit-archived-btn").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".republish-btn").onclick = (e) => { e.stopPropagation(); unarchiveAircraft(a.id, a.model); };
+      tr.querySelector(".del-btn").onclick = (e) => { e.stopPropagation(); delDoc("aircraft", a.id, a.model, () => { loadAircraft(); }); };
       rows.appendChild(tr);
     });
   }
@@ -903,6 +949,105 @@
     // PA-XXXX onde XXXX é sequencial baseado em timestamp curto (sem precisar consultar o banco antes de abrir o modal)
     const n = Date.now().toString().slice(-4);
     return `PA-${n}`;
+  }
+
+  /* ============================================================
+     VISUALIZAR AERONAVE (somente leitura)
+     Mostra todos os campos — públicos e internos — sem abrir
+     o formulário de edição. Botão "Editar" no topo leva pra lá.
+     ============================================================ */
+  let viewingAircraftId = null;
+  let viewingAircraftData = null;
+
+  function avVal(v, suffix=""){
+    if(v===null||v===undefined||v==="") return `<span class="val empty">— não informado —</span>`;
+    return `<span class="val">${esc(String(v))}${suffix}</span>`;
+  }
+
+  function openAircraftView(id, a){
+    viewingAircraftId = id;
+    viewingAircraftData = a;
+    $("avTitle").textContent = a.model || "Aeronave";
+
+    const precoTxt = a.sobConsulta
+      ? "Sob consulta"
+      : (a.priceNum!=null ? `${a.currency||"USD"} ${Number(a.priceNum).toLocaleString("pt-BR")}` : null);
+
+    const imagesHTML = (a.images && a.images.length)
+      ? `<div class="av-thumbs">${a.images.map(u=>`<img src="${u}">`).join("")}</div>`
+      : `<span class="val empty">Nenhuma imagem cadastrada</span>`;
+
+    const specsHTML = (a.specs||[]).filter(s=>s.label||s.value).length
+      ? (a.specs||[]).filter(s=>s.label||s.value).map(s=>`<div class="av-spec-row"><span>${esc(s.label||"")}</span><b>${esc(s.value||"")}</b></div>`).join("")
+      : `<span class="val empty">Nenhuma ficha técnica cadastrada</span>`;
+
+    const featsHTML = (a.features||[]).filter(f=>f.title||f.desc).length
+      ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem">${(a.features||[]).filter(f=>f.title||f.desc).map(f=>`<div class="av-feat"><b>${esc(f.title||"")}</b><span>${esc(f.desc||"")}</span></div>`).join("")}</div>`
+      : `<span class="val empty">Nenhuma tecnologia cadastrada</span>`;
+
+    $("avBody").innerHTML = `
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : `<span class="av-badge">Ativa no site</span>`}
+        ${a.featured ? `<span class="av-badge" style="background:#b45309">Em destaque na Home</span>` : ""}
+      </div>
+
+      <div class="av-section">
+        <div class="av-section-title">Informações Gerais</div>
+        <div class="av-grid">
+          <div class="av-item"><label>Modelo</label>${avVal(a.model)}</div>
+          <div class="av-item"><label>Código Interno</label>${avVal(a.codigoInterno)}</div>
+          <div class="av-item"><label>Ano</label>${avVal(a.year)}</div>
+          <div class="av-item"><label>Condição</label>${avVal(a.condition)}</div>
+          <div class="av-item"><label>Localização</label>${avVal(a.location)}</div>
+          <div class="av-item"><label>Selo</label>${avVal(a.tag)}</div>
+          <div class="av-item"><label>Horas (célula)</label>${avVal(a.hoursNum)}</div>
+          <div class="av-item"><label>Horas (motor)</label>${avVal(a.motorHours)}</div>
+          <div class="av-item"><label>Horas (hélice)</label>${avVal(a.heliceHours)}</div>
+          <div class="av-item"><label>Preço</label>${avVal(precoTxt)}</div>
+        </div>
+      </div>
+
+      <div class="av-section">
+        <div class="av-section-title">Descrição</div>
+        ${a.description ? `<p class="av-desc">${esc(a.description)}</p>` : `<span class="val empty">Nenhuma descrição cadastrada</span>`}
+      </div>
+
+      <div class="av-section">
+        <div class="av-section-title">Imagens</div>
+        ${imagesHTML}
+      </div>
+
+      <div class="av-section">
+        <div class="av-section-title">Ficha Técnica</div>
+        <div>${specsHTML}</div>
+      </div>
+
+      <div class="av-section">
+        <div class="av-section-title">Tecnologias a Bordo</div>
+        ${featsHTML}
+      </div>
+
+      <div class="av-internal">
+        <div class="av-section-title">
+          <svg style="width:.875rem;height:.875rem;stroke:hsl(var(--muted-foreground));fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l7-3 7 3z"/></svg>
+          Uso Interno — não aparece no site
+        </div>
+        <div class="av-grid" style="margin-top:.75rem">
+          <div class="av-item"><label>Prefixo</label>${avVal(a.prefixo)}</div>
+          <div class="av-item"><label>Telefone do proprietário</label>${avVal(a.proprietarioTelefone)}</div>
+          <div class="av-item" style="grid-column:1/-1"><label>Nome do proprietário</label>${avVal(a.proprietarioNome)}</div>
+          <div class="av-item" style="grid-column:1/-1"><label>Anotações internas</label>${a.notasInternas ? `<p class="av-desc">${esc(a.notasInternas)}</p>` : avVal(null)}</div>
+        </div>
+      </div>
+    `;
+    $("ovAircraftView").classList.add("open");
+  }
+
+  function wireAircraftViewModal(){
+    $("avEditBtn").onclick = () => {
+      $("ovAircraftView").classList.remove("open");
+      openAircraft(viewingAircraftId, viewingAircraftData);
+    };
   }
 
   function openAircraft(id, a){
