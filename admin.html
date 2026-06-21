@@ -639,10 +639,10 @@
     docs.forEach(a => {
       const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
       const isFeatured = !!a.featured;
-      const canFeature  = !isFeatured && totalFeatured >= 4;
+      const canFeature  = !isFeatured && totalFeatured >= 8;
       const featBtn = isFeatured
         ? `<button class="feat-toggle feat-on" data-id="${a.id}" data-feat="true">${STAR_ON}Em destaque</button>`
-        : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 4"':''}>${STAR_OFF}Destacar</button>`;
+        : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 8"':''}>${STAR_OFF}Destacar</button>`;
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>

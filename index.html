@@ -133,6 +133,68 @@
     color: rgba(255,255,255,0.25); font-size: .875rem; font-style: italic;
   }
 
+  /* ---- CARROSSEL ---- */
+  .inv-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .inv-car-viewport {
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+  }
+  .inv-dark-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    gap: 1rem;
+    transition: transform .5s cubic-bezier(.4,0,.2,1);
+  }
+  /* Em telas largas, mostra 4 cards por "página" do carrossel */
+  @media(min-width:640px) {
+    .inv-dark-grid { grid-auto-columns: calc(50% - .5rem); }
+  }
+  @media(min-width:1024px) {
+    .inv-dark-grid { grid-auto-columns: calc(25% - .9375rem); gap: 1.25rem; }
+  }
+  .inv-car-arrow {
+    flex-shrink: 0;
+    width: 2.5rem; height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, opacity .15s;
+  }
+  .inv-car-arrow:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
+  .inv-car-arrow:disabled { opacity: .25; cursor: not-allowed; }
+  .inv-car-arrow:disabled:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+
+  .inv-car-dots {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    margin-top: 1.75rem;
+  }
+  .inv-car-dot {
+    width: .5rem; height: .5rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background .2s, width .2s;
+  }
+  .inv-car-dot.active {
+    background: #fff;
+    width: 1.5rem;
+    border-radius: 9999px;
+  }
+
   /* video institucional */
   .vid-sec{ padding:4rem 0; background:hsl(var(--card)); }
   .vid-wrap{ max-width:64rem; margin:0 auto; }
@@ -221,7 +283,22 @@
         </div>
         <a href="aeronaves.html" class="inv-dark-see-all" data-i18n="home_inv_all">Ver todo estoque <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
       </div>
-      <div class="inv-dark-grid" id="invGrid"></div>
+
+      <!-- Carrossel: 4 cards visíveis por vez, navega de 1 em 1, até 8 aeronaves -->
+      <div class="inv-carousel">
+        <button class="inv-car-arrow inv-car-prev" id="invPrev" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" style="width:1.1rem;height:1.1rem;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="inv-car-viewport">
+          <div class="inv-dark-grid" id="invGrid"></div>
+        </div>
+        <button class="inv-car-arrow inv-car-next" id="invNext" aria-label="Próxima">
+          <svg viewBox="0 0 24 24" style="width:1.1rem;height:1.1rem;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <!-- Dots de posição -->
+      <div class="inv-car-dots" id="invDots"></div>
     </div>
   </section>
 
@@ -533,25 +610,123 @@
     </a>`;
   }
 
+  /* ============================================================
+     CARROSSEL — Oportunidades em Destaque (até 8 aeronaves)
+     Avança 1 card por vez. Em telas largas mostra 4 por página,
+     então o número de "posições" do carrossel é total - visíveis + 1.
+     ============================================================ */
+  let carouselItems = [];
+  let carouselIndex = 0;
+  let carouselTimer = null;
+  const CAROUSEL_INTERVAL = 5000; // 5s entre avanços automáticos
+
+  function getVisibleCount(){
+    const w = window.innerWidth;
+    if(w >= 1024) return 4;
+    if(w >= 640)  return 2;
+    return 1;
+  }
+
+  function carouselMaxIndex(){
+    const visible = getVisibleCount();
+    return Math.max(0, carouselItems.length - visible);
+  }
+
+  function renderCarouselDots(){
+    const dotsEl = document.getElementById("invDots");
+    const max = carouselMaxIndex();
+    if(max <= 0){ dotsEl.innerHTML = ""; return; }
+    dotsEl.innerHTML = "";
+    for(let i=0; i<=max; i++){
+      const dot = document.createElement("button");
+      dot.className = "inv-car-dot" + (i===carouselIndex ? " active" : "");
+      dot.setAttribute("aria-label", `Ir para posição ${i+1}`);
+      dot.onclick = () => { goToCarousel(i); restartAutoplay(); };
+      dotsEl.appendChild(dot);
+    }
+  }
+
+  function updateCarouselUI(){
+    const grid = document.getElementById("invGrid");
+    const visible = getVisibleCount();
+    const step = 100 / visible; // % de deslocamento por item
+    grid.style.transform = `translateX(-${carouselIndex * step}%)`;
+    const max = carouselMaxIndex();
+    document.getElementById("invPrev").disabled = carouselIndex <= 0;
+    document.getElementById("invNext").disabled = carouselIndex >= max;
+    renderCarouselDots();
+  }
+
+  function goToCarousel(i){
+    const max = carouselMaxIndex();
+    carouselIndex = Math.max(0, Math.min(i, max));
+    updateCarouselUI();
+  }
+
+  function nextCarousel(){
+    const max = carouselMaxIndex();
+    // Loop: ao chegar no fim, volta pro início (autoplay contínuo)
+    carouselIndex = carouselIndex >= max ? 0 : carouselIndex + 1;
+    updateCarouselUI();
+  }
+
+  function prevCarousel(){
+    const max = carouselMaxIndex();
+    carouselIndex = carouselIndex <= 0 ? max : carouselIndex - 1;
+    updateCarouselUI();
+  }
+
+  function restartAutoplay(){
+    if(carouselTimer) clearInterval(carouselTimer);
+    if(carouselMaxIndex() > 0){
+      carouselTimer = setInterval(nextCarousel, CAROUSEL_INTERVAL);
+    }
+  }
+
+  function wireCarouselControls(){
+    document.getElementById("invPrev").onclick = () => { prevCarousel(); restartAutoplay(); };
+    document.getElementById("invNext").onclick = () => { nextCarousel(); restartAutoplay(); };
+    // Pausa o autoplay quando o mouse está sobre o carrossel
+    const carousel = document.querySelector(".inv-carousel");
+    carousel.addEventListener("mouseenter", () => { if(carouselTimer) clearInterval(carouselTimer); });
+    carousel.addEventListener("mouseleave", restartAutoplay);
+    // Recalcula posições/visibilidade ao redimensionar a janela
+    window.addEventListener("resize", () => { carouselIndex = 0; updateCarouselUI(); });
+  }
+
   async function loadHighlights(){
     const grid = document.getElementById("invGrid");
     if (window.PA && PA.configured) {
       try {
-        const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(8).get();
-        const activeDocs = snap.docs.filter(d => !d.data().archived).slice(0,4);
+        const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(16).get();
+        const activeDocs = snap.docs.filter(d => !d.data().archived).slice(0,8);
         if (activeDocs.length) {
-          grid.innerHTML = activeDocs.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
+          carouselItems = activeDocs.map(d => ({ id:d.id, ...d.data() }));
+          grid.innerHTML = carouselItems.map(a => cardHTML(a)).join("");
+          carouselIndex = 0;
+          updateCarouselUI();
+          wireCarouselControls();
+          restartAutoplay();
           return;
         }
-        const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(8).get();
-        const fallbackActive = fallback.docs.filter(d => !d.data().archived).slice(0,4);
+        const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(16).get();
+        const fallbackActive = fallback.docs.filter(d => !d.data().archived).slice(0,8);
         if(fallbackActive.length){
-          grid.innerHTML = fallbackActive.map(d => cardHTML({ id:d.id, ...d.data() })).join("");
+          carouselItems = fallbackActive.map(d => ({ id:d.id, ...d.data() }));
+          grid.innerHTML = carouselItems.map(a => cardHTML(a)).join("");
+          carouselIndex = 0;
+          updateCarouselUI();
+          wireCarouselControls();
+          restartAutoplay();
           return;
         }
       } catch(e){ /* estado vazio */ }
     }
+    carouselItems = [];
     grid.innerHTML = `<div class="inv-dark-empty">${t("ac_empty")}</div>`;
+    document.getElementById("invPrev").disabled = true;
+    document.getElementById("invNext").disabled = true;
+    document.getElementById("invDots").innerHTML = "";
   }
   loadHighlights();
   loadSiteMedia();
