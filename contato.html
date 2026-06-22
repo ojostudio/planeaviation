@@ -357,10 +357,12 @@
       
       activeAircrafts.forEach(a => {
         const opt = document.createElement("option");
-        // Salva o "Modelo [Código Interno]" 
+        // O valor do atributo 'value' mantém o código interno oculto (Ex: "Vision Jet [PA-0001]")
         const cod = a.codigoInterno || "Sem Cód";
         opt.value = `${a.model} [${cod}]`;
-        opt.textContent = `${a.model} (${a.year}) — Cód: ${cod}`;
+        
+        // O texto visível para o cliente na tela NÃO exibe o código interno
+        opt.textContent = `${a.model} (${a.year})`;
         select.appendChild(opt);
       });
     } catch (e) {
@@ -384,7 +386,7 @@
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
       subject: document.getElementById('subject').value,
-      aircraft: document.getElementById('aircraftSelect').value, // Registra o modelo e código
+      aircraft: document.getElementById('aircraftSelect').value, // Registra o modelo e código interno no banco
       message: document.getElementById('message').value.trim(),
       status: "novo", // Para a aba no painel admin identificar que não foi lido
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
