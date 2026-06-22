@@ -516,6 +516,25 @@ document.addEventListener("DOMContentLoaded", () => {
       btnPdf.innerHTML = "GERANDO PDF...";
       btnPdf.disabled = true;
 
+      // Função infalível para carregar a logo local e transformar em Base64 na hora
+      async function getBase64ImageFromUrl(imageUrl) {
+        try {
+          const res = await fetch(imageUrl);
+          const blob = await res.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        } catch(e) {
+          console.warn("Aviso: Logo não carregada.", e);
+          return "";
+        }
+      }
+
+      // Certifique-se de renomear a imagem enviada para "logo-plane.png" e colocar na pasta images
+      const logoBase64 = await getBase64ImageFromUrl("images/logo-plane.png");
+
       const priceStr = fmtPrice(P) || "Sob Consulta";
       
       const specsHTML = (P.specs||[]).filter(s=>s[0]||s[1]).map(s=>`
@@ -529,11 +548,15 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `<div style="width:100%; height:400px; border-radius:12px; margin-bottom:20px; background-image:url('${P.images[0]}'); background-size:cover; background-position:center; background-repeat:no-repeat;"></div>` 
         : '';
 
+      const logoHTML = logoBase64 
+        ? `<img src="${logoBase64}" style="height:35px;" alt="Plane Aviation" />` 
+        : `<h2 style="margin:0; font-size:24px; letter-spacing:2px; font-style:italic;">PLANE AVIATION</h2>`;
+
       const pdfHTML = `
         <div style="padding:40px; background-color:#0a0a0a; color:#ffffff; font-family: 'Inter', sans-serif; width:800px; min-height:1100px;">
           
           <div style="text-align:left; margin-bottom:30px;">
-            <img src="images/logo-pdf.png" crossorigin="anonymous" style="height:35px;" alt="Plane Aviation" />
+            ${logoHTML}
           </div>
           
           ${mainImg}
