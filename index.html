@@ -693,7 +693,10 @@
     if (window.PA && PA.configured) {
       try {
         const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(16).get();
-        const activeDocs = snap.docs.filter(d => !d.data().archived).slice(0,8);
+        const activeDocs = snap.docs
+          .filter(d => !d.data().archived)
+          .sort((a,b) => (Number(b.data().year)||0) - (Number(a.data().year)||0))
+          .slice(0,8);
         if (activeDocs.length) {
           carouselItems = activeDocs.map(d => ({ id:d.id, ...d.data() }));
           grid.innerHTML = carouselItems.map(a => cardHTML(a)).join("");
@@ -704,7 +707,10 @@
           return;
         }
         const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(16).get();
-        const fallbackActive = fallback.docs.filter(d => !d.data().archived).slice(0,8);
+        const fallbackActive = fallback.docs
+          .filter(d => !d.data().archived)
+          .sort((a,b) => (Number(b.data().year)||0) - (Number(a.data().year)||0))
+          .slice(0,8);
         if(fallbackActive.length){
           carouselItems = fallbackActive.map(d => ({ id:d.id, ...d.data() }));
           grid.innerHTML = carouselItems.map(a => cardHTML(a)).join("");
