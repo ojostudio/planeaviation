@@ -129,6 +129,31 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 .f-selo span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--background)/.5); }
 .f-desc  { font-size: var(--font-size-xs); color: hsl(var(--background)/.4); line-height: 1.6; }
 
+/* Redes sociais no rodapé */
+.f-social {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-top: 1.25rem;
+}
+.f-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--background)/.2);
+  color: hsl(var(--background)/.4);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.f-social-link svg { width: 1rem; height: 1rem; }
+.f-social-link:hover {
+  color: hsl(var(--background));
+  border-color: hsl(var(--background)/.5);
+  background: hsl(var(--background)/.08);
+}
+
 .f-col h4 { font-size: var(--font-size-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--background)/.6); margin-bottom: 1rem; }
 .f-col nav { display: flex; flex-direction: column; gap: .625rem; }
 .f-col nav a { font-size: var(--font-size-small); color: hsl(var(--background)/.5); transition: color .15s; }
