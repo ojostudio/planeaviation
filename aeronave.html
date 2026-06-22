@@ -162,32 +162,19 @@ body { background: #0a0a0a; color: #fff; }
 
 /* CTAs */
 .det-actions {
-  display: flex; gap: .75rem; flex-wrap: wrap;
+  display: flex;
   margin-bottom: 2rem;
 }
 .det-btn-primary {
-  display: inline-flex; align-items: center; gap: .5rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
   background: #fff; color: #0a0a0a;
   border: none; border-radius: 6px;
-  font-size: 10px; font-weight: 700;
+  font-size: 11px; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
-  padding: .75rem 1.5rem; cursor: pointer;
+  padding: .875rem 2rem; cursor: pointer;
   text-decoration: none; transition: opacity .15s;
-  flex: 1;
 }
 .det-btn-primary:hover { opacity: .88; }
-.det-btn-secondary {
-  display: inline-flex; align-items: center; gap: .5rem;
-  background: transparent; color: #fff;
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 6px;
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  padding: .75rem 1.5rem; cursor: pointer;
-  text-decoration: none; transition: background .15s, border-color .15s;
-  flex: 1;
-}
-.det-btn-secondary:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
 
 /* Divider */
 .det-divider {
@@ -332,7 +319,6 @@ body { background: #0a0a0a; color: #fff; }
 <body>
 <div id="site-header"></div>
 <main>
-  <!-- Breadcrumb -->
   <div class="crumb">
     <div class="container">
       <a href="aeronaves.html" data-i18n="det_crumb">Aeronaves Disponíveis</a>
@@ -341,12 +327,10 @@ body { background: #0a0a0a; color: #fff; }
     </div>
   </div>
 
-  <!-- Main -->
   <div class="det-wrap" id="detWrap">
     <div class="container">
       <div class="det-grid">
 
-        <!-- LEFT: Gallery + Description + Specs -->
         <div>
           <div class="gal-main" id="galMain">
             <div class="ph-dark">[Imagem]</div>
@@ -360,40 +344,37 @@ body { background: #0a0a0a; color: #fff; }
           </div>
           <div class="thumbs" id="thumbs"></div>
 
-          <!-- Description (below gallery) -->
           <div id="descBlock" style="display:none;margin-top:2rem">
             <p class="det-section-label" id="descLabel" data-i18n="det_about">Sobre esta aeronave</p>
             <p class="det-desc-text" id="descText"></p>
           </div>
 
-          <!-- Specs (below description) -->
           <div id="specsBlock" style="display:none;margin-top:2rem">
             <p class="det-section-label" id="specsLabel" data-i18n="det_specs">Ficha Técnica</p>
             <div class="det-specs" id="specs"></div>
           </div>
         </div>
 
-        <!-- RIGHT: Info -->
         <div>
           <p class="det-badge" id="condLoc"></p>
           <h1 class="det-title" id="model"></h1>
           <div class="det-metas" id="detMetas"></div>
           <div class="det-price" id="detPrice"></div>
           <div class="det-actions">
-            <a href="contato.html?motivo=comprar" class="det-btn-primary" data-i18n="det_cta1"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Solicitar Proposta</a>
-            <a href="contato.html?motivo=visita" class="det-btn-secondary" data-i18n="det_cta2"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Agendar Visita</a>
+            <a href="contato.html?motivo=comprar" class="det-btn-primary">
+              TENHO INTERESSE
+              <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- Technologies (full width below grid) -->
       <div id="featsSection" style="display:none;margin-top:3rem">
         <hr class="det-divider">
         <p class="det-section-label" id="featsLabel" data-i18n="det_tech">Tecnologias a bordo</p>
         <div class="det-tech-grid" id="feats"></div>
       </div>
 
-      <!-- Other options -->
       <div class="other-section" id="otherSection" style="display:none">
         <div class="other-section-head">
           <h2>Outras opções</h2>

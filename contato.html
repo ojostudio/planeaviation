@@ -7,6 +7,8 @@
   
   <link rel="stylesheet" href="styles.css">
   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+  
   <style>
     /* Forçando o fundo preto absoluto em toda a página */
     body {
@@ -75,6 +77,26 @@
       outline: none;
       border-color: #ffffff !important;
       background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Ajustes para integrar o campo de telefone com bandeiras ao nosso Dark Theme */
+    .iti { width: 100%; }
+    .iti__country-list {
+      background-color: #151515 !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 8px;
+      color: #ffffff;
+      max-width: 300px;
+    }
+    .iti__country:hover, .iti__country.iti__highlight {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    .iti__divider {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    /* Corrige o padding para não o número não sobrepor a bandeira */
+    .form-group input#phone {
+      padding-left: 3.5rem !important;
     }
 
     /* Clonando o comportamento e layout exato do contêiner .sell (Vender) da vitrine */
@@ -320,15 +342,37 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 
   <script src="js/i18n.js" defer></script>
   <script src="js/firebase-config.js" defer></script>
   <script src="js/site.js" defer></script>
 
   <script>
-  // Aguarda todo o HTML carregar para rodar a lógica
+  // Inicialização do Input de Telefone com Bandeiras
+  const phoneInput = document.getElementById("phone");
+  const iti = window.intlTelInput(phoneInput, {
+    initialCountry: "br",
+    preferredCountries: ["br", "us", "ar", "mx"],
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+  });
+
+  // Máscara Inteligente: Formata enquanto digita (apenas para Brasil)
+  phoneInput.addEventListener('input', function(e) {
+    const country = iti.getSelectedCountryData().iso2;
+    if (country === "br") {
+      let x = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+      if(x.length === 0) { e.target.value = ''; return; }
+      if(x.length <= 2) { e.target.value = '(' + x; return; }
+      if(x.length <= 6) { e.target.value = '(' + x.slice(0,2) + ') ' + x.slice(2); return; }
+      if(x.length <= 10) { e.target.value = '(' + x.slice(0,2) + ') ' + x.slice(2,6) + '-' + x.slice(6); return; }
+      e.target.value = '(' + x.slice(0,2) + ') ' + x.slice(2,7) + '-' + x.slice(7,11);
+    }
+  });
+
   document.addEventListener("DOMContentLoaded", () => {
-    // 1. Captura parâmetros inteligentes da URL
+    // Captura parâmetros inteligentes da URL
     const urlParams = new URLSearchParams(window.location.search);
     const motivo = urlParams.get('motivo');
     if (motivo) {
@@ -336,11 +380,10 @@
       if (selectSubject) selectSubject.value = motivo;
     }
     
-    // 2. Tenta puxar as aeronaves do banco com pequeno atraso para as libs carregarem
     setTimeout(loadAircraftsForForm, 500); 
   });
 
-  // Função para puxar as aeronaves ativas do Firestore
+  // Puxa as aeronaves ativas do Firestore
   async function loadAircraftsForForm() {
     if (!window.PA || !PA.configured) {
       console.warn("Firebase não configurado.");
@@ -350,19 +393,16 @@
       const snap = await PA.db.collection("aircraft").get();
       const activeAircrafts = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(a => !a.archived) // Ignora as arquivadas
-        .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0)); // Mais novas primeiro
+        .filter(a => !a.archived)
+        .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0)); 
 
       const select = document.getElementById('aircraftSelect');
       
       activeAircrafts.forEach(a => {
         const opt = document.createElement("option");
-        // O valor do atributo 'value' mantém o código interno oculto (Ex: "Vision Jet [PA-0001]")
         const cod = a.codigoInterno || "Sem Cód";
         opt.value = `${a.model} [${cod}]`;
-        
-        // O texto visível para o cliente na tela NÃO exibe o código interno
-        opt.textContent = `${a.model} (${a.year})`;
+        opt.textContent = `${a.model} (${a.year})`; // Cliente não vê o código
         select.appendChild(opt);
       });
     } catch (e) {
@@ -380,20 +420,22 @@
     btn.innerHTML = "ENVIANDO...";
     btn.disabled = true;
 
+    // Coleta o telefone formatado do plugin
+    const fullPhoneNumber = iti.getNumber();
+
     // Coleta os dados do form
     const leadData = {
       name: document.getElementById('name').value.trim(),
       email: document.getElementById('email').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
+      phone: fullPhoneNumber, // Telefone + Código do país (Ex: +5511999990000)
       subject: document.getElementById('subject').value,
-      aircraft: document.getElementById('aircraftSelect').value, // Registra o modelo e código interno no banco
+      aircraft: document.getElementById('aircraftSelect').value,
       message: document.getElementById('message').value.trim(),
-      status: "novo", // Para a aba no painel admin identificar que não foi lido
+      status: "novo", 
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     try {
-      // Salva em uma nova coleção chamada 'leads'
       await PA.db.collection("leads").add(leadData);
       alert('Obrigado! Sua mensagem foi enviada com sucesso e recebida por nossa equipe.');
       e.target.reset();
@@ -407,3 +449,5 @@
   </script>
 </body>
 </html>
+
+```
