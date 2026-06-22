@@ -6,10 +6,8 @@
 <title>Aeronave | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<!-- CSS da Biblioteca de Bandeiras/Telefone -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
 
-<!-- Biblioteca para geração dinâmica de PDF no navegador -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script src="js/i18n.js" defer></script>
@@ -81,17 +79,21 @@ body { background: #0a0a0a; color: #fff; }
 
 /* CTAs */
 .det-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
+
 .det-btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
   background: #fff; color: #0a0a0a; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; padding: .875rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s; flex: 1;
+  text-transform: uppercase; padding: .875rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s; 
+  flex: 0 0 auto; /* Correção: Impede o botão de esticar a tela inteira */
 }
 .det-btn-primary:hover { opacity: .88; }
+
 .det-btn-pdf {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px;
   font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: .875rem 1.5rem; cursor: pointer;
-  text-decoration: none; transition: background .15s, border-color .15s; flex: 0 0 auto;
+  text-decoration: none; transition: background .15s, border-color .15s; 
+  flex: 0 0 auto; /* Correção: Mantém alinhado ao texto */
 }
 .det-btn-pdf:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
 
@@ -148,7 +150,6 @@ body { background: #0a0a0a; color: #fff; }
 .x-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:1.25rem; display: flex; align-items: center; justify-content: center; transition: color .15s;}
 .x-btn:hover { color:#fff; }
 
-/* Form Styles do Modal */
 .form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
 .form-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); }
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.875rem 1rem; font-family: var(--font); font-size: .875rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #fff; transition: border-color 0.2s, background-color 0.2s; }
@@ -166,7 +167,6 @@ body { background: #0a0a0a; color: #fff; }
 <body>
 <div id="site-header"></div>
 <main>
-  <!-- Breadcrumb -->
   <div class="crumb">
     <div class="container">
       <a href="aeronaves.html" data-i18n="det_crumb">Aeronaves Disponíveis</a>
@@ -175,12 +175,9 @@ body { background: #0a0a0a; color: #fff; }
     </div>
   </div>
 
-  <!-- Main -->
   <div class="det-wrap" id="detWrap">
     <div class="container">
       <div class="det-grid">
-
-        <!-- LEFT: Gallery + Description + Specs -->
         <div>
           <div class="gal-main" id="galMain">
             <div class="ph-dark">[Imagem]</div>
@@ -201,7 +198,6 @@ body { background: #0a0a0a; color: #fff; }
           </div>
         </div>
 
-        <!-- RIGHT: Info -->
         <div>
           <p class="det-badge" id="condLoc"></p>
           <h1 class="det-title" id="model"></h1>
@@ -214,7 +210,6 @@ body { background: #0a0a0a; color: #fff; }
               <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
             </button>
             
-            <!-- NOVO: BOTÃO BAIXAR PDF -->
             <button id="btnDownloadPDF" class="det-btn-pdf">
               BAIXAR PDF
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;margin-left:.25rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -243,7 +238,6 @@ body { background: #0a0a0a; color: #fff; }
 </main>
 <div id="site-footer"></div>
 
-<!-- POP-UP MODAL (FORMULÁRIO DE CONTATO) -->
 <div class="overlay" id="contactModal">
   <div class="modal">
     <div class="modal-head">
@@ -293,7 +287,6 @@ body { background: #0a0a0a; color: #fff; }
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<!-- Biblioteca de Telefone e Bandeiras -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
@@ -395,7 +388,7 @@ function renderPage(p){
   const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f => `<div class="det-tech-card"><svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
   if(featsHTML){ document.getElementById("feats").innerHTML = featsHTML; document.getElementById("featsLabel").textContent = t("det_tech"); featsSection.style.display="block"; } else { featsSection.style.display="none"; }
 
-  // WhatsApp Dinâmico
+  // WhatsApp Dinâmico no Header do Modal
   const telefoneWhatsapp = "5511999990000"; 
   const codInterno = p.codigoInterno || "Sem Cód";
   const textoMensagem = encodeURIComponent(`Olá! Tenho interesse na aeronave ${main} ${sub} (${codInterno}).`);
@@ -513,10 +506,8 @@ document.getElementById("btnDownloadPDF").addEventListener("click", async () => 
   btn.innerHTML = "GERANDO PDF...";
   btn.disabled = true;
 
-  // Monta a string do Preço
   const priceStr = fmtPrice(P) || "Sob Consulta";
   
-  // Monta o grid da Ficha Técnica
   const specsHTML = (P.specs||[]).filter(s=>s[0]||s[1]).map(s=>`
     <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333; font-size:12px;">
       <span style="color:#aaa">${s[0]}</span>
@@ -524,20 +515,14 @@ document.getElementById("btnDownloadPDF").addEventListener("click", async () => 
     </div>
   `).join('');
 
-  // Imagem Principal (Configurada com crossorigin para evitar bloqueios de segurança do Firebase)
   const mainImg = P.images && P.images.length 
     ? `<img src="${P.images[0]}" crossorigin="anonymous" style="width:100%; height:400px; object-fit:cover; border-radius:12px; margin-bottom:20px;">` 
     : '';
 
-  // Criação do container invisível para moldar o PDF
-  const pdfBox = document.createElement("div");
-  pdfBox.style.position = "absolute";
-  pdfBox.style.left = "-9999px"; // Oculto da tela
-  
-  pdfBox.innerHTML = `
+  // Criamos o HTML como string puro, sem usar DOM invisível para não confundir o html2canvas
+  const pdfHTML = `
     <div style="padding:40px; background-color:#0a0a0a; color:#ffffff; font-family: 'Inter', sans-serif; width:800px; min-height:1100px;">
       
-      <!-- Cabeçalho PDF -->
       <div style="text-align:center; margin-bottom:30px;">
         <h2 style="margin:0; font-size:24px; letter-spacing:2px; font-style:italic;">PLANE AVIATION</h2>
         <p style="margin:5px 0 0; font-size:10px; color:#888; letter-spacing:1px; text-transform:uppercase;">Representante Exclusiva Cirrus no Brasil</p>
@@ -545,21 +530,18 @@ document.getElementById("btnDownloadPDF").addEventListener("click", async () => 
       
       ${mainImg}
       
-      <!-- Informações Principais -->
       <div style="margin-bottom:20px;">
         <div style="font-size:10px; color:#aaa; letter-spacing:2px; text-transform:uppercase; margin-bottom:5px;">${P.condition || ''} · ${P.year || ''} · Cód: ${P.codigoInterno || ''}</div>
         <h1 style="margin:0 0 10px; font-size:36px; font-style:italic; text-transform:uppercase;">${P.model}</h1>
         <div style="font-size:24px; font-weight:bold;">${priceStr}</div>
       </div>
       
-      <!-- Metas (Horas) -->
       <div style="display:flex; gap:20px; margin-bottom:30px;">
         ${P.hoursNum ? `<div style="background:#151515; padding:10px 15px; border-radius:8px; font-size:12px;"><span style="color:#aaa">Célula:</span> <b>${fmtHoras(P.hoursNum)}</b></div>` : ''}
         ${P.motorHours ? `<div style="background:#151515; padding:10px 15px; border-radius:8px; font-size:12px;"><span style="color:#aaa">Motor:</span> <b>${fmtHoras(P.motorHours)}</b></div>` : ''}
         ${P.heliceHours ? `<div style="background:#151515; padding:10px 15px; border-radius:8px; font-size:12px;"><span style="color:#aaa">Hélice:</span> <b>${fmtHoras(P.heliceHours)}</b></div>` : ''}
       </div>
       
-      <!-- Ficha Técnica (Specs) -->
       <div style="margin-bottom:30px;">
         <h3 style="font-size:14px; text-transform:uppercase; color:#888; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:15px;">Ficha Técnica</h3>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 30px;">
@@ -567,7 +549,6 @@ document.getElementById("btnDownloadPDF").addEventListener("click", async () => 
         </div>
       </div>
       
-      <!-- Descrição -->
       ${P.description ? `
       <div style="margin-bottom:30px;">
         <h3 style="font-size:14px; text-transform:uppercase; color:#888; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:15px;">Sobre a aeronave</h3>
@@ -575,17 +556,12 @@ document.getElementById("btnDownloadPDF").addEventListener("click", async () => 
       </div>
       ` : ''}
       
-      <!-- Rodapé PDF -->
       <div style="text-align:center; border-top:1px solid #333; padding-top:20px; margin-top:40px;">
         <p style="font-size:12px; margin:0;"><b>Fale com um consultor:</b> +55 (11) 99999-0000 | contato@planeaviation.com.br</p>
       </div>
-      
     </div>
   `;
 
-  document.body.appendChild(pdfBox);
-
-  // Configurações da biblioteca
   const opt = {
     margin:       0,
     filename:     `Plane-Aviation-${P.model.replace(/\s+/g, '-')}.pdf`,
@@ -594,18 +570,16 @@ document.getElementById("btnDownloadPDF").addEventListener("click", async () => 
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
-  // Processa e Baixa o PDF
   try {
-    await html2pdf().set(opt).from(pdfBox).save();
+    // A mágica: passamos o HTML como String! O html2pdf processa ele internamente sem erro de corte.
+    await html2pdf().set(opt).from(pdfHTML).save();
   } catch (err) {
     console.error(err);
     alert("Erro ao gerar PDF.");
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
   }
-
-  // Finalização (Remove a div invisível e restaura o botão)
-  document.body.removeChild(pdfBox);
-  btn.innerHTML = originalText;
-  btn.disabled = false;
 });
 </script>
 </body>
