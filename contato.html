@@ -290,6 +290,52 @@
                 </select>
               </div>
 
+              <form id="contactForm">
+              <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input type="text" id="name" required placeholder="Ex: João Silva">
+              </div>
+
+              <div class="form-group">
+                <label for="email">E-mail Corporativo</label>
+                <input type="email" id="email" required placeholder="joao@empresa.com">
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Telefone / WhatsApp</label>
+                <input type="tel" id="phone" required placeholder="(11) 99999-0000">
+              </div>
+
+              <div class="form-group">
+                <label for="subject">Assunto de Interesse</label>
+                <select id="subject" required>
+                  <option value="" disabled selected>Selecione uma opção...</option>
+                  <option value="comprar">Comprar uma Aeronave</option>
+                  <option value="vender">Vender minha Aeronave</option>
+                  <option value="hangaragem">Hangaragem Premium</option>
+                  <option value="consultoria">Consultoria e Importação</option>
+                  <option value="outros">Outros Assuntos</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="aircraftSelect">Aeronave de Interesse (Opcional)</label>
+                <select id="aircraftSelect">
+                  <option value="">Nenhuma / Outro assunto</option>
+                  </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message">Mensagem</label>
+                <textarea id="message" rows="5" required placeholder="Como podemos ajudar você ou sua empresa?"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-solid btn-lg" style="width: 100%; margin-top: 1rem; background-color: #ffffff; color: #000000;">
+                ENVIAR MENSAGEM
+                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width: 1em; height: 1em; fill: currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+              </button>
+            </form>
+
               <div class="form-group">
                 <label for="message">Mensagem</label>
                 <textarea id="message" rows="5" required placeholder="Como podemos ajudar você ou sua empresa?"></textarea>
@@ -316,22 +362,78 @@
   <script src="js/site.js" defer></script>
 
   <script>
-    // Captura parâmetros inteligentes da URL para preenchimento automático de assunto
-    document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const motivo = urlParams.get('motivo');
-      if (motivo) {
-        const selectSubject = document.getElementById('subject');
-        if (selectSubject) selectSubject.value = motivo;
-      }
-    });
+  // Captura parâmetros inteligentes da URL
+  document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const motivo = urlParams.get('motivo');
+    if (motivo) {
+      const selectSubject = document.getElementById('subject');
+      if (selectSubject) selectSubject.value = motivo;
+    }
+    
+    // Inicia a busca das aeronaves no banco
+    loadAircraftsForForm();
+  });
 
-    // Lógica base de tratamento de envio do formulário
-    document.getElementById('contactForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Obrigado! Sua mensagem foi enviada com sucesso. Nossa equipe entrará em contato em breve.');
+  // Puxa as aeronaves ativas do Firestore para o Dropdown
+  async function loadAircraftsForForm() {
+    if (!window.PA || !PA.configured) return;
+    try {
+      const snap = await PA.db.collection("aircraft").get();
+      const activeAircrafts = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(a => !a.archived) // Ignora as arquivadas
+        .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0)); // Mais novas primeiro
+
+      const select = document.getElementById('aircraftSelect');
+      
+      activeAircrafts.forEach(a => {
+        const opt = document.createElement("option");
+        // O valor salvo no banco terá Nome e Código (Ex: "Vision Jet - [PA-0001]")
+        const cod = a.codigoInterno || "Sem Cód";
+        opt.value = `${a.model} [${cod}]`;
+        opt.textContent = `${a.model} (${a.year}) — Cód: ${cod}`;
+        select.appendChild(opt);
+      });
+    } catch (e) {
+      console.error("Erro ao carregar aeronaves no formulário:", e);
+    }
+  }
+
+  // Lógica de salvamento no Firebase (Lead Capture)
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!window.PA || !PA.configured) return alert("Erro de conexão. Tente contato via WhatsApp no momento.");
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalBtnHTML = btn.innerHTML;
+    btn.innerHTML = "ENVIANDO...";
+    btn.disabled = true;
+
+    // Coleta os dados do form
+    const leadData = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      subject: document.getElementById('subject').value,
+      aircraft: document.getElementById('aircraftSelect').value, // Registra o modelo e código
+      message: document.getElementById('message').value.trim(),
+      status: "novo", // Para a aba no painel admin identificar que não foi lido
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      // Salva em uma nova coleção chamada 'leads'
+      await PA.db.collection("leads").add(leadData);
+      alert('Obrigado! Sua mensagem foi enviada com sucesso e recebida por nossa equipe.');
       e.target.reset();
-    });
-  </script>
+    } catch(err) {
+      alert('Ops! Houve um erro ao enviar: ' + err.message);
+    } finally {
+      btn.innerHTML = originalBtnHTML;
+      btn.disabled = false;
+    }
+  });
+</script>
 </body>
 </html>
