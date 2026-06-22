@@ -8,7 +8,6 @@
 <title>Plane Aviation — Representante exclusiva Cirrus no Brasil</title>
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
   <style>
     #site-header { display: block; height: 4rem; }
     body { min-height: 100vh; }
@@ -18,7 +17,7 @@
 <style>
   /* Home-specific */
   .hero-home{ position:relative; min-height:90vh; display:flex; align-items:center; justify-content:center; background:hsl(var(--foreground)); overflow:hidden; }
-  .hero-bg{ position:absolute; inset:0; background:linear-gradient(135deg, hsl(var(--muted)), hsl(var(--accent))); }
+  .hero-bg{ position:absolute; inset:0; background:linear-gradient(135deg, hsl(var(--muted)), hsl(var(--accent))); transition: opacity 0.5s ease-in-out; }
   .hero-bg .vp{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)/.2); }
   .hero-bg .ring{ width:6rem; height:6rem; border:2px dashed currentColor; border-radius:9999px; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; }
   .hero-bg span{ font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; }
@@ -39,6 +38,7 @@
     background: #0a0a0a;
     padding: 5rem 0;
   }
+  .inv-dark-section .ac-card { background: rgba(255,255,255,0.02) !important; }
   .inv-dark-head {
     display: flex; flex-direction: column; gap: 1rem;
     margin-bottom: 2.5rem;
@@ -189,40 +189,19 @@
     border-radius: 9999px;
   }
 
-  /* video institucional */
-  .vid-sec{ padding:4rem 0; background:hsl(var(--card)); }
-  .vid-wrap{ max-width:64rem; margin:0 auto; }
-  .vid-box{ position:relative; background:hsl(var(--muted)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); overflow:hidden; aspect-ratio:16/9; width:100%; }
-  .vid-box iframe, .vid-box video { position:absolute; inset:0; width:100%; height:100%; border:none; display:block; z-index:2; }
-  .vid-inner{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; z-index:1; }
-  .vid-play{ width:4rem; height:4rem; background:hsl(var(--foreground)); border-radius:9999px; display:flex; align-items:center; justify-content:center; color:hsl(var(--background)); }
-  .vid-grid{ position:absolute; inset:0; opacity:.05; background-image:linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px); background-size:40px 40px; }
-
-  /* linha cirrus model cards */
-  .model-card{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); overflow:hidden; background:hsl(var(--card)); }
-  .model-card .body{ padding:1.75rem; }
-  .model-card h3{ font-size:1.25rem; font-weight:700; letter-spacing:-.025em; margin-top:.25rem; margin-bottom:.25rem; }
-  .model-card p{ font-size:.875rem; color:hsl(var(--muted-foreground)); margin-bottom:1.25rem; }
-  .cfg-box{ margin-top:2.5rem; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); background:hsl(var(--card)); padding:1.75rem 2rem; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:1rem; }
-  @media(min-width:640px){ .cfg-box{ flex-direction:row; } }
-  .cfg-box .t{ font-size:.875rem; font-weight:700; letter-spacing:-.025em; margin-bottom:.25rem; }
-  .cfg-box .d{ font-size:.875rem; color:hsl(var(--muted-foreground)); }
-
-  /* sell band */
-  .sell-band{ padding:5rem 0; }
-  .sell-band .row{ max-width:64rem; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:2rem; }
-  @media(min-width:768px){ .sell-band .row{ flex-direction:row; } }
-  .sell-band h2{ font-size:1.875rem; font-weight:700; letter-spacing:-.025em; margin-top:.5rem; margin-bottom:.75rem; color:hsl(var(--background)); }
-  @media(min-width:640px){ .sell-band h2{ font-size:2.25rem; } }
-  .sell-band p{ font-size:1rem; color:hsl(var(--background)/.6); line-height:1.6; }
-  .sell-band .col{ max-width:36rem; }
-
-  /* news cta band */
-  .news-band{ padding:4rem 0; }
-  .news-band .row{ max-width:56rem; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:2rem; text-align:center; }
-  @media(min-width:640px){ .news-band .row{ flex-direction:row; text-align:left; } }
-  .news-band h2{ font-size:1.5rem; font-weight:700; letter-spacing:-.025em; color:hsl(var(--background)); margin-top:.25rem; margin-bottom:.5rem; }
-  .news-band p{ font-size:.875rem; color:hsl(var(--background)/.6); max-width:32rem; }
+  /* Estilos específicos para o Slider do Hero */
+  .hero-nav-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: rgba(255,255,255,0.25);
+    cursor: pointer; z-index: 10; font-size: 1.5rem; padding: 1rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .hero-nav-arrow:hover { color: #ffffff; transform: translateY(-50%) scale(1.1); }
+  .hero-text-box { transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; }
+  .hero-slider-dots { position: absolute; bottom: 2rem; left: 5rem; z-index: 10; display: flex; gap: 0.5rem; }
+  @media(max-width:1023px) { .hero-slider-dots { left: 50%; transform: translateX(-50%); } }
+  .hero-slider-dot { width: 1.5rem; height: 2px; background: rgba(255,255,255,0.25); border: none; cursor: pointer; transition: background 0.3s ease; }
+  .hero-slider-dot.active { background: #ffffff; }
 </style>
   <script src="js/i18n.js" defer></script>
   <script src="js/site.js" defer></script>
@@ -237,37 +216,40 @@
 <div id="site-header"></div>
 <main>
 
-  <!-- HERO -->
   <section class="hero-glass-section">
-  <div class="hero-bg" id="heroBg"></div>
-  
-  <div class="hero-glass-mask"></div>
-
-  <div class="container hero-content-wrapper">
-    <div class="hero-text-box">
-      
-      <div id="heroBadge" style="display:none; margin-bottom: 1.25rem;">
-        <span id="heroTag" style="display:inline-block; font-size:11px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.75)"></span>
-      </div>
-      
-      <h1 class="hero-title-glass" id="heroTitle" data-i18n="home_hero">O acesso definitivo à aviação executiva de alta performance.</h1>
-      
-      <div class="hero-cta" style="margin-top: 2rem;">
-        <a href="aeronaves.html" class="btn btn-solid" id="heroBtn" data-i18n="home_cta1" style="background-color: #000; color: #fff; padding: 1rem 2rem;">
-          Ver Aeronaves Disponíveis
-          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
-        </a>
-      </div>
-    </div>
+    <div class="hero-bg" id="heroBg"></div>
     
-    <div class="hero-badge-glass">
-      <img src="images/cirrus-badge.svg" alt="Cirrus Authorized">
-      <span>Representante exclusiva Cirrus<br>Aircraft no Brasil desde 2003</span>
-    </div>
-  </div>
-</section>
+    <div class="hero-glass-mask"></div>
 
-  <!-- INVENTORY HIGHLIGHTS — dark section -->
+    <button class="hero-nav-arrow" id="heroSliderPrev" style="left: 1rem;" aria-label="Anterior">⟨</button>
+    <button class="hero-nav-arrow" id="heroSliderNext" style="right: 1rem;" aria-label="Próximo">⟩</button>
+
+    <div class="container hero-content-wrapper">
+      <div class="hero-text-box" id="heroTextBox">
+        
+        <div id="heroBadge" style="display:none; margin-bottom: 1.25rem;">
+          <span id="heroTag" style="display:inline-block; font-size:11px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.75)"></span>
+        </div>
+        
+        <h1 class="hero-title-glass" id="heroTitle"></h1>
+        
+        <div class="hero-cta" style="margin-top: 2rem;">
+          <a href="#" class="btn btn-solid" id="heroBtn" style="background-color: #000; color: #fff; padding: 1rem 2rem;">
+            <span id="heroBtnText"></span>
+            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          </a>
+        </div>
+      </div>
+      
+      <div class="hero-badge-glass">
+        <img src="images/cirrus-badge.svg" alt="Cirrus Authorized">
+        <span>Representante exclusiva Cirrus<br>Aircraft no Brasil desde 2003</span>
+      </div>
+    </div>
+
+    <div class="hero-slider-dots" id="heroSliderDots"></div>
+  </section>
+
   <section class="inv-dark-section">
     <div class="container">
       <div class="inv-dark-head">
@@ -278,7 +260,6 @@
         <a href="aeronaves.html" class="inv-dark-see-all" data-i18n="home_inv_all">Ver todo estoque <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
       </div>
 
-      <!-- Carrossel: 4 cards visíveis por vez, navega de 1 em 1, até 8 aeronaves -->
       <div class="inv-carousel">
         <button class="inv-car-arrow inv-car-prev" id="invPrev" aria-label="Anterior">
           <svg viewBox="0 0 24 24" style="width:1.1rem;height:1.1rem;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="m15 18-6-6 6-6"/></svg>
@@ -291,7 +272,6 @@
         </button>
       </div>
 
-      <!-- Dots de posição -->
       <div class="inv-car-dots" id="invDots"></div>
     </div>
   </section>
@@ -299,275 +279,133 @@
   <section class="home-casa-cirrus">
     <div class="casa-cirrus-card">
       <img src="images/cirrus-icon.svg" alt="" class="cirrus-watermark">
-      
       <div class="cirrus-badge">
         <img src="images/cirrus-badge.svg" alt="Cirrus Authorized">
       </div>
-
       <span class="eyebrow">REPRESENTANTE EXCLUSIVO NO BRASIL</span>
-      
       <h2 class="h-display title">A CASA<br>DO SEU<br>CIRRUS.</h2>
-      
       <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2003, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para você focar na única coisa que interessa, conquistar os céus.</p>
     </div>
   </section>
 
-
-<section class="inst-scroll-section" id="instScrollSec">
-  
-  <div class="red-line-container">
-    <img src="images/linha-vermelha.svg" class="red-line-anim" alt="">
-  </div>
-
-  <div class="scroll-texts-container">
-    
-    <div class="scroll-slide active" id="slide-1">
-      <span class="eyebrow">OPERAÇÃO COMPLETA</span>
-      <h2 class="h-display">MUITO ALÉM<br>DA VENDA</h2>
-      <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
+  <section class="inst-scroll-section" id="instScrollSec">
+    <div class="red-line-container">
+      <img src="images/linha-vermelha.svg" class="red-line-anim" alt="">
     </div>
-
-    <div class="scroll-slide" id="slide-2">
-      <span class="eyebrow">OPERAÇÃO COMPLETA</span>
-      <h2 class="h-display">CONSULTORIA<br>PERSONALIZADA</h2>
-      <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
+    <div class="scroll-texts-container">
+      <div class="scroll-slide active" id="slide-1">
+        <span class="eyebrow">OPERAÇÃO COMPLETA</span>
+        <h2 class="h-display">MUITO ALÉM<br>DA VENDA</h2>
+        <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
+      </div>
+      <div class="scroll-slide" id="slide-2">
+        <span class="eyebrow">OPERAÇÃO COMPLETA</span>
+        <h2 class="h-display">CONSULTORIA<br>PERSONALIZADA</h2>
+        <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
+      </div>
+      <div class="scroll-slide" id="slide-3">
+        <span class="eyebrow">OPERAÇÃO COMPLETA</span>
+        <h2 class="h-display">DESEMBARAÇO<br>LEGAL & FISCAL</h2>
+        <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
+      </div>
+      <div class="scroll-slide" id="slide-4">
+        <span class="eyebrow">OPERAÇÃO COMPLETA</span>
+        <h2 class="h-display">HANGARAGEM<br>PREMIUM</h2>
+        <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
+      </div>
     </div>
+  </section>
 
-    <div class="scroll-slide" id="slide-3">
-      <span class="eyebrow">OPERAÇÃO COMPLETA</span>
-      <h2 class="h-display">DESEMBARAÇO<br>LEGAL & FISCAL</h2>
-      <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
-    </div>
-
-    <div class="scroll-slide" id="slide-4">
-      <span class="eyebrow">OPERAÇÃO COMPLETA</span>
-      <h2 class="h-display">HANGARAGEM<br>PREMIUM</h2>
-      <p class="muted">A PLANE AVIATION é revendedora exclusiva CIRRUS Aircraft no Brasil desde 2023, mas oferece muito mais que produtos. Cuidamos de todas as etapas do processo, para voce focar na unica coisa que interessa, conquistar os céus.</p>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- SCROLL PARALAXE -->
-<section class="cp-section">
-  <div class="cp-container">
-    <div class="cp-camada cp-fundo">
-      <h1 class="cp-title" id="cp-texto-aviao">CIRRUS</h1>
-    </div>
-
-    <div class="cp-camada cp-canvas-container">
-      <canvas id="cp-aviao-canvas"></canvas>
-    </div>
-
-    <div class="cp-camada cp-frente">
-      <h1 class="cp-title" id="cp-texto-modelo">SR22 G7</h1>
-      
-      <div id="cp-card-glass">
-        <div class="cp-card-content">
-          <div class="cp-card-left">
-            <span class="cp-brand">CIRRUS</span>
-            <h2 class="cp-model-title">SR22G7</h2>
-            <p class="cp-subtitle">Estilo, praticidade e conforto.<br>A aeronave pessoal mais moderna e segura do mundo.</p>
-            <p class="cp-description">O carro-chefe da linha SR com motor turbo normalizado, ideal para voos em cruzeiro de longa distância com máxima performance.</p>
-            <div class="cp-buttons">
-               <a href="universo-cirrus.html" class="btn btn-invert">
-                CONHEÇA O SR22 G7
-               <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
-              </a>
-  
-               <a href="https://plane-configurator-kappa.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
-                CONFIGURADOR
-              <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
-               </a>
+  <section class="cp-section">
+    <div class="cp-container">
+      <div class="cp-camada cp-fundo">
+        <h1 class="cp-title" id="cp-texto-aviao">CIRRUS</h1>
+      </div>
+      <div class="cp-camada cp-canvas-container">
+        <canvas id="cp-aviao-canvas"></canvas>
+      </div>
+      <div class="cp-camada cp-frente">
+        <h1 class="cp-title" id="cp-texto-modelo">SR22 G7</h1>
+        <div id="cp-card-glass">
+          <div class="cp-card-content">
+            <div class="cp-card-left">
+              <span class="cp-brand">CIRRUS</span>
+              <h2 class="cp-model-title">SR22G7</h2>
+              <p class="cp-subtitle">Estilo, praticidade e conforto.<br>A aeronave pessoal mais moderna e segura do mundo.</p>
+              <p class="cp-description">O carro-chefe da linha SR com motor turbo normalizado, ideal para voos em cruzeiro de longa distância com máxima performance.</p>
+              <div class="cp-buttons">
+                 <a href="universo-cirrus.html" class="btn btn-invert">
+                  CONHEÇA O SR22 G7
+                 <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+                </a>
+                 <a href="https://plane-configurator-kappa.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
+                  CONFIGURADOR
+                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+                 </a>
+              </div>
+            </div>
+            <div class="cp-card-right">
+              <div class="cp-stat"><span class="cp-stat-label">velocidade máxima</span><span class="cp-stat-value">214 ktas</span></div>
+              <div class="cp-stat"><span class="cp-stat-label">alcance</span><span class="cp-stat-value">1.100 nm</span></div>
+              <div class="cp-stat"><span class="cp-stat-label">altitude máxima</span><span class="cp-stat-value">25.000 ft</span></div>
+              <div class="cp-stat"><span class="cp-stat-label">motor</span><span class="cp-stat-value">IO 550 turbo</span></div>
             </div>
           </div>
-          <div class="cp-card-right">
-            <div class="cp-stat"><span class="cp-stat-label">velocidade máxima</span><span class="cp-stat-value">214 ktas</span></div>
-            <div class="cp-stat"><span class="cp-stat-label">alcance</span><span class="cp-stat-value">1.100 nm</span></div>
-            <div class="cp-stat"><span class="cp-stat-label">altitude máxima</span><span class="cp-stat-value">25.000 ft</span></div>
-            <div class="cp-stat"><span class="cp-stat-label">motor</span><span class="cp-stat-value">IO 550 turbo</span></div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-  <!-- VIDEO INSTITUCIONAL
-  <section class="vid-sec">
-    <div class="container vid-wrap">
-      <div class="center" style="margin-bottom:2rem">
-       <!-- <span class="eyebrow" data-i18n="home_vid_eyebrow">Plane Aviation</span>
-        <h2 data-i18n="home_vid_title">Conheça a nossa história</h2>
-      </div>
-      <!-- Vídeo gerenciado pelo painel admin
-      <div class="vid-box" id="vidBox">
-        <div class="vid-inner" id="vidInner">
-          <div class="vid-play"><svg class="icon i-6" style="margin-left:3px" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
-          <span style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:hsl(var(--muted-foreground))">[ Vídeo Institucional — Plane Aviation ]</span>
-        </div>
-        <div class="vid-grid"></div>
-      </div>
-      <p class="center muted" style="font-size:.75rem;margin-top:1rem" data-i18n="home_vid_sub">Representante exclusiva Cirrus Aircraft no Brasil desde 2003 — excelência em aviação executiva.</p>
-    </div>
-  </section>
- -->
-
-
-  <!-- LINHA CIRRUS
-  <section class="sec" style="background:hsl(var(--muted))">
-    <div class="container">
-      <div class="sec-head">
-        <span class="eyebrow" data-i18n="home_cirrus_eyebrow">Fabricante</span>
-        <h2 data-i18n="home_cirrus_title">Conheça a Linha Cirrus</h2>
-        <p class="muted" style="font-size:.875rem;margin-top:.75rem;max-width:28rem;margin-left:auto;margin-right:auto" data-i18n="home_cirrus_sub">Tecnologia de ponta, design premiado e o único paraquedas balístico integrado da aviação geral.</p>
-      </div>
-      <div class="grid g1 md-g2" style="gap:1.5rem">
-        <div class="model-card">
-          <div class="ph rounded" style="aspect-ratio:16/9"><svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="lbl">[Imagem Vision Jet]</span></div>
-          <div class="body">
-            <span class="eyebrow" style="letter-spacing:.2em">Jato Pessoal</span>
-            <h3>Vision Jet</h3>
-            <p>Jato pessoal com paraquedas balístico</p>
-            <a href="universo-cirrus.html" class="arrow-link">Explorar Tecnologia Cirrus <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
-          </div>
-        </div>
-        <div class="model-card">
-          <div class="ph rounded" style="aspect-ratio:16/9"><svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="lbl">[Imagem SR Series]</span></div>
-          <div class="body">
-            <span class="eyebrow" style="letter-spacing:.2em">Monomotor</span>
-            <h3>SR Series</h3>
-            <p>SR20 · SR22 · SR22T — o monomotor mais seguro do mundo</p>
-            <a href="universo-cirrus.html" class="arrow-link">Explorar Tecnologia Cirrus <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
-          </div>
-        </div>
-      </div>
-      <div class="cfg-box">
-        <div>
-          <p class="t" data-i18n="home_cfg_title">Projete a sua aeronave de fábrica.</p>
-          <p class="d" data-i18n="home_cfg_desc">Escolha modelo, exterior e interior. Envie para cotação em minutos.</p>
-        </div>
-        <a href="https://plane-configurator-kappa.vercel.app/" class="btn btn-solid btn-sm" data-i18n="home_cfg_btn">Ir para o Configurador <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
       </div>
     </div>
   </section>
 
-   -->
-
-  <!-- SERVICES OVERVIEW
-  <section class="sec">
-    <div class="container">
-      <div class="sec-head">
-        <span class="eyebrow" data-i18n="home_svc_eyebrow">Operação completa</span>
-        <h2 data-i18n="home_svc_title">Muito além da venda.</h2>
-        <p class="muted" style="font-size:1rem;margin-top:.5rem" data-i18n="home_svc_sub">Uma operação completa.</p>
-      </div>
-      <div class="grid g1 sm-g3" style="gap:1.25rem">
-        <div class="icard">
-          <div class="iconbox"><svg class="icon i-5" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg></div>
-          <h3 data-i18n="svc1_title">Assessoria de Importação</h3>
-          <p data-i18n="svc1_short">Processo completo com segurança e agilidade: homologação ANAC, documentação e licenças internacionais.</p>
-        </div>
-        <div class="icard">
-          <div class="iconbox"><svg class="icon i-5" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
-          <h3 data-i18n="svc2_short_title">Desembaraço Legal e Fiscal</h3>
-          <p data-i18n="svc2_short">Resolução burocrática ponta a ponta: suporte jurídico e fiscal especializado em aviação executiva.</p>
-        </div>
-        <div class="icard">
-          <div class="iconbox"><svg class="icon i-5" viewBox="0 0 24 24"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect width="12" height="12" x="6" y="10"/></svg></div>
-          <h3 data-i18n="svc3_short_title">Hangaragem Premium</h3>
-          <p data-i18n="svc3_short">Espaço exclusivo com infraestrutura de ponta para manter sua aeronave protegida e sempre pronta.</p>
-        </div>
-      </div>
-      <div class="center" style="margin-top:2.5rem">
-        <a href="servicos.html" class="arrow-link" data-i18n="home_svc_all">Ver todos os serviços <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
-      </div>
-    </div>
-  </section>
--->
-
-
-  <!-- SELL YOUR PLANE 
-  <section class="sell-band band-dark">
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <span class="eyebrow dark" data-i18n="home_sell_eyebrow">Para proprietários</span>
-          <h2 data-i18n="home_sell_title">Venda seu Cirrus com quem entende do mercado.</h2>
-          <p data-i18n="home_sell_desc">Conectamos sua aeronave a uma rede exclusiva de compradores qualificados. Avaliação profissional, marketing especializado e processo seguro do início ao fim.</p>
-        </div>
-        <a href="contato.html?motivo=vender" class="btn btn-invert btn-md" style="font-weight:700" data-i18n="home_sell_btn"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Quero anunciar meu avião svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
-      </div>
-    </div>
-  </section>
--->
-  <!-- NEWS INSIGHTS CTA
-  <section class="news-band band-dark">
-    <div class="container">
-      <div class="row">
-        <div>
-          <span class="eyebrow dark" data-i18n="home_news_eyebrow">Conteúdo</span>
-          <h2 data-i18n="home_news_title">Plane Insights</h2>
-          <p data-i18n="home_news_desc">Acompanhe nossa visão de mercado, análises de especialistas e episódios exclusivos do nosso podcast sobre o universo da aviação executiva.</p>
-        </div>
-        <a href="news.html" class="btn btn-invert btn-wide" data-i18n="home_news_btn"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Acessar News &amp; Podcast</a>
-      </div>
-    </div>
-  </section>
- -->
 </main>
 
-<section style="padding: 6rem 0;">
-  <div class="container">
-    
-    <div class="home-config-banner">
-      <div class="config-img">
-        <img src="images/wireframe2.webp" alt="Configurador de Aeronave Cirrus">
+  <section style="padding: 6rem 0;">
+    <div class="container">
+      <div class="home-config-banner">
+        <div class="config-img">
+          <img src="images/wireframe2.webp" alt="Configurador de Aeronave Cirrus">
+        </div>
+        <div class="config-content">
+          <span class="eyebrow" style="color: #ccc; display: block; line-height: 1.4;">
+            FAÇA DO SEU JEITO.<br>PROJETE SUA AERONAVE DE FÁBRICA
+          </span>
+          <h2 class="config-title">CONFIGURADOR</h2>
+          <a href="https://plane-configurator-kappa.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
+            IR PARA CONFIGURADOR
+            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          </a>
+        </div>
       </div>
-      <div class="config-content">
-        <span class="eyebrow" style="color: #ccc; display: block; line-height: 1.4;">
-          FAÇA DO SEU JEITO.<br>PROJETE SUA AERONAVE DE FÁBRICA
-        </span>
-        <h2 class="config-title">CONFIGURADOR</h2>
-        <a href="https://plane-configurator-kappa.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
-          IR PARA CONFIGURADOR
-          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
-        </a>
+
+      <div class="home-split-section" style="margin-top: 3rem;">
+        <div class="split-text">
+          <span class="eyebrow">PARA PROPRIETÁRIOS</span>
+          <h2 class="h-display">VENDA SEU CIRRUS COM<br>QUEM ENTENDE O MERCADO.</h2>
+          <p class="muted" style="line-height: 1.6;">Conectamos sua aeronave a uma rede exclusiva de compradores qualificados. Avaliação profissional, marketing especializado e processo seguro do início ao fim.</p>
+        </div>
+        <div class="split-action">
+          <a href="contato.html?motivo=vender" class="btn btn-solid">
+            QUERO ANUNCIAR
+            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="home-split-section">
+        <div class="split-text">
+          <span class="eyebrow">CONTEÚDO</span>
+          <h2 class="h-display">PLANE INSIGHTS</h2>
+          <p class="muted" style="line-height: 1.6;">Acompanhe nossa visão de mercado, análises de especialistas e episódios exclusivos do nosso podcast sobre o universo da aviação executiva.</p>
+        </div>
+        <div class="split-action">
+          <a href="news.html" class="btn btn-solid">
+            ACESSAR NEWS & PODCAST
+            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          </a>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="home-split-section" style="margin-top: 3rem;">
-      <div class="split-text">
-        <span class="eyebrow">PARA PROPRIETÁRIOS</span>
-        <h2 class="h-display">VENDA SEU CIRRUS COM<br>QUEM ENTENDE O MERCADO.</h2>
-        <p class="muted" style="line-height: 1.6;">Conectamos sua aeronave a uma rede exclusiva de compradores qualificados. Avaliação profissional, marketing especializado e processo seguro do início ao fim.</p>
-      </div>
-      <div class="split-action">
-        <a href="contato.html?motivo=vender" class="btn btn-solid">
-          QUERO ANUNCIAR
-          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
-        </a>
-      </div>
-    </div>
-
-    <div class="home-split-section">
-      <div class="split-text">
-        <span class="eyebrow">CONTEÚDO</span>
-        <h2 class="h-display">PLANE INSIGHTS</h2>
-        <p class="muted" style="line-height: 1.6;">Acompanhe nossa visão de mercado, análises de especialistas e episódios exclusivos do nosso podcast sobre o universo da aviação executiva.</p>
-      </div>
-      <div class="split-action">
-        <a href="news.html" class="btn btn-solid">
-          ACESSAR NEWS & PODCAST
-          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
-        </a>
-      </div>
-    </div>
-
-  </div>
-</section>
 <div id="site-footer"></div>
 
 <script src="js/firebase-config.js"></script>
@@ -578,22 +416,15 @@
 
   function cardHTML(a){
     const id = a.id || a._id;
-    const media = (a.images && a.images[0])
-      ? `<img src="${a.images[0]}" alt="${a.model}">`
-      : `<div class="ph-dark">[Foto]</div>`;
+    const media = (a.images && a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
     const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/);
     const main = parts?.[1] || a.model || "";
     const sub  = parts?.[2] || "";
     const hours = a.hoursNum != null ? Number(a.hoursNum).toLocaleString("pt-BR")+"h" : (a.hours ? a.hours+"h" : "");
     const meta  = [a.year, hours].filter(Boolean).join(" · ");
-    const price = (a.sobConsulta || !a.priceNum)
-      ? t("ac_consult")
-      : (a.currency==="BRL" ? "R$"+Number(a.priceNum).toLocaleString("pt-BR") : "USD "+Number(a.priceNum).toLocaleString("en-US"));
+    const price = (a.sobConsulta || !a.priceNum) ? t("ac_consult") : (a.currency==="BRL" ? "R$"+Number(a.priceNum).toLocaleString("pt-BR") : "USD "+Number(a.priceNum).toLocaleString("en-US"));
     return `<a href="aeronave.html?id=${id}" class="ac-card">
-      <div class="ac-card-img">
-        ${media}
-        ${a.tag ? `<span class="ac-card-tag">${a.tag}</span>` : ""}
-      </div>
+      <div class="ac-card-img">${media}${a.tag ? `<span class="ac-card-tag">${a.tag}</span>` : ""}</div>
       <div class="ac-card-body">
         <div class="ac-card-cond">${a.condition||""}</div>
         <div class="ac-card-title">${main}<span>${sub}</span></div>
@@ -604,15 +435,10 @@
     </a>`;
   }
 
-  /* ============================================================
-     CARROSSEL — Oportunidades em Destaque (até 8 aeronaves)
-     Avança 1 card por vez. Em telas largas mostra 4 por página,
-     então o número de "posições" do carrossel é total - visíveis + 1.
-     ============================================================ */
   let carouselItems = [];
   let carouselIndex = 0;
   let carouselTimer = null;
-  const CAROUSEL_INTERVAL = 5000; // 5s entre avanços automáticos
+  const CAROUSEL_INTERVAL = 5000;
 
   function getVisibleCount(){
     const w = window.innerWidth;
@@ -621,70 +447,40 @@
     return 1;
   }
 
-  function carouselMaxIndex(){
-    const visible = getVisibleCount();
-    return Math.max(0, carouselItems.length - visible);
-  }
+  function carouselMaxIndex(){ return Math.max(0, carouselItems.length - getVisibleCount()); }
 
   function renderCarouselDots(){
-    const dotsEl = document.getElementById("invDots");
-    const max = carouselMaxIndex();
+    const dotsEl = document.getElementById("invDots"); const max = carouselMaxIndex();
     if(max <= 0){ dotsEl.innerHTML = ""; return; }
     dotsEl.innerHTML = "";
     for(let i=0; i<=max; i++){
       const dot = document.createElement("button");
       dot.className = "inv-car-dot" + (i===carouselIndex ? " active" : "");
-      dot.setAttribute("aria-label", `Ir para posição ${i+1}`);
       dot.onclick = () => { goToCarousel(i); restartAutoplay(); };
       dotsEl.appendChild(dot);
     }
   }
 
   function updateCarouselUI(){
-    const grid = document.getElementById("invGrid");
-    const visible = getVisibleCount();
-    const step = 100 / visible; // % de deslocamento por item
-    grid.style.transform = `translateX(-${carouselIndex * step}%)`;
-    const max = carouselMaxIndex();
+    const grid = document.getElementById("invGrid"); const visible = getVisibleCount(); const step = 100 / visible;
+    grid.style.transform = `translateX(-${carouselIndex * step}%)`; const max = carouselMaxIndex();
     document.getElementById("invPrev").disabled = carouselIndex <= 0;
     document.getElementById("invNext").disabled = carouselIndex >= max;
     renderCarouselDots();
   }
 
-  function goToCarousel(i){
-    const max = carouselMaxIndex();
-    carouselIndex = Math.max(0, Math.min(i, max));
-    updateCarouselUI();
-  }
+  function goToCarousel(i){ const max = carouselMaxIndex(); carouselIndex = Math.max(0, Math.min(i, max)); updateCarouselUI(); }
+  function nextCarousel(){ const max = carouselMaxIndex(); carouselIndex = carouselIndex >= max ? 0 : carouselIndex + 1; updateCarouselUI(); }
+  function prevCarousel(){ const max = carouselMaxIndex(); carouselIndex = carouselIndex <= 0 ? max : carouselIndex - 1; updateCarouselUI(); }
 
-  function nextCarousel(){
-    const max = carouselMaxIndex();
-    // Loop: ao chegar no fim, volta pro início (autoplay contínuo)
-    carouselIndex = carouselIndex >= max ? 0 : carouselIndex + 1;
-    updateCarouselUI();
-  }
-
-  function prevCarousel(){
-    const max = carouselMaxIndex();
-    carouselIndex = carouselIndex <= 0 ? max : carouselIndex - 1;
-    updateCarouselUI();
-  }
-
-  function restartAutoplay(){
-    if(carouselTimer) clearInterval(carouselTimer);
-    if(carouselMaxIndex() > 0){
-      carouselTimer = setInterval(nextCarousel, CAROUSEL_INTERVAL);
-    }
-  }
+  function restartAutoplay(){ if(carouselTimer) clearInterval(carouselTimer); if(carouselMaxIndex() > 0){ carouselTimer = setInterval(nextCarousel, CAROUSEL_INTERVAL); } }
 
   function wireCarouselControls(){
     document.getElementById("invPrev").onclick = () => { prevCarousel(); restartAutoplay(); };
     document.getElementById("invNext").onclick = () => { nextCarousel(); restartAutoplay(); };
-    // Pausa o autoplay quando o mouse está sobre o carrossel
     const carousel = document.querySelector(".inv-carousel");
     carousel.addEventListener("mouseenter", () => { if(carouselTimer) clearInterval(carouselTimer); });
     carousel.addEventListener("mouseleave", restartAutoplay);
-    // Recalcula posições/visibilidade ao redimensionar a janela
     window.addEventListener("resize", () => { carouselIndex = 0; updateCarouselUI(); });
   }
 
@@ -693,50 +489,97 @@
     if (window.PA && PA.configured) {
       try {
         const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(16).get();
-        const activeDocs = snap.docs
-          .filter(d => !d.data().archived)
-          .sort((a,b) => (Number(b.data().year)||0) - (Number(a.data().year)||0))
-          .slice(0,8);
+        const activeDocs = snap.docs.filter(d => !d.data().archived).sort((a,b) => (Number(b.data().year)||0) - (Number(a.data().year)||0)).slice(0,8);
         if (activeDocs.length) {
           carouselItems = activeDocs.map(d => ({ id:d.id, ...d.data() }));
           grid.innerHTML = carouselItems.map(a => cardHTML(a)).join("");
-          carouselIndex = 0;
-          updateCarouselUI();
-          wireCarouselControls();
-          restartAutoplay();
-          return;
+          carouselIndex = 0; updateCarouselUI(); wireCarouselControls(); restartAutoplay(); return;
         }
-        const fallback = await PA.db.collection("aircraft").orderBy("createdAt","desc").limit(16).get();
-        const fallbackActive = fallback.docs
-          .filter(d => !d.data().archived)
-          .sort((a,b) => (Number(b.data().year)||0) - (Number(a.data().year)||0))
-          .slice(0,8);
-        if(fallbackActive.length){
-          carouselItems = fallbackActive.map(d => ({ id:d.id, ...d.data() }));
-          grid.innerHTML = carouselItems.map(a => cardHTML(a)).join("");
-          carouselIndex = 0;
-          updateCarouselUI();
-          wireCarouselControls();
-          restartAutoplay();
-          return;
-        }
-      } catch(e){ /* estado vazio */ }
+      } catch(e){}
     }
-    carouselItems = [];
     grid.innerHTML = `<div class="inv-dark-empty">${t("ac_empty")}</div>`;
-    document.getElementById("invPrev").disabled = true;
-    document.getElementById("invNext").disabled = true;
-    document.getElementById("invDots").innerHTML = "";
   }
-  loadHighlights();
-  loadSiteMedia();
 
-  // Re-renderiza conteúdo dinâmico ao trocar idioma
-  document.addEventListener("pa:langchange", () => {
-    loadHighlights();     // cards do inventário em destaque
-    loadSiteMedia();      // textos do hero vindos do Firestore
-  });
-  // Carrega configurações do hero e vídeos do Firestore
+  /* ============================================================
+     SISTEMA DE HERO SLIDER MULTI-BANNER DINÂMICO
+     ============================================================ */
+  let heroSlides = [];
+  let activeHeroIndex = 0;
+  let heroAutoplayTimer = null;
+  const HERO_ROTATION_SPEED = 6000; // 6 segundos por banner
+
+  function applyHeroSlide(index) {
+    if (!heroSlides.length) return;
+    const slide = heroSlides[index];
+    const tBox = document.getElementById("heroTextBox");
+    const hBg = document.getElementById("heroBg");
+
+    // Fade Out coordenado da tipografia e da mídia de fundo
+    tBox.style.opacity = "0";
+    tBox.style.transform = "translateY(10px)";
+    hBg.style.opacity = "0";
+
+    setTimeout(() => {
+      // Injeta textos e urls
+      const badge = document.getElementById("heroBadge");
+      if(slide.tag) { document.getElementById("heroTag").textContent = slide.tag; badge.style.display = "block"; } 
+      else { badge.style.display = "none"; }
+      
+      document.getElementById("heroTitle").textContent = slide.title || "";
+      document.getElementById("heroBtnText").textContent = slide.btnText || "Saber Mais";
+      document.getElementById("heroBtn").href = slide.btnUrl || "contato.html";
+
+      // Injeta vídeo ou imagem de fundo
+      if(slide.videoUrl) {
+        hBg.innerHTML = `<video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="${slide.videoUrl}" type="video/mp4"></video>`;
+      } else if(slide.imgUrl) {
+        hBg.style.backgroundImage = `url('${slide.imgUrl}')`;
+        hBg.style.backgroundSize = "cover";
+        hBg.style.backgroundPosition = "center";
+        hBg.innerHTML = "";
+      }
+
+      // Fade In unificado
+      tBox.style.opacity = "1";
+      tBox.style.transform = "translateY(0)";
+      hBg.style.opacity = "1";
+
+      // Sincroniza indicadores lineares (dots)
+      document.querySelectorAll(".hero-slider-dot").forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === index);
+      });
+    }, 400);
+  }
+
+  function renderHeroDots() {
+    const container = document.getElementById("heroSliderDots");
+    container.innerHTML = heroSlides.map((_, i) => `<button class="hero-slider-dot ${i===0?'active':''}" data-idx="${i}" aria-label="Ir para banner ${i+1}"></button>`).join("");
+    container.querySelectorAll(".hero-slider-dot").forEach(dot => {
+      dot.onclick = () => { activeHeroIndex = Number(dot.dataset.idx); applyHeroSlide(activeHeroIndex); startHeroAutoplay(); };
+    });
+  }
+
+  function startHeroAutoplay() {
+    if(heroAutoplayTimer) clearInterval(heroAutoplayTimer);
+    if(heroSlides.length > 1) {
+      heroAutoplayTimer = setInterval(() => {
+        activeHeroIndex = activeHeroIndex >= heroSlides.length - 1 ? 0 : activeHeroIndex + 1;
+        applyHeroSlide(activeHeroIndex);
+      }, HERO_ROTATION_SPEED);
+    }
+  }
+
+  function wireHeroSliderControls() {
+    document.getElementById("heroSliderPrev").onclick = () => {
+      activeHeroIndex = activeHeroIndex <= 0 ? heroSlides.length - 1 : activeHeroIndex - 1;
+      applyHeroSlide(activeHeroIndex); startHeroAutoplay();
+    };
+    document.getElementById("heroSliderNext").onclick = () => {
+      activeHeroIndex = activeHeroIndex >= heroSlides.length - 1 ? 0 : activeHeroIndex + 1;
+      applyHeroSlide(activeHeroIndex); startHeroAutoplay();
+    };
+  }
+
   async function loadSiteMedia(){
     if(!window.PA || !PA.configured) return;
     try {
@@ -744,52 +587,41 @@
       if(!doc.exists) return;
       const d = doc.data();
 
-      // --- Hero: tag (eyebrow) --- mostra se preenchida, some se vazia
-      const badge = document.getElementById("heroBadge");
-      const tagEl = document.getElementById("heroTag");
-      if(badge && tagEl){
-        if(d.heroTag){ tagEl.textContent = d.heroTag; badge.style.display="block"; }
-        else { badge.style.display="none"; }
+      // Mapeia array de slides ou constrói fallback do legado anterior
+      if (d.slides && d.slides.length) {
+        heroSlides = d.slides;
+      } else {
+        heroSlides = [{
+          tag: d.heroTag || "",
+          title: d.heroTitle || "O acesso definitivo à aviação executiva de alta performance.",
+          btnText: d.btnText || "Ver Aeronaves Disponíveis",
+          btnUrl: d.btnUrl || "aeronaves.html",
+          videoUrl: d.heroVideoUrl || "",
+          imgUrl: d.heroImageUrl || ""
+        }];
       }
 
-      // --- Hero: título ---
-      if(d.heroTitle) document.getElementById("heroTitle").textContent = d.heroTitle;
+      activeHeroIndex = 0;
+      renderHeroDots();
+      applyHeroSlide(activeHeroIndex);
+      wireHeroSliderControls();
+      startHeroAutoplay();
 
-      // --- Hero: botão ---
-      const btn = document.getElementById("heroBtn");
-      if(d.btnText) btn.textContent = d.btnText;
-      if(d.btnUrl)  btn.href = d.btnUrl;
-
-      // --- Hero: vídeo ou imagem de fundo ---
-      const heroBg = document.getElementById("heroBg");
-      if(d.heroVideoUrl){
-        heroBg.innerHTML = `<video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-          <source src="${d.heroVideoUrl}" type="video/mp4">
-        </video>`;
-      } else if(d.heroImageUrl){
-        heroBg.style.backgroundImage  = `url('${d.heroImageUrl}')`;
-        heroBg.style.backgroundSize    = "cover";
-        heroBg.style.backgroundPosition= "center";
-        heroBg.innerHTML = "";
-      }
-
-      // --- Vídeo "Nossa História" ---
-      const vidInner = document.getElementById("vidInner");
-      const vidBox   = document.getElementById("vidBox");
+      // Mantém vídeo histórico de baixo rodando
+      const vidBox = document.getElementById("vidBox");
       if(d.historiaVideoUrl && vidBox && !vidBox.querySelector("iframe, video")){
         const url = d.historiaVideoUrl;
         const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/);
-        const vmMatch = url.match(/vimeo\.com\/(\d+)/);
-        let embed = "";
-        if(ytMatch)      embed = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?rel=0" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
-        else if(vmMatch) embed = `<iframe src="https://player.vimeo.com/video/${vmMatch[1]}" frameborder="0" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
-        else             embed = `<video controls><source src="${url}" type="video/mp4"></video>`;
-        if(vidInner) vidInner.style.display = "none";
+        let embed = ytMatch ? `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?rel=0" frameborder="0" allowfullscreen></iframe>` : `<video controls><source src="${url}" type="video/mp4"></video>`;
+        const inner = document.getElementById("vidInner"); if(inner) inner.style.display = "none";
         vidBox.insertAdjacentHTML("afterbegin", embed);
       }
-    } catch(e){ /* mantém padrão */ }
+    } catch(e){}
   }
-  // fim do script de mídia
+
+  loadHighlights();
+  loadSiteMedia();
+  document.addEventListener("pa:langchange", () => { loadHighlights(); loadSiteMedia(); });
 </script>
 </body>
 </html>
