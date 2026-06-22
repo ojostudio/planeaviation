@@ -6,6 +6,7 @@
 <title>Aeronave | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
 <script src="js/i18n.js" defer></script>
 <script src="js/site.js" defer></script>
 <style>
@@ -19,17 +20,8 @@
 body { background: #0a0a0a; color: #fff; }
 
 /* Breadcrumb */
-.crumb {
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  padding: .625rem 0;
-}
-.crumb .container {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: .75rem;
-  color: rgba(255,255,255,0.35);
-}
+.crumb { border-bottom: 1px solid rgba(255,255,255,0.08); padding: .625rem 0; }
+.crumb .container { display: flex; align-items: center; gap: .5rem; font-size: .75rem; color: rgba(255,255,255,0.35); }
 .crumb a { color: rgba(255,255,255,0.35); }
 .crumb a:hover { color: rgba(255,255,255,0.7); }
 .crumb .sep { opacity: .3; }
@@ -37,283 +29,132 @@ body { background: #0a0a0a; color: #fff; }
 
 /* ---- MAIN LAYOUT ---- */
 .det-wrap { padding: 2.5rem 0 5rem; }
-.det-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
-  align-items: start;
-}
-@media(min-width:1024px) {
-  .det-grid { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; }
-}
+.det-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
+@media(min-width:1024px) { .det-grid { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; } }
 
 /* ---- GALLERY ---- */
 .gal-main {
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
-  background: rgba(255,255,255,0.05);
-  aspect-ratio: 4/3;
-  /* Bevel effect matching cards */
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.08) inset,
-    0 -1px 0 rgba(0,0,0,0.4) inset,
-    0 32px 64px rgba(0,0,0,0.6);
+  border-radius: 14px; overflow: hidden; position: relative; background: rgba(255,255,255,0.05); aspect-ratio: 4/3;
+  border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 -1px 0 rgba(0,0,0,0.4) inset, 0 32px 64px rgba(0,0,0,0.6);
 }
-.gal-main img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-}
-.gal-main .ph-dark {
-  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-  color:rgba(255,255,255,0.15);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
-}
+.gal-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gal-main .ph-dark { width:100%;height:100%;display:flex;align-items:center;justify-content:center; color:rgba(255,255,255,0.15);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase; }
 .gal-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 2.25rem; height: 2.25rem;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: #fff;
-  transition: background .15s;
-  z-index: 2;
+  position: absolute; top: 50%; transform: translateY(-50%); width: 2.25rem; height: 2.25rem;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: background .15s; z-index: 2;
 }
 .gal-nav:hover { background: rgba(0,0,0,0.75); }
 .gal-nav.prev { left: .75rem; }
 .gal-nav.next { right: .75rem; }
 .gal-tag {
-  position: absolute; top: .875rem; left: .875rem;
-  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  background: rgba(255,255,255,0.12); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
-  color: #fff; padding: .3rem .625rem;
+  position: absolute; top: .875rem; left: .875rem; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; padding: .3rem .625rem;
 }
-/* Thumbnails */
-.thumbs {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: .5rem;
-  margin-top: .625rem;
-}
-.thumbs button {
-  background: none; padding: 0; cursor: pointer;
-  border: 2px solid transparent;
-  border-radius: 8px; overflow: hidden;
-  transition: border-color .15s;
-}
+.thumbs { display: grid; grid-template-columns: repeat(4,1fr); gap: .5rem; margin-top: .625rem; }
+.thumbs button { background: none; padding: 0; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden; transition: border-color .15s; }
 .thumbs button.active { border-color: rgba(255,255,255,0.5); }
-.thumbs button img {
-  width: 100%; aspect-ratio: 4/3;
-  object-fit: cover; display: block;
-}
-.thumbs button .ph-thumb {
-  aspect-ratio: 4/3;
-  background: rgba(255,255,255,0.06);
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.15); font-size: .6rem;
-}
+.thumbs button img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 
 /* ---- INFO COLUMN ---- */
-.det-badge {
-  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); margin-bottom: .5rem;
-}
+.det-badge { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: .5rem; }
 .det-title {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800; font-style: italic;
-  text-transform: uppercase;
-  letter-spacing: -.01em; line-height: 1;
-  color: #fff; margin-bottom: 1rem;
+  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-style: italic;
+  text-transform: uppercase; letter-spacing: -.01em; line-height: 1; color: #fff; margin-bottom: 1rem;
 }
 .det-title span { font-weight: 400; font-style: italic; }
 
-/* Metas pills */
-.det-metas {
-  display: flex; flex-wrap: wrap; gap: .375rem;
-  margin-bottom: 1.25rem;
-}
+.det-metas { display: flex; flex-wrap: wrap; gap: .375rem; margin-bottom: 1.25rem; }
 .det-meta-pill {
-  display: inline-flex; align-items: center; gap: .375rem;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 6px;
-  padding: .3rem .75rem;
-  font-size: .75rem; font-weight: 500;
-  color: rgba(255,255,255,0.8);
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .375rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px; padding: .3rem .75rem; font-size: .75rem; font-weight: 500; color: rgba(255,255,255,0.8); white-space: nowrap;
 }
 .det-meta-pill .ml { color: rgba(255,255,255,0.4); font-weight: 400; margin-right: .125rem; }
 
-/* Price */
-.det-price {
-  font-size: 1.625rem; font-weight: 700;
-  letter-spacing: -.02em; color: #fff;
-  margin-bottom: 1.5rem;
-}
-.det-price.consult {
-  font-size: 1rem; font-weight: 500;
-  color: rgba(255,255,255,0.4);
-  font-style: italic;
-}
+.det-price { font-size: 1.625rem; font-weight: 700; letter-spacing: -.02em; color: #fff; margin-bottom: 1.5rem; }
+.det-price.consult { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.4); font-style: italic; }
 
-/* CTAs */
-.det-actions {
-  display: flex;
-  margin-bottom: 2rem;
-}
+/* CTAs - Redesenhados para focar no Principal e WhatsApp */
+.det-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
 .det-btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
-  background: #fff; color: #0a0a0a;
-  border: none; border-radius: 6px;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  padding: .875rem 2rem; cursor: pointer;
-  text-decoration: none; transition: opacity .15s;
+  background: #fff; color: #0a0a0a; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; padding: .875rem 2rem; cursor: pointer; text-decoration: none; transition: opacity .15s; flex: 1;
 }
 .det-btn-primary:hover { opacity: .88; }
+.det-btn-whatsapp {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  background: rgba(37, 211, 102, 0.05); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.4); border-radius: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: .875rem 1.5rem; cursor: pointer;
+  text-decoration: none; transition: all .15s; flex: 1;
+}
+.det-btn-whatsapp:hover { background: #25d366; color: #0a0a0a; border-color: #25d366; }
 
-/* Divider */
-.det-divider {
-  border: none; border-top: 1px solid rgba(255,255,255,0.08);
-  margin: 1.5rem 0;
-}
-
-/* Description */
-.det-section-label {
-  font-size: 9px; font-weight: 700;
-  letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); margin-bottom: .875rem;
-}
-.det-desc-text {
-  font-size: .875rem; line-height: 1.75;
-  color: rgba(255,255,255,0.55);
-  white-space: pre-wrap;
-}
-
-/* Specs table */
-.det-specs {
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px; overflow: hidden;
-}
-.det-spec-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: .625rem 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  font-size: .8125rem;
-}
+.det-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; }
+.det-section-label { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: .875rem; }
+.det-desc-text { font-size: .875rem; line-height: 1.75; color: rgba(255,255,255,0.55); white-space: pre-wrap; }
+.det-specs { border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+.det-spec-row { display: flex; justify-content: space-between; align-items: center; padding: .625rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: .8125rem; }
 .det-spec-row:last-child { border-bottom: none; }
 .det-spec-key { color: rgba(255,255,255,0.4); }
 .det-spec-val { font-weight: 600; color: #fff; }
 
-/* Technologies */
-.det-tech-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .75rem;
-}
+.det-tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 @media(min-width:640px) { .det-tech-grid { grid-template-columns: repeat(4,1fr); } }
-.det-tech-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px; padding: 1rem;
-}
+.det-tech-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem; }
 .det-tech-card svg { color: rgba(255,255,255,0.5); margin-bottom: .625rem; }
-.det-tech-card h3 {
-  font-size: .8125rem; font-weight: 700;
-  color: #fff; margin-bottom: .25rem;
-}
-.det-tech-card p {
-  font-size: .75rem; color: rgba(255,255,255,0.4);
-  line-height: 1.5;
-}
+.det-tech-card h3 { font-size: .8125rem; font-weight: 700; color: #fff; margin-bottom: .25rem; }
+.det-tech-card p { font-size: .75rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
 
-/* Other options */
-.other-section {
-  border-top: 1px solid rgba(255,255,255,0.08);
-  margin-top: 4rem; padding-top: 3rem;
-}
-.other-section-head {
-  display: flex; align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem; flex-wrap: wrap; gap: .75rem;
-}
-.other-section-head h2 {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: 1.25rem; font-weight: 800; font-style: italic;
-  text-transform: uppercase; color: #fff;
-}
-.other-see-all {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); text-decoration: none;
-  display: inline-flex; align-items: center; gap: .375rem;
-  transition: color .15s;
-}
+/* Outras Opções */
+.other-section { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4rem; padding-top: 3rem; }
+.other-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .75rem; }
+.other-section-head h2 { font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif; font-size: 1.25rem; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; }
+.other-see-all { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.4); text-decoration: none; display: inline-flex; align-items: center; gap: .375rem; transition: color .15s; }
 .other-see-all:hover { color: #fff; }
-.other-grid {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 1rem;
-}
+.other-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
 @media(min-width:640px)  { .other-grid { grid-template-columns: repeat(2,1fr); } }
 @media(min-width:1024px) { .other-grid { grid-template-columns: repeat(4,1fr); } }
-
-/* Reuse ac-card styles from aeronaves */
-.ac-card {
-  display: block;
-  background: rgba(255,255,255,0.04);
-  border-radius: 16px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.08) inset,
-    0 -1px 0 rgba(0,0,0,0.4) inset,
-    0 24px 48px rgba(0,0,0,0.5);
-  transition: transform .2s, box-shadow .2s, border-color .2s;
-  text-decoration: none; color: inherit;
-  padding: .5rem; cursor: pointer;
-}
-.ac-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,255,255,0.22);
-}
-.ac-card-img {
-  position: relative; border-radius: 10px; overflow: hidden;
-  aspect-ratio: 4/3; background: rgba(255,255,255,0.06);
-  margin-bottom: .75rem;
-}
+.ac-card { display: block; background: rgba(255,255,255,0.04); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 -1px 0 rgba(0,0,0,0.4) inset, 0 24px 48px rgba(0,0,0,0.5); transition: transform .2s, box-shadow .2s, border-color .2s; text-decoration: none; color: inherit; padding: .5rem; cursor: pointer; }
+.ac-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.22); }
+.ac-card-img { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 4/3; background: rgba(255,255,255,0.06); margin-bottom: .75rem; }
 .ac-card-img img { width:100%;height:100%;object-fit:cover;display:block; }
-.ac-card-img .ph-dark {
-  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-  color:rgba(255,255,255,0.15);font-size:.6rem;
-}
-.ac-card-tag {
-  position:absolute;top:.5rem;left:.5rem;
-  font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,0.2);border-radius:4px;
-  color:#fff;padding:.2rem .4rem;
-}
+.ac-card-img .ph-dark { width:100%;height:100%;display:flex;align-items:center;justify-content:center; color:rgba(255,255,255,0.15);font-size:.6rem; }
+.ac-card-tag { position:absolute;top:.5rem;left:.5rem; font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase; background:rgba(255,255,255,0.12);backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2);border-radius:4px; color:#fff;padding:.2rem .4rem; }
 .ac-card-body { padding: .125rem .25rem .375rem; }
 .ac-card-cond { font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:.2rem; }
-.ac-card-title {
-  font-family:'Grift','Bebas Neue','Inter',sans-serif;
-  font-size:1rem;font-weight:800;font-style:italic;
-  text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:.2rem;
-}
+.ac-card-title { font-family:'Grift','Bebas Neue','Inter',sans-serif; font-size:1rem;font-weight:800;font-style:italic; text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:.2rem; }
 .ac-card-title span { font-weight:400; }
 .ac-card-meta { font-size:.7rem;color:rgba(255,255,255,0.35);margin-bottom:.5rem; }
 .ac-card-price { font-size:.875rem;font-weight:700;color:#fff;margin-bottom:.625rem; }
-.ac-card-btn {
-  display:inline-flex;align-items:center;gap:.375rem;
-  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:#fff;background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.18);border-radius:5px;
-  padding:.4rem .75rem;white-space:nowrap;
-}
+.ac-card-btn { display:inline-flex;align-items:center;gap:.375rem; font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase; color:#fff;background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);border-radius:5px; padding:.4rem .75rem;white-space:nowrap; }
+
+/* ============================================================
+   MODAL DE CONTATO (Pop-up Form)
+   ============================================================ */
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; z-index:999; padding:2rem 1rem; overflow-y:auto; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.overlay.open { display:flex; }
+.modal { background:#0a0a0a; border:1px solid rgba(255,255,255,0.15); border-radius:16px; width:100%; max-width:32rem; margin:auto; color:#fff; box-shadow: 0 24px 64px rgba(0,0,0,0.8); }
+.modal-head { display:flex; align-items:center; justify-content:space-between; padding:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
+.modal-head h3 { font-size:1.25rem; font-weight:700; font-family:'Grift', sans-serif; font-style:italic; letter-spacing:0.02em; text-transform: uppercase; margin: 0; }
+.modal-body { padding:1.5rem; }
+.x-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:1.25rem; display: flex; align-items: center; justify-content: center; }
+.x-btn:hover { color:#fff; }
+
+/* Form Styles do Modal */
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+.form-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.875rem 1rem; font-family: var(--font); font-size: .875rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #fff; transition: border-color 0.2s, background-color 0.2s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #fff; background: rgba(255, 255, 255, 0.1); }
+.form-group select { appearance: none; cursor: pointer; }
+.form-group select option { background: #1a1a1a; color: #fff; }
+
+/* Ajustes da Bandeira do Telefone no Modal */
+.iti { width: 100%; }
+.iti__country-list { background-color: #151515 !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 8px; color: #ffffff; max-width: 300px; z-index: 1000; }
+.iti__country:hover, .iti__country.iti__highlight { background-color: rgba(255, 255, 255, 0.1) !important; }
+.iti__divider { border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; }
+.form-group input#modalPhone { padding-left: 3.5rem !important; }
 </style>
 </head>
 <body>
@@ -334,12 +175,8 @@ body { background: #0a0a0a; color: #fff; }
         <div>
           <div class="gal-main" id="galMain">
             <div class="ph-dark">[Imagem]</div>
-            <button class="gal-nav prev" id="galPrev" aria-label="Anterior">
-              <svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-            </button>
-            <button class="gal-nav next" id="galNext" aria-label="Próxima">
-              <svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
+            <button class="gal-nav prev" id="galPrev" aria-label="Anterior"><svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="gal-nav next" id="galNext" aria-label="Próxima"><svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
             <span class="gal-tag" id="galTag" style="display:none"></span>
           </div>
           <div class="thumbs" id="thumbs"></div>
@@ -360,10 +197,16 @@ body { background: #0a0a0a; color: #fff; }
           <h1 class="det-title" id="model"></h1>
           <div class="det-metas" id="detMetas"></div>
           <div class="det-price" id="detPrice"></div>
+          
           <div class="det-actions">
-            <a href="contato.html?motivo=comprar" class="det-btn-primary">
+            <button id="btnOpenContactModal" class="det-btn-primary">
               TENHO INTERESSE
               <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+            </button>
+            
+            <a id="btnWhatsApp" href="#" target="_blank" class="det-btn-whatsapp">
+              WHATSAPP
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.2em;height:1.2em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.021-.967-.264-.099-.456-.149-.648.149-.193.297-.762.967-.934 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.648-1.564-.888-2.14-.231-.56-.467-.484-.648-.493-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             </a>
           </div>
         </div>
@@ -389,8 +232,50 @@ body { background: #0a0a0a; color: #fff; }
 </main>
 <div id="site-footer"></div>
 
+<div class="overlay" id="contactModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>FALE COM UM CONSULTOR</h3>
+      <button class="x-btn" id="btnCloseModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="contactFormModal">
+        <div class="form-group">
+          <label for="modalName">Nome Completo</label>
+          <input type="text" id="modalName" required placeholder="Ex: João Silva">
+        </div>
+        <div class="form-group">
+          <label for="modalEmail">E-mail Corporativo</label>
+          <input type="email" id="modalEmail" required placeholder="joao@empresa.com">
+        </div>
+        <div class="form-group">
+          <label for="modalPhone">Telefone / WhatsApp</label>
+          <input type="tel" id="modalPhone" required placeholder="(11) 99999-0000">
+        </div>
+        
+        <input type="hidden" id="modalSubject" value="comprar">
+        
+        <div class="form-group">
+          <label for="modalAircraftSelect">Aeronave de Interesse</label>
+          <select id="modalAircraftSelect" required></select>
+        </div>
+        
+        <div class="form-group">
+          <label for="modalMessage">Sua Mensagem</label>
+          <textarea id="modalMessage" rows="4" required placeholder="Gostaria de saber mais informações sobre esta aeronave..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-solid btn-lg" style="width: 100%; margin-top: 0.5rem; background-color: #ffffff; color: #000000;">
+          ENVIAR MENSAGEM
+          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width: 1em; height: 1em; fill: currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
 const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
@@ -411,7 +296,7 @@ function getLocalized(p,f){ const l=getLang(); return l==="pt"?p[f]||"":(p.trans
 function getLocalizedArray(p,f){ const l=getLang(); return l==="pt"?p[f]||[]:(p.translations?.[l]?.[f]||p[f]||[]); }
 
 const pageId = new URLSearchParams(location.search).get("id");
-let P = null, activeImg = 0, galleryCount = 0;
+let P = null, activeImg = 0;
 
 document.addEventListener("pa:langchange", () => { if(P) renderPage(P); });
 
@@ -434,32 +319,21 @@ function paintMain(){
 function paintThumbs(){
   if(!hasImgs()){ thumbsEl.innerHTML=""; return; }
   thumbsEl.innerHTML = P.images.map((url,i) =>
-    `<button class="${i===activeImg?"active":""}" data-i="${i}">
-      <img src="${url}" alt="${P.model} ${i+1}">
-    </button>`).join("");
+    `<button class="${i===activeImg?"active":""}" data-i="${i}"><img src="${url}" alt="${P.model} ${i+1}"></button>`).join("");
   thumbsEl.querySelectorAll("button").forEach(b =>
     b.addEventListener("click", () => { activeImg=+b.dataset.i; paintMain(); paintThumbs(); }));
 }
-document.getElementById("galPrev").addEventListener("click", () => {
-  if(!hasImgs()) return;
-  activeImg=(activeImg-1+P.images.length)%P.images.length; paintMain(); paintThumbs();
-});
-document.getElementById("galNext").addEventListener("click", () => {
-  if(!hasImgs()) return;
-  activeImg=(activeImg+1)%P.images.length; paintMain(); paintThumbs();
-});
+document.getElementById("galPrev").addEventListener("click", () => { if(!hasImgs()) return; activeImg=(activeImg-1+P.images.length)%P.images.length; paintMain(); paintThumbs(); });
+document.getElementById("galNext").addEventListener("click", () => { if(!hasImgs()) return; activeImg=(activeImg+1)%P.images.length; paintMain(); paintThumbs(); });
 
 function fmtPrice(p){
   if(p.sobConsulta || !p.priceNum) return null;
-  return p.currency==="BRL"
-    ? "R$"+Number(p.priceNum).toLocaleString("pt-BR")
-    : "USD "+Number(p.priceNum).toLocaleString("en-US");
+  return p.currency==="BRL" ? "R$"+Number(p.priceNum).toLocaleString("pt-BR") : "USD "+Number(p.priceNum).toLocaleString("en-US");
 }
 function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
 
 function renderPage(p){
   P = p;
-  // Don't reset gallery position on lang change
   if(!P._init){ activeImg=0; P._init=true; paintMain(); paintThumbs(); }
 
   const loc_cond  = getLocalized(p,"condition");
@@ -468,120 +342,66 @@ function renderPage(p){
   const loc_specs = getLocalizedArray(p,"specs");
   const loc_feats = getLocalizedArray(p,"features");
 
-  // Breadcrumb + title
   document.getElementById("crumbModel").textContent = p.model + (p.year ? " — "+p.year : "");
   document.getElementById("condLoc").textContent = [loc_cond, loc_loc].filter(Boolean).join(" · ");
   document.title = `${p.model} | Plane Aviation`;
 
-  // Title (bold + lighter variant)
   const parts = p.model.match(/^(.*?)(\s[A-Z0-9+]+)?$/);
   const main = parts?.[1] || p.model;
   const sub  = parts?.[2] || "";
   document.getElementById("model").innerHTML = `${main}<span>${sub}</span>`;
 
-  // Tag
   const tagEl = document.getElementById("galTag");
-  if(p.tag){ tagEl.textContent=p.tag; tagEl.style.display=""; }
-  else { tagEl.style.display="none"; }
+  if(p.tag){ tagEl.textContent=p.tag; tagEl.style.display=""; } else { tagEl.style.display="none"; }
 
-  // Metas
   const metas = [];
   if(p.year)              metas.push({ l:t("det_meta_year"),   v:String(p.year) });
   if(p.hoursNum!=null)    metas.push({ l:t("det_meta_cell"),   v:fmtHoras(p.hoursNum) });
   if(p.motorHours!=null)  metas.push({ l:t("det_meta_engine"), v:fmtHoras(p.motorHours) });
   if(p.heliceHours!=null) metas.push({ l:t("det_meta_prop"),   v:fmtHoras(p.heliceHours) });
-  document.getElementById("detMetas").innerHTML = metas.map(m =>
-    `<span class="det-meta-pill"><span class="ml">${m.l}</span>${m.v}</span>`).join("");
+  document.getElementById("detMetas").innerHTML = metas.map(m => `<span class="det-meta-pill"><span class="ml">${m.l}</span>${m.v}</span>`).join("");
 
-  // Price
   const priceEl = document.getElementById("detPrice");
   const price = fmtPrice(p);
-  if(price){ priceEl.textContent=price; priceEl.className="det-price"; }
-  else { priceEl.textContent=t("ac_consult"); priceEl.className="det-price consult"; }
+  if(price){ priceEl.textContent=price; priceEl.className="det-price"; } else { priceEl.textContent=t("ac_consult"); priceEl.className="det-price consult"; }
 
-  // Description
   const descBlock = document.getElementById("descBlock");
-  if(loc_desc){
-    document.getElementById("descLabel").textContent = t("det_about");
-    document.getElementById("descText").textContent  = loc_desc;
-    descBlock.style.display="block";
-  } else { descBlock.style.display="none"; }
+  if(loc_desc){ document.getElementById("descLabel").textContent = t("det_about"); document.getElementById("descText").textContent  = loc_desc; descBlock.style.display="block"; } else { descBlock.style.display="none"; }
 
-  // Specs
   const specsBlock = document.getElementById("specsBlock");
-  const specsHTML = loc_specs.filter(s=>s[0]||s[1]).map(s =>
-    `<div class="det-spec-row"><span class="det-spec-key">${s[0]||""}</span><span class="det-spec-val">${s[1]||""}</span></div>`).join("");
-  if(specsHTML){
-    document.getElementById("specs").innerHTML = specsHTML;
-    document.getElementById("specsLabel").textContent = t("det_specs");
-    specsBlock.style.display="block";
-  } else { specsBlock.style.display="none"; }
+  const specsHTML = loc_specs.filter(s=>s[0]||s[1]).map(s => `<div class="det-spec-row"><span class="det-spec-key">${s[0]||""}</span><span class="det-spec-val">${s[1]||""}</span></div>`).join("");
+  if(specsHTML){ document.getElementById("specs").innerHTML = specsHTML; document.getElementById("specsLabel").textContent = t("det_specs"); specsBlock.style.display="block"; } else { specsBlock.style.display="none"; }
 
-  // Technologies
   const featsSection = document.getElementById("featsSection");
-  const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f =>
-    `<div class="det-tech-card">
-      <svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg>
-      <h3>${f[1]||""}</h3>
-      <p>${f[2]||""}</p>
-    </div>`).join("");
-  if(featsHTML){
-    document.getElementById("feats").innerHTML = featsHTML;
-    document.getElementById("featsLabel").textContent = t("det_tech");
-    featsSection.style.display="block";
-  } else { featsSection.style.display="none"; }
+  const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f => `<div class="det-tech-card"><svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
+  if(featsHTML){ document.getElementById("feats").innerHTML = featsHTML; document.getElementById("featsLabel").textContent = t("det_tech"); featsSection.style.display="block"; } else { featsSection.style.display="none"; }
+
+  // Configuração do WhatsApp Dinâmico (usando um telefone padrão caso precise ser alterado, é só trocar a string abaixo)
+  const telefoneWhatsapp = "5511999990000"; 
+  const codInterno = p.codigoInterno || "Sem Cód";
+  const textoMensagem = encodeURIComponent(`Olá! Tenho interesse na aeronave ${main} ${sub} (${codInterno}).`);
+  document.getElementById("btnWhatsApp").href = `https://wa.me/${telefoneWhatsapp}?text=${textoMensagem}`;
+
+  // Configura a Aeronave pré-selecionada no Modal de Contato
+  const modalSelect = document.getElementById("modalAircraftSelect");
+  modalSelect.innerHTML = `<option value="${p.model} [${codInterno}]" selected>${p.model} (${p.year})</option>`;
 }
 
 function notFound(){
-  document.getElementById("detWrap").innerHTML = `
-    <div class="container" style="padding:5rem 0;text-align:center">
-      <p style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem" data-i18n="ac_eyebrow">Estoque</p>
-      <h1 style="font-family:'Grift','Bebas Neue','Inter',sans-serif;font-size:2.5rem;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1>
-      <a href="aeronaves.html" style="display:inline-flex;align-items:center;gap:.5rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:.75rem 1.5rem;text-decoration:none" data-i18n="det_back">Ver Aeronaves Disponíveis</a>
-    </div>`;
+  document.getElementById("detWrap").innerHTML = `<div class="container" style="padding:5rem 0;text-align:center"><p style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem" data-i18n="ac_eyebrow">Estoque</p><h1 style="font-family:'Grift','Bebas Neue','Inter',sans-serif;font-size:2.5rem;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1><a href="aeronaves.html" style="display:inline-flex;align-items:center;gap:.5rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:.75rem 1.5rem;text-decoration:none" data-i18n="det_back">Ver Aeronaves Disponíveis</a></div>`;
   if(window.PA_I18N) PA_I18N.applyLang();
 }
 
 function fromFirestore(a){
-  return {
-    tag:a.tag||"", model:a.model||"", year:a.year||"",
-    hoursNum:a.hoursNum!=null?a.hoursNum:null,
-    motorHours:a.motorHours!=null?a.motorHours:null,
-    heliceHours:a.heliceHours!=null?a.heliceHours:null,
-    condition:a.condition||"", currency:a.currency||"USD",
-    priceNum:a.priceNum!=null?a.priceNum:null,
-    sobConsulta:!!a.sobConsulta,
-    location:a.location||"", description:a.description||"",
-    translations:a.translations||{},
-    images:a.images||[],
-    specs:(a.specs||[]).map(s=>[s.label,s.value]),
-    features:(a.features||[]).map(f=>[f.icon,f.title,f.desc])
-  };
+  return { tag:a.tag||"", model:a.model||"", year:a.year||"", hoursNum:a.hoursNum!=null?a.hoursNum:null, motorHours:a.motorHours!=null?a.motorHours:null, heliceHours:a.heliceHours!=null?a.heliceHours:null, condition:a.condition||"", currency:a.currency||"USD", priceNum:a.priceNum!=null?a.priceNum:null, sobConsulta:!!a.sobConsulta, location:a.location||"", description:a.description||"", codigoInterno:a.codigoInterno||"", translations:a.translations||{}, images:a.images||[], specs:(a.specs||[]).map(s=>[s.label,s.value]), features:(a.features||[]).map(f=>[f.icon,f.title,f.desc]) };
 }
 
 function otherCardHTML(id, a){
-  const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/);
-  const main = parts?.[1]||a.model||"";
-  const sub  = parts?.[2]||"";
-  const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult")
-    : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
+  const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/); const main = parts?.[1]||a.model||""; const sub  = parts?.[2]||"";
+  const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult") : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
   const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" • ");
-  const img = (a.images&&a.images[0])
-    ? `<img src="${a.images[0]}" alt="${a.model}">`
-    : `<div class="ph-dark">[Foto]</div>`;
-  return `<a href="aeronave.html?id=${id}" class="ac-card">
-    <div class="ac-card-img">
-      ${img}
-      ${a.tag?`<span class="ac-card-tag">${a.tag}</span>`:""}
-    </div>
-    <div class="ac-card-body">
-      <div class="ac-card-cond">${a.condition||""}</div>
-      <div class="ac-card-title">${main}<span>${sub}</span></div>
-      ${meta?`<div class="ac-card-meta">${meta}</div>`:""}
-      <div class="ac-card-price">${price}</div>
-      <span class="ac-card-btn">Ver ${ARROW}</span>
-    </div>
-  </a>`;
+  const img = (a.images&&a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
+  return `<a href="aeronave.html?id=${id}" class="ac-card"><div class="ac-card-img">${img}${a.tag?`<span class="ac-card-tag">${a.tag}</span>`:""}</div><div class="ac-card-body"><div class="ac-card-cond">${a.condition||""}</div><div class="ac-card-title">${main}<span>${sub}</span></div>${meta?`<div class="ac-card-meta">${meta}</div>`:""}<div class="ac-card-price">${price}</div><span class="ac-card-btn">Ver ${ARROW}</span></div></a>`;
 }
 
 async function init(){
@@ -591,23 +411,81 @@ async function init(){
     if(!doc.exists || doc.data().archived){ notFound(); return; }
     renderPage(fromFirestore(doc.data()));
 
-    // Other options
     const others = await PA.db.collection("aircraft").get();
-    const otherDocs = others.docs
-      .filter(d=>d.id!==pageId && !d.data().archived)
-      .sort((a,b)=>{
-        const ay = Number(a.data().year)||0, by = Number(b.data().year)||0;
-        if(ay !== by) return by - ay; // mais novo primeiro
-        return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0);
-      })
-      .slice(0,4);
-    if(otherDocs.length){
-      document.getElementById("otherSection").style.display="block";
-      document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCardHTML(d.id,d.data())).join("");
-    }
+    const otherDocs = others.docs.filter(d=>d.id!==pageId && !d.data().archived).sort((a,b)=>{ const ay = Number(a.data().year)||0, by = Number(b.data().year)||0; if(ay !== by) return by - ay; return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0); }).slice(0,4);
+    if(otherDocs.length){ document.getElementById("otherSection").style.display="block"; document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCardHTML(d.id,d.data())).join(""); }
   } catch(e){ notFound(); }
 }
 init();
+
+/* ============================================================
+   LÓGICA DO MODAL DE CONTATO E TELEFONE
+   ============================================================ */
+// Abertura e Fechamento do Modal
+const btnOpen = document.getElementById("btnOpenContactModal");
+const btnClose = document.getElementById("btnCloseModal");
+const modalOverlay = document.getElementById("contactModal");
+
+btnOpen.addEventListener("click", () => modalOverlay.classList.add("open"));
+btnClose.addEventListener("click", () => modalOverlay.classList.remove("open"));
+modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove("open"); });
+
+// Inicialização do Input de Telefone com Bandeiras
+const phoneInput = document.getElementById("modalPhone");
+const iti = window.intlTelInput(phoneInput, {
+  initialCountry: "br",
+  preferredCountries: ["br", "us", "ar", "mx"],
+  utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+});
+
+// Máscara Inteligente (Apenas para o Brasil)
+phoneInput.addEventListener('input', function(e) {
+  const country = iti.getSelectedCountryData().iso2;
+  if (country === "br") {
+    let x = e.target.value.replace(/\D/g, ''); 
+    if(x.length === 0) { e.target.value = ''; return; }
+    if(x.length <= 2) { e.target.value = '(' + x; return; }
+    if(x.length <= 6) { e.target.value = '(' + x.slice(0,2) + ') ' + x.slice(2); return; }
+    if(x.length <= 10) { e.target.value = '(' + x.slice(0,2) + ') ' + x.slice(2,6) + '-' + x.slice(6); return; }
+    e.target.value = '(' + x.slice(0,2) + ') ' + x.slice(2,7) + '-' + x.slice(7,11);
+  }
+});
+
+// Envio do Formulário para a coleção Leads
+document.getElementById('contactFormModal').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!window.PA || !PA.configured) return alert("Erro de conexão. Tente contato via WhatsApp no momento.");
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  const originalBtnHTML = btn.innerHTML;
+  btn.innerHTML = "ENVIANDO...";
+  btn.disabled = true;
+
+  const fullPhoneNumber = iti.getNumber();
+
+  const leadData = {
+    name: document.getElementById('modalName').value.trim(),
+    email: document.getElementById('modalEmail').value.trim(),
+    phone: fullPhoneNumber,
+    subject: document.getElementById('modalSubject').value,
+    aircraft: document.getElementById('modalAircraftSelect').value, // Envia Nome [Código]
+    message: document.getElementById('modalMessage').value.trim(),
+    status: "novo", 
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try {
+    await PA.db.collection("leads").add(leadData);
+    alert('Obrigado! Sua mensagem foi enviada com sucesso e nossa equipe entrará em contato em breve.');
+    e.target.reset();
+    modalOverlay.classList.remove("open"); // Fecha o modal após enviar
+  } catch(err) {
+    alert('Ops! Houve um erro ao enviar: ' + err.message);
+  } finally {
+    btn.innerHTML = originalBtnHTML;
+    btn.disabled = false;
+  }
+});
 </script>
 </body>
 </html>
