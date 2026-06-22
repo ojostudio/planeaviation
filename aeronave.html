@@ -79,10 +79,12 @@ body { background: #0a0a0a; color: #fff; }
 
 /* CTAs */
 .det-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
+
 .det-btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
   background: #fff; color: #0a0a0a; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; padding: .875rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s; flex: 0 0 auto;
+  text-transform: uppercase; padding: .875rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s; 
+  flex: 0 0 auto; 
 }
 .det-btn-primary:hover { opacity: .88; }
 
@@ -90,7 +92,8 @@ body { background: #0a0a0a; color: #fff; }
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px;
   font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: .875rem 1.5rem; cursor: pointer;
-  text-decoration: none; transition: background .15s, border-color .15s; flex: 0 0 auto;
+  text-decoration: none; transition: background .15s, border-color .15s; 
+  flex: 0 0 auto; 
 }
 .det-btn-pdf:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
 
@@ -287,8 +290,8 @@ body { background: #0a0a0a; color: #fff; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
-// Variáveis Globais
 const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
+
 const ICONS = {
   Shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
   Monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
@@ -299,18 +302,23 @@ const ICONS = {
   Award:'<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>'
 };
 
-const pageId = new URLSearchParams(location.search).get("id");
-let P = null, activeImg = 0;
-
 function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
 function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
 function getLocalized(p,f){ const l=getLang(); return l==="pt"?p[f]||"":(p.translations?.[l]?.[f]||p[f]||""); }
 function getLocalizedArray(p,f){ const l=getLang(); return l==="pt"?p[f]||[]:(p.translations?.[l]?.[f]||p[f]||[]); }
 
+const pageId = new URLSearchParams(location.search).get("id");
+let P = null, activeImg = 0;
+
+document.addEventListener("pa:langchange", () => { if(P) renderPage(P); });
+
+// Gallery
+const galMainEl = document.getElementById("galMain");
+const thumbsEl  = document.getElementById("thumbs");
+
 function hasImgs(){ return P && P.images && P.images.length; }
 
 function paintMain(){
-  const galMainEl = document.getElementById("galMain");
   const existing = galMainEl.querySelector("img, .ph-dark");
   if(existing) existing.remove();
   if(hasImgs()){
@@ -320,39 +328,21 @@ function paintMain(){
     galMainEl.prepend(img);
   }
 }
-
 function paintThumbs(){
-  const thumbsEl  = document.getElementById("thumbs");
   if(!hasImgs()){ thumbsEl.innerHTML=""; return; }
   thumbsEl.innerHTML = P.images.map((url,i) =>
     `<button class="${i===activeImg?"active":""}" data-i="${i}"><img src="${url}" alt="${P.model} ${i+1}"></button>`).join("");
   thumbsEl.querySelectorAll("button").forEach(b =>
     b.addEventListener("click", () => { activeImg=+b.dataset.i; paintMain(); paintThumbs(); }));
 }
+document.getElementById("galPrev").addEventListener("click", () => { if(!hasImgs()) return; activeImg=(activeImg-1+P.images.length)%P.images.length; paintMain(); paintThumbs(); });
+document.getElementById("galNext").addEventListener("click", () => { if(!hasImgs()) return; activeImg=(activeImg+1)%P.images.length; paintMain(); paintThumbs(); });
 
 function fmtPrice(p){
   if(p.sobConsulta || !p.priceNum) return null;
   return p.currency==="BRL" ? "R$"+Number(p.priceNum).toLocaleString("pt-BR") : "USD "+Number(p.priceNum).toLocaleString("en-US");
 }
-
 function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
-
-function fromFirestore(a){
-  return { tag:a.tag||"", model:a.model||"", year:a.year||"", hoursNum:a.hoursNum!=null?a.hoursNum:null, motorHours:a.motorHours!=null?a.motorHours:null, heliceHours:a.heliceHours!=null?a.heliceHours:null, condition:a.condition||"", currency:a.currency||"USD", priceNum:a.priceNum!=null?a.priceNum:null, sobConsulta:!!a.sobConsulta, location:a.location||"", description:a.description||"", codigoInterno:a.codigoInterno||"", translations:a.translations||{}, images:a.images||[], specs:(a.specs||[]).map(s=>[s.label,s.value]), features:(a.features||[]).map(f=>[f.icon,f.title,f.desc]) };
-}
-
-function otherCardHTML(id, a){
-  const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/); const main = parts?.[1]||a.model||""; const sub  = parts?.[2]||"";
-  const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult") : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
-  const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" • ");
-  const img = (a.images&&a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
-  return `<a href="aeronave.html?id=${id}" class="ac-card"><div class="ac-card-img">${img}${a.tag?`<span class="ac-card-tag">${a.tag}</span>`:""}</div><div class="ac-card-body"><div class="ac-card-cond">${a.condition||""}</div><div class="ac-card-title">${main}<span>${sub}</span></div>${meta?`<div class="ac-card-meta">${meta}</div>`:""}<div class="ac-card-price">${price}</div><span class="ac-card-btn">Ver ${ARROW}</span></div></a>`;
-}
-
-function notFound(){
-  document.getElementById("detWrap").innerHTML = `<div class="container" style="padding:5rem 0;text-align:center"><p style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem" data-i18n="ac_eyebrow">Estoque</p><h1 style="font-family:'Grift','Bebas Neue','Inter',sans-serif;font-size:2.5rem;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1><a href="aeronaves.html" style="display:inline-flex;align-items:center;gap:.5rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:.75rem 1.5rem;text-decoration:none" data-i18n="det_back">Ver Aeronaves Disponíveis</a></div>`;
-  if(window.PA_I18N) PA_I18N.applyLang();
-}
 
 function renderPage(p){
   P = p;
@@ -398,15 +388,32 @@ function renderPage(p){
   const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f => `<div class="det-tech-card"><svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
   if(featsHTML){ document.getElementById("feats").innerHTML = featsHTML; document.getElementById("featsLabel").textContent = t("det_tech"); featsSection.style.display="block"; } else { featsSection.style.display="none"; }
 
-  // Configuração do WhatsApp Dinâmico (Header do Modal)
+  // WhatsApp Dinâmico no Header do Modal
   const telefoneWhatsapp = "5511999990000"; 
   const codInterno = p.codigoInterno || "Sem Cód";
   const textoMensagem = encodeURIComponent(`Olá! Tenho interesse na aeronave ${main} ${sub} (${codInterno}).`);
   document.getElementById("btnWhatsApp").href = `https://wa.me/${telefoneWhatsapp}?text=${textoMensagem}`;
 
-  // Configura a Aeronave pré-selecionada no Modal de Contato
+  // Select do Modal
   const modalSelect = document.getElementById("modalAircraftSelect");
   modalSelect.innerHTML = `<option value="${p.model} [${codInterno}]" selected>${p.model} (${p.year})</option>`;
+}
+
+function notFound(){
+  document.getElementById("detWrap").innerHTML = `<div class="container" style="padding:5rem 0;text-align:center"><p style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem" data-i18n="ac_eyebrow">Estoque</p><h1 style="font-family:'Grift','Bebas Neue','Inter',sans-serif;font-size:2.5rem;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1><a href="aeronaves.html" style="display:inline-flex;align-items:center;gap:.5rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:.75rem 1.5rem;text-decoration:none" data-i18n="det_back">Ver Aeronaves Disponíveis</a></div>`;
+  if(window.PA_I18N) PA_I18N.applyLang();
+}
+
+function fromFirestore(a){
+  return { tag:a.tag||"", model:a.model||"", year:a.year||"", hoursNum:a.hoursNum!=null?a.hoursNum:null, motorHours:a.motorHours!=null?a.motorHours:null, heliceHours:a.heliceHours!=null?a.heliceHours:null, condition:a.condition||"", currency:a.currency||"USD", priceNum:a.priceNum!=null?a.priceNum:null, sobConsulta:!!a.sobConsulta, location:a.location||"", description:a.description||"", codigoInterno:a.codigoInterno||"", translations:a.translations||{}, images:a.images||[], specs:(a.specs||[]).map(s=>[s.label,s.value]), features:(a.features||[]).map(f=>[f.icon,f.title,f.desc]) };
+}
+
+function otherCardHTML(id, a){
+  const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/); const main = parts?.[1]||a.model||""; const sub  = parts?.[2]||"";
+  const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult") : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
+  const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" • ");
+  const img = (a.images&&a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
+  return `<a href="aeronave.html?id=${id}" class="ac-card"><div class="ac-card-img">${img}${a.tag?`<span class="ac-card-tag">${a.tag}</span>`:""}</div><div class="ac-card-body"><div class="ac-card-cond">${a.condition||""}</div><div class="ac-card-title">${main}<span>${sub}</span></div>${meta?`<div class="ac-card-meta">${meta}</div>`:""}<div class="ac-card-price">${price}</div><span class="ac-card-btn">Ver ${ARROW}</span></div></a>`;
 }
 
 async function init(){
@@ -442,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove("open"); });
   }
 
-  // Eventos da Biblioteca de Telefone (Tratamento de erro caso a biblioteca falhe)
+  // Eventos da Biblioteca de Telefone
   try {
     const phoneInput = document.getElementById("modalPhone");
     if(phoneInput && window.intlTelInput) {
@@ -523,15 +530,17 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `).join('');
 
+      // Agora usamos div com background-image ao invés de img para o html2canvas não esmagar a imagem
       const mainImg = P.images && P.images.length 
-        ? `<img src="${P.images[0]}" crossorigin="anonymous" style="width:100%; height:400px; object-fit:cover; border-radius:12px; margin-bottom:20px;">` 
+        ? `<div style="width:100%; height:400px; border-radius:12px; margin-bottom:20px; background-image:url('${P.images[0]}'); background-size:cover; background-position:center; background-repeat:no-repeat;"></div>` 
         : '';
 
+      // O HTML embutido e puro, já com a Logo real do site!
       const pdfHTML = `
         <div style="padding:40px; background-color:#0a0a0a; color:#ffffff; font-family: 'Inter', sans-serif; width:800px; min-height:1100px;">
           
-          <div style="text-align:center; margin-bottom:30px;">
-            <h2 style="margin:0; font-size:24px; letter-spacing:2px; font-style:italic;">PLANE AVIATION</h2>
+          <div style="text-align:center; margin-bottom:30px; display:flex; flex-direction:column; align-items:center;">
+            <svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:40px;width:auto;display:block;margin-bottom:10px;"><g> <path fill="#ffffff" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path fill="#ffffff" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path fill="#ffffff" d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path fill="#ffffff" d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path fill="#ffffff" d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path fill="#ffffff" d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path fill="#ffffff" d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path fill="#ffffff" d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path fill="#ffffff" d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path fill="#ffffff" d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path fill="#ffffff" d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path fill="#ffffff" d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg>
             <p style="margin:5px 0 0; font-size:10px; color:#888; letter-spacing:1px; text-transform:uppercase;">Representante Exclusiva Cirrus no Brasil</p>
           </div>
           
@@ -566,6 +575,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div style="text-align:center; border-top:1px solid #333; padding-top:20px; margin-top:40px;">
             <p style="font-size:12px; margin:0;"><b>Fale com um consultor:</b> +55 (11) 99999-0000 | contato@planeaviation.com.br</p>
           </div>
+          
         </div>
       `;
 
