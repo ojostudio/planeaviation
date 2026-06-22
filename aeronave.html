@@ -6,6 +6,7 @@
 <title>Aeronave | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<!-- CSS da Biblioteca de Bandeiras/Telefone -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
 <script src="js/i18n.js" defer></script>
 <script src="js/site.js" defer></script>
@@ -74,21 +75,14 @@ body { background: #0a0a0a; color: #fff; }
 .det-price { font-size: 1.625rem; font-weight: 700; letter-spacing: -.02em; color: #fff; margin-bottom: 1.5rem; }
 .det-price.consult { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.4); font-style: italic; }
 
-/* CTAs - Redesenhados para focar no Principal e WhatsApp */
+/* CTAs */
 .det-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
 .det-btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
   background: #fff; color: #0a0a0a; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; padding: .875rem 2rem; cursor: pointer; text-decoration: none; transition: opacity .15s; flex: 1;
+  text-transform: uppercase; padding: .875rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s;
 }
 .det-btn-primary:hover { opacity: .88; }
-.det-btn-whatsapp {
-  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  background: rgba(37, 211, 102, 0.05); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.4); border-radius: 6px;
-  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: .875rem 1.5rem; cursor: pointer;
-  text-decoration: none; transition: all .15s; flex: 1;
-}
-.det-btn-whatsapp:hover { background: #25d366; color: #0a0a0a; border-color: #25d366; }
 
 .det-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; }
 .det-section-label { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: .875rem; }
@@ -137,8 +131,10 @@ body { background: #0a0a0a; color: #fff; }
 .modal { background:#0a0a0a; border:1px solid rgba(255,255,255,0.15); border-radius:16px; width:100%; max-width:32rem; margin:auto; color:#fff; box-shadow: 0 24px 64px rgba(0,0,0,0.8); }
 .modal-head { display:flex; align-items:center; justify-content:space-between; padding:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
 .modal-head h3 { font-size:1.25rem; font-weight:700; font-family:'Grift', sans-serif; font-style:italic; letter-spacing:0.02em; text-transform: uppercase; margin: 0; }
+.modal-wa-btn { display:inline-flex; align-items:center; gap:.375rem; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:.5rem .75rem; text-decoration:none; transition:background .15s, border-color .15s; }
+.modal-wa-btn:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.4); }
 .modal-body { padding:1.5rem; }
-.x-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:1.25rem; display: flex; align-items: center; justify-content: center; }
+.x-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:1.25rem; display: flex; align-items: center; justify-content: center; transition: color .15s;}
 .x-btn:hover { color:#fff; }
 
 /* Form Styles do Modal */
@@ -160,6 +156,7 @@ body { background: #0a0a0a; color: #fff; }
 <body>
 <div id="site-header"></div>
 <main>
+  <!-- Breadcrumb -->
   <div class="crumb">
     <div class="container">
       <a href="aeronaves.html" data-i18n="det_crumb">Aeronaves Disponíveis</a>
@@ -168,10 +165,12 @@ body { background: #0a0a0a; color: #fff; }
     </div>
   </div>
 
+  <!-- Main -->
   <div class="det-wrap" id="detWrap">
     <div class="container">
       <div class="det-grid">
 
+        <!-- LEFT: Gallery + Description + Specs -->
         <div>
           <div class="gal-main" id="galMain">
             <div class="ph-dark">[Imagem]</div>
@@ -192,6 +191,7 @@ body { background: #0a0a0a; color: #fff; }
           </div>
         </div>
 
+        <!-- RIGHT: Info -->
         <div>
           <p class="det-badge" id="condLoc"></p>
           <h1 class="det-title" id="model"></h1>
@@ -199,15 +199,11 @@ body { background: #0a0a0a; color: #fff; }
           <div class="det-price" id="detPrice"></div>
           
           <div class="det-actions">
+            <!-- ÚNICO CTA PRINCIPAL -->
             <button id="btnOpenContactModal" class="det-btn-primary">
               TENHO INTERESSE
               <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
             </button>
-            
-            <a id="btnWhatsApp" href="#" target="_blank" class="det-btn-whatsapp">
-              WHATSAPP
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.2em;height:1.2em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.021-.967-.264-.099-.456-.149-.648.149-.193.297-.762.967-.934 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.648-1.564-.888-2.14-.231-.56-.467-.484-.648-.493-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </a>
           </div>
         </div>
       </div>
@@ -232,11 +228,19 @@ body { background: #0a0a0a; color: #fff; }
 </main>
 <div id="site-footer"></div>
 
+<!-- POP-UP MODAL (FORMULÁRIO DE CONTATO) -->
 <div class="overlay" id="contactModal">
   <div class="modal">
     <div class="modal-head">
       <h3>FALE COM UM CONSULTOR</h3>
-      <button class="x-btn" id="btnCloseModal">✕</button>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <!-- WHATSAPP DISCRETO DENTRO DO MODAL -->
+        <a id="btnWhatsApp" href="#" target="_blank" class="modal-wa-btn">
+          WHATSAPP
+          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+        </a>
+        <button class="x-btn" id="btnCloseModal">✕</button>
+      </div>
     </div>
     <div class="modal-body">
       <form id="contactFormModal">
@@ -253,6 +257,7 @@ body { background: #0a0a0a; color: #fff; }
           <input type="tel" id="modalPhone" required placeholder="(11) 99999-0000">
         </div>
         
+        <!-- Campo Oculto para o Assunto Padrão -->
         <input type="hidden" id="modalSubject" value="comprar">
         
         <div class="form-group">
@@ -275,6 +280,7 @@ body { background: #0a0a0a; color: #fff; }
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Biblioteca de Telefone e Bandeiras -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
@@ -376,7 +382,7 @@ function renderPage(p){
   const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f => `<div class="det-tech-card"><svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
   if(featsHTML){ document.getElementById("feats").innerHTML = featsHTML; document.getElementById("featsLabel").textContent = t("det_tech"); featsSection.style.display="block"; } else { featsSection.style.display="none"; }
 
-  // Configuração do WhatsApp Dinâmico (usando um telefone padrão caso precise ser alterado, é só trocar a string abaixo)
+  // Configuração do WhatsApp Dinâmico no Header do Modal
   const telefoneWhatsapp = "5511999990000"; 
   const codInterno = p.codigoInterno || "Sem Cód";
   const textoMensagem = encodeURIComponent(`Olá! Tenho interesse na aeronave ${main} ${sub} (${codInterno}).`);
