@@ -430,15 +430,13 @@ async function init(){
 }
 
 // -------------------------------------------------------------------------
-// INICIALIZAÇÃO SEGURA (Evita que bibliotecas externas quebrem a página)
+// INICIALIZAÇÃO SEGURA
 // -------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   
-  // Eventos da Galeria
   document.getElementById("galPrev").addEventListener("click", () => { if(hasImgs()) { activeImg=(activeImg-1+P.images.length)%P.images.length; paintMain(); paintThumbs(); } });
   document.getElementById("galNext").addEventListener("click", () => { if(hasImgs()) { activeImg=(activeImg+1)%P.images.length; paintMain(); paintThumbs(); } });
 
-  // Eventos do Modal de Contato
   const btnOpen = document.getElementById("btnOpenContactModal");
   const btnClose = document.getElementById("btnCloseModal");
   const modalOverlay = document.getElementById("contactModal");
@@ -449,7 +447,6 @@ document.addEventListener("DOMContentLoaded", () => {
     modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove("open"); });
   }
 
-  // Eventos da Biblioteca de Telefone
   try {
     const phoneInput = document.getElementById("modalPhone");
     if(phoneInput && window.intlTelInput) {
@@ -471,10 +468,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      // Envio do formulário
       document.getElementById('contactFormModal').addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!window.PA || !PA.configured) return alert("Erro de conexão. Tente contato via WhatsApp no momento.");
+        if (!window.PA || !PA.configured) return alert("Erro de conexão.");
 
         const btn = e.target.querySelector('button[type="submit"]');
         const originalBtnHTML = btn.innerHTML;
@@ -496,11 +492,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
           await PA.db.collection("leads").add(leadData);
-          alert('Obrigado! Sua mensagem foi enviada com sucesso e nossa equipe entrará em contato em breve.');
+          alert('Sua mensagem foi enviada com sucesso!');
           e.target.reset();
           modalOverlay.classList.remove("open"); 
         } catch(err) {
-          alert('Ops! Houve um erro ao enviar: ' + err.message);
+          alert('Erro ao enviar: ' + err.message);
         } finally {
           btn.innerHTML = originalBtnHTML;
           btn.disabled = false;
@@ -508,10 +504,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   } catch (error) {
-    console.warn("Erro ao carregar a biblioteca de telefone:", error);
+    console.warn(error);
   }
 
-  // Evento do Botão de Baixar PDF
   const btnPdf = document.getElementById("btnDownloadPDF");
   if(btnPdf) {
     btnPdf.addEventListener("click", async () => {
@@ -530,17 +525,19 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `).join('');
 
-      // Agora usamos div com background-image ao invés de img para o html2canvas não esmagar a imagem
       const mainImg = P.images && P.images.length 
         ? `<div style="width:100%; height:400px; border-radius:12px; margin-bottom:20px; background-image:url('${P.images[0]}'); background-size:cover; background-position:center; background-repeat:no-repeat;"></div>` 
         : '';
 
-      // O HTML embutido e puro, já com a Logo real do site!
+      // TRUQUE DO PDF: Convertendo o seu SVG da Logo em uma "Imagem de Dados" para o html2canvas não ignorar
+      const logoSvgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95" width="250" height="60"><g> <path fill="#ffffff" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path fill="#ffffff" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path fill="#ffffff" d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path fill="#ffffff" d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path fill="#ffffff" d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path fill="#ffffff" d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path fill="#ffffff" d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path fill="#ffffff" d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path fill="#ffffff" d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path fill="#ffffff" d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path fill="#ffffff" d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path fill="#ffffff" d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg>`;
+      const logoDataUri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(logoSvgStr);
+
       const pdfHTML = `
         <div style="padding:40px; background-color:#0a0a0a; color:#ffffff; font-family: 'Inter', sans-serif; width:800px; min-height:1100px;">
           
           <div style="text-align:center; margin-bottom:30px; display:flex; flex-direction:column; align-items:center;">
-            <svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:40px;width:auto;display:block;margin-bottom:10px;"><g> <path fill="#ffffff" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path fill="#ffffff" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path fill="#ffffff" d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path fill="#ffffff" d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path fill="#ffffff" d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path fill="#ffffff" d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path fill="#ffffff" d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path fill="#ffffff" d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path fill="#ffffff" d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path fill="#ffffff" d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path fill="#ffffff" d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path fill="#ffffff" d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg>
+            <img src="${logoDataUri}" style="height:35px; margin-bottom:10px;" />
             <p style="margin:5px 0 0; font-size:10px; color:#888; letter-spacing:1px; text-transform:uppercase;">Representante Exclusiva Cirrus no Brasil</p>
           </div>
           
@@ -575,7 +572,6 @@ document.addEventListener("DOMContentLoaded", () => {
           <div style="text-align:center; border-top:1px solid #333; padding-top:20px; margin-top:40px;">
             <p style="font-size:12px; margin:0;"><b>Fale com um consultor:</b> +55 (11) 99999-0000 | contato@planeaviation.com.br</p>
           </div>
-          
         </div>
       `;
 
@@ -599,7 +595,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Por fim, executa a renderização da página
   init();
 });
 </script>
