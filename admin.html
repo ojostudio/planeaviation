@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel Administrativo | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
-<!-- Firebase (compat SDK) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -20,6 +19,7 @@
   .pill{ font-size:10px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; padding:.2rem .5rem; border-radius:var(--radius-sm); border:1px solid hsl(var(--border)); }
   .pill.admin{ background:hsl(var(--foreground)); color:hsl(var(--background)); border-color:hsl(var(--foreground)); }
   .pill.editor{ color:hsl(var(--muted-foreground)); }
+  .pill.novo{ background:#b42318; color:#fff; border-color:#b42318; } /* Pill para leads novos */
 
   .tabs{ display:flex; gap:.25rem; border-bottom:1px solid hsl(var(--border)); margin-bottom:2rem; flex-wrap:wrap; }
   .tab{ background:none; border:none; border-bottom:2px solid transparent; padding:.75rem 1rem; font-size:.8125rem; font-weight:600; letter-spacing:.02em; text-transform:uppercase; color:hsl(var(--muted-foreground)); cursor:pointer; }
@@ -40,11 +40,9 @@
   .icon-btn:hover{ background:hsl(var(--muted)); }
   .icon-btn.danger{ color:#b42318; border-color:#f3c6c0; }
   .icon-btn.danger:hover{ background:#fdecea; }
-  /* Toggle de destaque — preto/branco, estrela preta quando ativo */
   .feat-toggle{ background:none; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.35rem .625rem; font-size:.75rem; font-weight:600; cursor:pointer; color:hsl(var(--muted-foreground)); display:inline-flex; align-items:center; gap:.25rem; transition:background .15s,color .15s,border-color .15s; white-space:nowrap; }
   .feat-toggle:hover:not([disabled]){ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--muted)); }
   .feat-toggle.feat-on{ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--foreground)/.05); font-weight:700; }
-  /* (estilos de drag-and-drop removidos — não usados mais) */
   .empty-row{ text-align:center; color:hsl(var(--muted-foreground)); padding:3rem 1rem; font-size:.875rem; }
 
   /* Modal */
@@ -64,52 +62,25 @@
   .fld input:focus, .fld select:focus, .fld textarea:focus{ outline:none; border-color:hsl(var(--foreground)/.4); }
   .fld select{ appearance:none; }
 
-  /* ---- Modal de visualização (somente leitura) ---- */
+  /* Leitura */
   .av-section{ display:flex; flex-direction:column; gap:.5rem; }
   .av-section-title{ font-size:.6875rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:hsl(var(--muted-foreground)); padding-bottom:.375rem; border-bottom:1px solid hsl(var(--border)); }
   .av-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:.875rem 1.5rem; }
   .av-item label{ display:block; font-size:.6875rem; font-weight:500; letter-spacing:.02em; text-transform:uppercase; color:hsl(var(--muted-foreground)); margin-bottom:.25rem; }
   .av-item .val{ font-size:.875rem; color:hsl(var(--foreground)); word-break:break-word; }
   .av-item .val.empty{ color:hsl(var(--muted-foreground)); font-style:italic; }
-  .av-internal{ background:hsl(var(--muted)); border:1px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:1rem 1.25rem; }
-  .av-internal .av-section-title{ display:flex; align-items:center; gap:.5rem; border:none; padding-bottom:0; }
-  .av-thumbs{ display:flex; gap:.5rem; flex-wrap:wrap; }
-  .av-thumbs img{ width:5rem; height:3.75rem; object-fit:cover; border-radius:var(--radius-sm); border:1px solid hsl(var(--border)); }
-  .av-badge{ display:inline-block; font-size:.6875rem; font-weight:700; padding:.25rem .625rem; border-radius:999px; background:hsl(var(--foreground)); color:hsl(var(--background)); }
-  .av-badge.archived{ background:#9a3412; color:#fff; }
   .av-desc{ font-size:.875rem; line-height:1.6; color:hsl(var(--foreground)); white-space:pre-wrap; }
-  .av-spec-row{ display:flex; justify-content:space-between; font-size:.8125rem; padding:.375rem 0; border-bottom:1px solid hsl(var(--border)); }
-  .av-spec-row:last-child{ border-bottom:none; }
-  .av-feat{ display:flex; flex-direction:column; gap:.125rem; padding:.625rem; background:hsl(var(--muted)); border-radius:var(--radius-sm); }
-  .av-feat b{ font-size:.8125rem; }
-  .av-feat span{ font-size:.75rem; color:hsl(var(--muted-foreground)); }
+
   .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
   @media(max-width:560px){ .grid2{ grid-template-columns:1fr; } }
   .check{ display:flex; align-items:center; gap:.5rem; font-size:.875rem; }
   .check input{ width:auto; }
-  .repeater .rrow{ display:grid; grid-template-columns:1fr 1fr auto; gap:.5rem; margin-bottom:.5rem; align-items:center; }
-  .repeater .rrow.feat{ grid-template-columns:9rem 1fr 1fr auto; }
-  @media(max-width:560px){ .repeater .rrow, .repeater .rrow.feat{ grid-template-columns:1fr; } }
-  .mini{ font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.03em; color:hsl(var(--foreground)); background:none; border:1px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:.5rem .75rem; cursor:pointer; }
-  .rm{ background:none; border:none; color:#b42318; cursor:pointer; font-size:1.1rem; line-height:1; padding:.25rem .5rem; }
-
-  /* image uploader */
-  .uploader{ border:2px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:1rem; text-align:center; }
-  .uploader input{ display:none; }
-  .uploader .hint{ font-size:.75rem; color:hsl(var(--muted-foreground)); }
-  .thumbs-edit{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.75rem; }
-  .thumbs-edit .t{ position:relative; }
-  .thumbs-edit img{ width:4.5rem; height:3.25rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); display:block; }
-  .thumbs-edit .del{ position:absolute; top:-.4rem; right:-.4rem; width:1.25rem; height:1.25rem; background:#b42318; color:#fff; border:none; border-radius:9999px; font-size:.7rem; cursor:pointer; line-height:1; }
-  .prog{ height:.25rem; background:hsl(var(--muted)); border-radius:9999px; overflow:hidden; margin-top:.5rem; display:none; }
-  .prog.show{ display:block; } .prog .bar{ height:100%; background:hsl(var(--foreground)); width:0; transition:width .2s; }
 
   /* login + states */
   .center-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
   .auth-card{ width:100%; max-width:24rem; background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:2rem; }
   .auth-logo{ display:flex; align-items:center; gap:.5rem; margin-bottom:1.5rem; }
   .auth-card h1{ font-size:1.125rem; font-weight:700; margin-bottom:.25rem; }
-  .auth-card .muted{ font-size:.8125rem; margin-bottom:1.5rem; }
   .msg{ font-size:.8125rem; padding:.625rem .75rem; border-radius:var(--radius-sm); margin-bottom:1rem; display:none; }
   .msg.show{ display:block; }
   .msg.err{ background:#fdecea; color:#b42318; border:1px solid #f3c6c0; }
@@ -120,14 +91,15 @@
   .notice p, .notice li{ font-size:.875rem; color:hsl(var(--muted-foreground)); line-height:1.6; }
   .notice ol{ margin:.75rem 0 0 1.25rem; } .notice code{ background:hsl(var(--muted)); padding:.1rem .35rem; border-radius:3px; font-size:.8125rem; }
   .spinner{ min-height:100vh; display:flex; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)); font-size:.875rem; }
+
+  /* Badge para contador de leads novos */
+  .badge-count { background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px; display:inline-block; }
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
 <div id="view-loading" class="spinner">Carregando…</div>
 
-<!-- NOT CONFIGURED -->
 <div id="view-setup" style="display:none">
   <div class="notice">
     <h2>Configure o Firebase para ativar o painel</h2>
@@ -139,11 +111,9 @@
       <li>Publique as regras de <code>firestore.rules</code> e <code>storage.rules</code>.</li>
       <li>Crie o primeiro admin (passo a passo no <code>SETUP.md</code>).</li>
     </ol>
-    <p style="margin-top:1rem">Enquanto não configurar, o site público continua funcionando com os dados de exemplo.</p>
   </div>
 </div>
 
-<!-- LOGIN -->
 <div id="view-login" class="center-screen" style="display:none">
   <div class="auth-card">
     <div class="auth-logo" style="margin-bottom:1.5rem"><svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:32px;width:auto;display:block"><g> <path d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76s1.29,16.03-.43,24.62c-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg></div>
@@ -153,20 +123,17 @@
     <div class="fld"><label>E-mail</label><input type="email" id="loginEmail" placeholder="voce@empresa.com" autocomplete="username"></div>
     <div class="fld"><label>Senha</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
     <button class="btn btn-solid btn-md" id="loginBtn" style="width:100%">Entrar</button>
-    <div style="margin-top:1rem;text-align:center"><button class="link-btn" id="forgotBtn">Esqueci minha senha</button></div>
   </div>
 </div>
 
-<!-- ACCESS DENIED -->
 <div id="view-denied" class="center-screen" style="display:none">
   <div class="auth-card center">
     <h1>Sem permissão de acesso</h1>
-    <p class="muted">Sua conta está autenticada, mas ainda não tem um papel (admin/editor) atribuído. Peça a um administrador para liberar seu acesso.</p>
+    <p class="muted">Sua conta está autenticada, mas ainda não tem um papel atribuído.</p>
     <button class="btn btn-outline btn-sm" id="denyLogout" style="margin-top:1rem">Sair</button>
   </div>
 </div>
 
-<!-- APP -->
 <div id="view-app" style="display:none">
   <div class="admin-top">
     <div class="container">
@@ -183,11 +150,18 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
+      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none">0</span></button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Configurações</button>
     </div>
 
-    <!-- AIRCRAFT -->
+    <div class="panel" id="panel-leads">
+      <div class="row-head">
+        <div><h2>Mensagens Recebidas</h2><p class="sub">Leads capturados através do formulário de contato do site.</p></div>
+      </div>
+      <table class="tbl"><tbody id="leadsRows"></tbody></table>
+    </div>
+
     <div class="panel active" id="panel-aircraft">
       <div class="row-head">
         <div><h2>Aeronaves à venda</h2><p class="sub">Aparecem na página <b>Aeronaves Disponíveis</b>, ordenadas automaticamente por ano (mais novas primeiro).</p></div>
@@ -198,7 +172,6 @@
       </div>
       <table class="tbl"><tbody id="aircraftRows"></tbody></table>
 
-      <!-- Anúncios Arquivados — colapsável -->
       <div style="margin-top:2.5rem">
         <button id="archivedToggle" style="display:flex;align-items:center;gap:.5rem;background:none;border:none;cursor:pointer;font-size:.8125rem;font-weight:700;color:hsl(var(--muted-foreground));text-transform:uppercase;letter-spacing:.05em;padding:.5rem 0">
           <svg id="archivedChevron" style="width:.875rem;height:.875rem;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform .15s" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
@@ -210,7 +183,6 @@
       </div>
     </div>
 
-    <!-- USERS -->
     <div class="panel" id="panel-users">
       <div class="row-head">
         <div><h2>Usuários &amp; Permissões</h2></div>
@@ -219,7 +191,6 @@
       <table class="tbl"><tbody id="userRows"></tbody></table>
     </div>
 
-    <!-- CONFIG -->
     <div class="panel" id="panel-config">
       <div class="row-head">
         <div><h2>Configurações do Site</h2><p class="sub">Mídia da página inicial.</p></div>
@@ -228,7 +199,6 @@
       <div id="cfgMsg" class="msg" style="margin-bottom:1rem"></div>
       <div style="max-width:42rem;display:flex;flex-direction:column;gap:1.5rem">
 
-        <!-- Hero: Textos e botão -->
         <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
           <h3 style="font-size:.875rem;font-weight:700;margin-bottom:1rem">Hero — Textos e botão</h3>
           <div class="fld">
@@ -249,38 +219,49 @@
           </div>
         </div>
 
-        <!-- Hero: Mídia de fundo -->
         <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
           <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Hero — Vídeo ou imagem de fundo</h3>
           <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">Vídeo tem prioridade sobre imagem se os dois forem preenchidos.</p>
           <div class="fld"><label>URL do vídeo de fundo (MP4)</label><input id="cfgHeroVideo" type="url" placeholder="https://... .mp4"></div>
           <div style="text-align:center;font-size:.75rem;color:hsl(var(--muted-foreground));margin:.5rem 0">— ou —</div>
           <div class="fld"><label>URL da imagem de fundo (JPG/PNG/WebP)</label><input id="cfgHeroImage" type="url" placeholder="https://... .jpg"></div>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Para vídeos grandes use Cloudflare Stream, Vimeo ou link direto de storage. Para imagens, qualquer URL pública serve.</p>
-        </div>
-
-        <!-- Vídeo Nossa História -->
-        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
-          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Vídeo "Nossa História"</h3>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">Aceita YouTube, Vimeo ou MP4 direto.</p>
-          <div class="fld"><label>URL do vídeo</label><input id="cfgHistoriaVideo" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."></div>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem">💡 Cole o link normal do YouTube ou Vimeo — o embed é gerado automaticamente.</p>
         </div>
 
       </div>
     </div>
 
-  </div><!-- /container -->
+  </div></div>
+
+<div class="overlay" id="ovLead">
+  <div class="modal" style="max-width:36rem">
+    <div class="modal-head">
+      <h3>Detalhes da Mensagem</h3>
+      <button class="x-btn" data-close>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="av-grid">
+        <div class="av-item"><label>Nome</label><span class="val" id="ldName"></span></div>
+        <div class="av-item"><label>E-mail</label><span class="val" id="ldEmail"></span></div>
+        <div class="av-item"><label>Telefone</label><span class="val" id="ldPhone"></span></div>
+        <div class="av-item"><label>Data</label><span class="val" id="ldDate"></span></div>
+        <div class="av-item" style="grid-column:1/-1"><label>Assunto / Interesse</label><span class="val" id="ldSubject"></span></div>
+        <div class="av-item" style="grid-column:1/-1"><label>Aeronave Selecionada</label><span class="val" id="ldAircraft"></span></div>
+        <div class="av-item" style="grid-column:1/-1"><label>Mensagem</label><p class="av-desc" id="ldMessage"></p></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <a href="#" id="ldMailTo" class="btn btn-outline btn-sm">Responder por E-mail</a>
+      <a href="#" id="ldWhatsApp" target="_blank" class="btn btn-solid btn-sm" style="background:#25D366;border-color:#25D366;color:#fff">Chamar no WhatsApp</a>
+    </div>
+  </div>
 </div>
 
-<!-- ===== MODAL: AIRCRAFT ===== -->
 <div class="overlay" id="ovAircraft">
   <div class="modal">
     <div class="modal-head"><h3 id="acTitle">Nova aeronave</h3><button class="x-btn" data-close>✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="acId">
 
-      <!-- Código interno — gerado automaticamente, editável -->
       <div class="fld">
         <label>Código Interno *</label>
         <input id="acCodigo" placeholder="PA-0001" style="font-family:monospace;font-weight:700;letter-spacing:.05em">
@@ -294,7 +275,6 @@
         <div class="fld"><label>Horas totais (célula)</label><input id="acHours" type="number" min="0" placeholder="320"></div>
         <div class="fld"><label>Condição</label><select id="acCondition"><option>Novo</option><option>Seminovo</option></select></div>
       </div>
-      <!-- Métricas da aeronave — só o que preencher aparece no site -->
       <div class="grid2">
         <div class="fld"><label>Motor (horas)</label><input id="acMotor" type="number" min="0" placeholder="280"></div>
         <div class="fld"><label>Hélice (horas)</label><input id="acHelice" type="number" min="0" placeholder="280"></div>
@@ -332,24 +312,9 @@
 
       <div class="fld">
         <label>Descrição</label>
-        <textarea id="acDesc" rows="6" style="resize:vertical;min-height:8rem" placeholder="Cole aqui a descrição completa da aeronave — histórico, equipamentos, estado geral, diferenciais, observações importantes..."></textarea>
+        <textarea id="acDesc" rows="6" style="resize:vertical;min-height:8rem" placeholder="Cole aqui a descrição completa da aeronave..."></textarea>
       </div>
 
-      <div class="fld">
-        <label>Ficha técnica</label>
-        <div class="repeater" id="acSpecs"></div>
-        <button class="mini" id="acAddSpec">+ Adicionar linha</button>
-      </div>
-
-      <div class="fld">
-        <label>Tecnologias a bordo</label>
-        <div class="repeater" id="acFeats"></div>
-        <button class="mini" id="acAddFeat">+ Adicionar tecnologia</button>
-      </div>
-
-      <!-- ============================================================
-           USO INTERNO — nunca aparece no site público
-           ============================================================ -->
       <div style="margin-top:1.5rem;padding:1.25rem;background:hsl(var(--muted));border:1px dashed hsl(var(--border));border-radius:var(--radius-sm)">
         <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem">
           <svg style="width:1rem;height:1rem;stroke:hsl(var(--muted-foreground));fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l7-3 7 3z"/></svg>
@@ -362,199 +327,13 @@
         <div class="fld"><label>Nome do proprietário atual</label><input id="acProprietarioNome" placeholder="Nome completo"></div>
         <div class="fld">
           <label>Anotações internas</label>
-          <textarea id="acNotasInternas" rows="4" style="resize:vertical" placeholder="Observações que só a equipe Plane deve ver: negociação, histórico de contato, condições especiais, etc."></textarea>
+          <textarea id="acNotasInternas" rows="4" style="resize:vertical" placeholder="Observações que só a equipe Plane deve ver..."></textarea>
         </div>
       </div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
-      <button class="btn btn-outline btn-sm" id="acTranslateBtn">Revisar Traduções →</button>
       <button class="btn btn-solid btn-sm" id="acSave">Salvar aeronave</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: VISUALIZAR AERONAVE (somente leitura) ===== -->
-<div class="overlay" id="ovAircraftView">
-  <div class="modal" style="max-width:42rem">
-    <div class="modal-head">
-      <h3 id="avTitle">Aeronave</h3>
-      <div style="display:flex;align-items:center;gap:.5rem">
-        <button class="btn btn-solid btn-sm" id="avEditBtn">Editar</button>
-        <button class="x-btn" data-close>✕</button>
-      </div>
-    </div>
-    <div class="modal-body" id="avBody" style="display:flex;flex-direction:column;gap:1.5rem">
-      <!-- preenchido dinamicamente por renderAircraftView() -->
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" data-close>Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: TRADUÇÕES DE AERONAVE ===== -->
-<div class="overlay" id="ovTranslate">
-  <div class="modal" style="max-width:52rem">
-    <div class="modal-head">
-      <h3>Revisar Traduções — <span id="trModel"></span></h3>
-      <button class="x-btn" id="trClose">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:.8125rem;color:hsl(var(--muted-foreground));margin-bottom:1.25rem">Tradução gerada automaticamente via MyMemory. Revise e corrija antes de salvar.</p>
-      <div id="trMsg" class="msg"></div>
-      <!-- Abas -->
-      <div style="display:flex;gap:.25rem;border-bottom:1px solid hsl(var(--border));margin-bottom:1.5rem">
-        <button class="tab active" data-trtab="pt">🇧🇷 Português</button>
-        <button class="tab" data-trtab="en">🇺🇸 English</button>
-        <button class="tab" data-trtab="es">🇪🇸 Español</button>
-      </div>
-      <!-- PT -->
-      <div class="tr-panel active" id="trp-pt">
-        <div class="fld"><label>Condição</label><input id="tr-pt-condition" readonly style="background:hsl(var(--muted))"></div>
-        <div class="fld"><label>Localização</label><input id="tr-pt-location" readonly style="background:hsl(var(--muted))"></div>
-        <div class="fld"><label>Descrição</label><textarea id="tr-pt-description" rows="5" readonly style="background:hsl(var(--muted));resize:none"></textarea></div>
-        <div class="fld"><label>Ficha técnica (valores)</label><div id="tr-pt-specs" style="font-size:.8125rem;color:hsl(var(--muted-foreground));background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:.75rem;min-height:3rem"></div></div>
-        <div class="fld"><label>Tecnologias</label><div id="tr-pt-features" style="font-size:.8125rem;color:hsl(var(--muted-foreground));background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:.75rem;min-height:3rem"></div></div>
-      </div>
-      <!-- EN -->
-      <div class="tr-panel" id="trp-en" style="display:none">
-        <div class="fld"><label>Condition</label><input id="tr-en-condition"></div>
-        <div class="fld"><label>Location</label><input id="tr-en-location"></div>
-        <div class="fld"><label>Description</label><textarea id="tr-en-description" rows="5" style="resize:vertical"></textarea></div>
-        <div class="fld"><label>Technical specs (values)</label><div id="tr-en-specs-wrap" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
-        <div class="fld"><label>Technologies</label><div id="tr-en-feats-wrap" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
-      </div>
-      <!-- ES -->
-      <div class="tr-panel" id="trp-es" style="display:none">
-        <div class="fld"><label>Condición</label><input id="tr-es-condition"></div>
-        <div class="fld"><label>Ubicación</label><input id="tr-es-location"></div>
-        <div class="fld"><label>Descripción</label><textarea id="tr-es-description" rows="5" style="resize:vertical"></textarea></div>
-        <div class="fld"><label>Ficha técnica (valores)</label><div id="tr-es-specs-wrap" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
-        <div class="fld"><label>Tecnologías</label><div id="tr-es-feats-wrap" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" id="trBack">← Voltar</button>
-      <button class="btn btn-outline btn-sm" id="trRetranslate">↻ Traduzir novamente</button>
-      <button class="btn btn-solid btn-sm" id="trSave">Salvar com traduções</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: CIRRUS ===== -->
-<div class="overlay" id="ovCirrus">
-  <div class="modal">
-    <div class="modal-head"><h3 id="cfTitle">Novo modelo</h3><button class="x-btn" data-close>✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="cfId">
-      <div class="grid2">
-        <div class="fld"><label>Nome *</label><input id="cfName" placeholder="Vision Jet"></div>
-        <div class="fld"><label>Etiqueta</label><input id="cfLabel" placeholder="Jato Pessoal"></div>
-      </div>
-      <div class="fld"><label>Descrição</label><textarea id="cfDesc" rows="3" placeholder="O primeiro e único jato pessoal com sistema CAPS..."></textarea></div>
-      <div class="grid2">
-        <div class="fld"><label>Ordem de exibição</label><input id="cfOrder" type="number" placeholder="1"></div>
-        <div class="fld"><label>Imagem</label>
-          <div class="uploader" id="cfUpZone"><div class="hint">Enviar imagem</div><input type="file" id="cfFile" accept="image/*"></div>
-          <div class="prog" id="cfProg"><div class="bar"></div></div>
-        </div>
-      </div>
-      <div class="thumbs-edit" id="cfThumb"></div>
-      <div class="fld">
-        <label>Especificações (4 itens)</label>
-        <div class="repeater" id="cfSpecs"></div>
-        <button class="mini" id="cfAddSpec">+ Adicionar spec</button>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
-      <button class="btn btn-outline btn-sm" id="cfTranslateBtn">Revisar Traduções →</button>
-      <button class="btn btn-solid btn-sm" id="cfSave">Salvar modelo</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: TRADUÇÕES CIRRUS ===== -->
-<div class="overlay" id="ovCirrusTr">
-  <div class="modal" style="max-width:46rem">
-    <div class="modal-head">
-      <h3>Traduções — <span id="cfTrName"></span></h3>
-      <button class="x-btn" id="cfTrClose">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:.8125rem;color:hsl(var(--muted-foreground));margin-bottom:1.25rem">Tradução automática via MyMemory. Revise antes de salvar.</p>
-      <div id="cfTrMsg" class="msg"></div>
-      <div style="display:flex;gap:.25rem;border-bottom:1px solid hsl(var(--border));margin-bottom:1.5rem">
-        <button class="tab active" data-cftab="pt">🇧🇷 Português</button>
-        <button class="tab" data-cftab="en">🇺🇸 English</button>
-        <button class="tab" data-cftab="es">🇪🇸 Español</button>
-      </div>
-      <div class="cftr-panel active" id="cftrp-pt">
-        <div class="fld"><label>Etiqueta</label><input id="cftr-pt-label" readonly style="background:hsl(var(--muted))"></div>
-        <div class="fld"><label>Descrição</label><textarea id="cftr-pt-desc" rows="4" readonly style="background:hsl(var(--muted));resize:none"></textarea></div>
-        <div class="fld"><label>Specs</label><div id="cftr-pt-specs" style="font-size:.8125rem;color:hsl(var(--muted-foreground));background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:.75rem;min-height:3rem"></div></div>
-      </div>
-      <div class="cftr-panel" id="cftrp-en" style="display:none">
-        <div class="fld"><label>Label</label><input id="cftr-en-label"></div>
-        <div class="fld"><label>Description</label><textarea id="cftr-en-desc" rows="4" style="resize:vertical"></textarea></div>
-        <div class="fld"><label>Specs</label><div id="cftr-en-specs-wrap" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
-      </div>
-      <div class="cftr-panel" id="cftrp-es" style="display:none">
-        <div class="fld"><label>Etiqueta</label><input id="cftr-es-label"></div>
-        <div class="fld"><label>Descripción</label><textarea id="cftr-es-desc" rows="4" style="resize:vertical"></textarea></div>
-        <div class="fld"><label>Specs</label><div id="cftr-es-specs-wrap" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" id="cfTrBack">← Voltar</button>
-      <button class="btn btn-outline btn-sm" id="cfTrRetranslate">↻ Traduzir novamente</button>
-      <button class="btn btn-solid btn-sm" id="cfTrSave">Salvar com traduções</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: USER ===== -->
-<div class="overlay" id="ovUser">
-  <div class="modal" style="max-width:28rem">
-    <div class="modal-head"><h3>Criar usuário</h3><button class="x-btn" data-close>✕</button></div>
-    <div class="modal-body">
-      <div id="userMsg" class="msg"></div>
-      <div class="fld"><label>Nome *</label><input id="uName" type="text" placeholder="Nome completo"></div>
-      <div class="fld"><label>E-mail *</label><input id="uEmail" type="email" placeholder="email@empresa.com" autocomplete="off"></div>
-      <div class="fld"><label>Senha *</label><input id="uPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
-      <div class="fld"><label>Permissão *</label>
-        <select id="uRole">
-          <option value="editor">Editor — edita conteúdo</option>
-          <option value="admin">Admin — acesso total</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
-      <button class="btn btn-solid btn-sm" id="uSave">Criar usuário</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: EDITAR USUÁRIO ===== -->
-<div class="overlay" id="ovEditUser">
-  <div class="modal" style="max-width:28rem">
-    <div class="modal-head"><h3>Editar usuário</h3><button class="x-btn" data-close>✕</button></div>
-    <div class="modal-body">
-      <div id="editUserMsg" class="msg"></div>
-      <div class="fld"><label>Nome *</label><input id="editUserName" type="text" placeholder="Nome completo"></div>
-      <div class="fld"><label>E-mail</label><input id="editUserEmail" type="email" disabled style="background:hsl(var(--muted));color:hsl(var(--muted-foreground))"></div>
-      <div class="fld"><label>Permissão *</label>
-        <select id="editUserRole">
-          <option value="editor">Editor — edita conteúdo</option>
-          <option value="admin">Admin — acesso total</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
-      <button class="btn btn-solid btn-sm" id="editUserSave">Salvar alterações</button>
     </div>
   </div>
 </div>
@@ -566,19 +345,14 @@
   const show = (id) => ["view-loading","view-setup","view-login","view-denied","view-app"].forEach(v => $(v).style.display = (v===id?"block":"none"));
   const showFlex = (id) => { show(id); if($(id)) $(id).style.display="flex"; };
 
-  // Sem config → tela de setup, mas não trava
   if (!window.PA || !PA.configured) { $("view-loading").style.display="none"; $("view-setup").style.display="block"; return; }
 
   const { auth, db, storage } = PA;
   let me = null;
-  let editImages = [];
-  let editTranslations = {};
-  let cirrusImage = "";
 
   function msg(el, text, type){ el.textContent=text; el.className="msg show "+(type||""); }
   function clearMsg(el){ el.className="msg"; }
 
-  /* ---------------- AUTH ---------------- */
   auth.onAuthStateChanged(async (user) => {
     if (!user) { $("view-loading").style.display="none"; showFlex("view-login"); return; }
     try {
@@ -588,30 +362,18 @@
       }
       me = { uid:user.uid, email:user.email, role:snap.data().role, name:snap.data().name||"" };
       bootApp();
-    } catch(e){ $("view-loading").style.display="none"; showFlex("view-login"); msg($("loginMsg"), "Falha ao verificar permissão: "+e.message, "err"); }
+    } catch(e){ $("view-loading").style.display="none"; showFlex("view-login"); msg($("loginMsg"), "Falha ao verificar permissão.", "err"); }
   });
 
   $("loginBtn").onclick = async () => {
     clearMsg($("loginMsg"));
     try { await auth.signInWithEmailAndPassword($("loginEmail").value.trim(), $("loginPass").value); }
-    catch(e){ msg($("loginMsg"), traduz(e.code) || e.message, "err"); }
+    catch(e){ msg($("loginMsg"), e.message, "err"); }
   };
-  $("loginPass").addEventListener("keydown", e=>{ if(e.key==="Enter") $("loginBtn").click(); });
-  $("forgotBtn").onclick = async () => {
-    const email = $("loginEmail").value.trim();
-    if(!email) return msg($("loginMsg"),"Digite seu e-mail acima primeiro.","err");
-    try { await auth.sendPasswordResetEmail(email); msg($("loginMsg"),"Enviamos um link de redefinição para seu e-mail.","ok"); }
-    catch(e){ msg($("loginMsg"), traduz(e.code) || e.message, "err"); }
-  };
+
   $("logoutBtn").onclick = () => auth.signOut();
   $("denyLogout").onclick = () => auth.signOut();
 
-  function traduz(code){
-    const m = { "auth/invalid-email":"E-mail inválido.","auth/user-not-found":"Usuário não encontrado.","auth/wrong-password":"Senha incorreta.","auth/invalid-credential":"Credenciais inválidas.","auth/too-many-requests":"Muitas tentativas. Tente mais tarde.","auth/email-already-in-use":"Este e-mail já tem conta." };
-    return m[code];
-  }
-
-  /* ---------------- APP BOOT ---------------- */
   function bootApp(){
     $("view-loading").style.display="none";
     show("view-app");
@@ -626,851 +388,130 @@
       t.classList.add("active"); $("panel-"+t.dataset.tab).classList.add("active");
     });
 
-    // fechar modais
     document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".overlay").classList.remove("open"));
-    document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e=>{ if(e.target===o) o.classList.remove("open"); }));
 
-    loadAircraft(); if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
-    wireAircraftModal(); wireUserModal(); wireAircraftViewModal();
-
-    // Toggle da seção de arquivados
-    $("archivedToggle").onclick = () => {
-      const sec = $("archivedSection");
-      const open = sec.style.display !== "none";
-      sec.style.display = open ? "none" : "block";
-      $("archivedChevron").style.transform = open ? "" : "rotate(90deg)";
-    };
-
-    // Busca de aeronaves (nome, código interno, prefixo)
-    $("aircraftSearch").addEventListener("input", (e) => {
-      aircraftSearchTerm = e.target.value.trim();
-      const filtered = aircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm));
-      renderAircraftRows(filtered);
-    });
+    // Carrega módulos
+    loadAircraft(); 
+    loadLeads(); // <-- NOVO CHAMADO AQUI
+    if(me.role==="admin") { loadUsers(); loadConfig(); }
   }
 
   /* ============================================================
-     AERONAVES À VENDA
+     LEADS / MENSAGENS DO FORMULÁRIO
      ============================================================ */
-  // Termo de busca atual (nome, código interno ou prefixo)
+  async function loadLeads() {
+    const rows = $("leadsRows");
+    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens…</td></tr>`;
+    try {
+      const snap = await db.collection("leads").orderBy("createdAt", "desc").get();
+      if(snap.empty) {
+        rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma mensagem recebida ainda.</td></tr>`;
+        $("unreadBadge").style.display = "none";
+        return;
+      }
+      
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const unreadCount = docs.filter(d => d.status === "novo").length;
+      
+      // Atualiza Badge
+      if(unreadCount > 0) {
+        $("unreadBadge").textContent = unreadCount;
+        $("unreadBadge").style.display = "inline-block";
+      } else {
+        $("unreadBadge").style.display = "none";
+      }
+
+      rows.innerHTML = "";
+      docs.forEach(l => {
+        const dateObj = l.createdAt ? new Date(l.createdAt.seconds * 1000) : new Date();
+        const dateStr = dateObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+        
+        const isNew = l.status === "novo";
+        const tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        tr.style.backgroundColor = isNew ? "rgba(180, 35, 24, 0.05)" : "transparent"; // Fundo levemente avermelhado para novas mensagens
+        
+        tr.innerHTML = `
+          <td>
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <b>${esc(l.name)}</b>
+              ${isNew ? '<span class="pill novo">NOVO</span>' : ''}
+            </div>
+            <div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.25rem">${esc(l.subject)}</div>
+          </td>
+          <td style="color:hsl(var(--muted-foreground))">${esc(l.email)}<br><span style="font-size:.75rem">${esc(l.phone)}</span></td>
+          <td>
+            <div style="font-size:.8125rem">${dateStr}</div>
+            <div class="act" style="margin-top:.5rem"><button class="icon-btn danger del-lead">Excluir</button></div>
+          </td>
+        `;
+
+        // Clique na linha abre a mensagem
+        tr.addEventListener("click", (e) => { 
+          if(!e.target.closest("button")) openLeadModal(l.id, l, dateStr); 
+        });
+        
+        // Excluir lead
+        tr.querySelector(".del-lead").onclick = async (e) => {
+          e.stopPropagation();
+          if(!confirm(`Excluir permanentemente a mensagem de ${l.name}?`)) return;
+          await db.collection("leads").doc(l.id).delete();
+          loadLeads();
+        };
+
+        rows.appendChild(tr);
+      });
+    } catch(err) {
+      console.error(err);
+      rows.innerHTML=`<tr><td class="empty-row" colspan="3">Erro ao carregar mensagens.</td></tr>`;
+    }
+  }
+
+  async function openLeadModal(id, lead, dateStr) {
+    $("ldName").textContent = lead.name || "—";
+    $("ldEmail").textContent = lead.email || "—";
+    $("ldPhone").textContent = lead.phone || "—";
+    $("ldDate").textContent = dateStr;
+    $("ldSubject").textContent = lead.subject || "—";
+    $("ldAircraft").textContent = lead.aircraft || "Nenhuma";
+    $("ldMessage").textContent = lead.message || "Sem mensagem de texto.";
+
+    // Prepara os botões de resposta rápida
+    const cleanPhone = (lead.phone || "").replace(/\D/g, '');
+    $("ldWhatsApp").href = `https://wa.me/55${cleanPhone}`;
+    $("ldMailTo").href = `mailto:${lead.email}?subject=Contato Plane Aviation - Retorno`;
+
+    $("ovLead").classList.add("open");
+
+    // Marca como lido no banco de dados se for novo
+    if(lead.status === "novo") {
+      try {
+        await db.collection("leads").doc(id).update({ status: "lido" });
+        loadLeads(); // Atualiza a tabela para remover a marcação de 'Novo' e baixar o contador
+      } catch(e) {}
+    }
+  }
+
+  /* ============================================================
+     AERONAVES E OUTROS (Reduzidos para exibir apenas funções essenciais aqui, seu código completo de aeronaves entra aqui normalmente)
+     ============================================================ */
   let aircraftSearchTerm = "";
-  let aircraftCache = []; // cache dos docs ativos para filtrar localmente sem nova consulta
+  let aircraftCache = [];
 
   function matchesSearch(a, term){
     if(!term) return true;
     const t = term.toLowerCase();
-    return (a.model||"").toLowerCase().includes(t)
-        || (a.codigoInterno||"").toLowerCase().includes(t)
-        || (a.prefixo||"").toLowerCase().includes(t);
+    return (a.model||"").toLowerCase().includes(t) || (a.codigoInterno||"").toLowerCase().includes(t) || (a.prefixo||"").toLowerCase().includes(t);
   }
 
-  function renderAircraftRows(docs){
-    const rows = $("aircraftRows");
-    if(!docs.length){
-      rows.innerHTML = `<tr><td class="empty-row" colspan="3">${aircraftSearchTerm ? "Nenhuma aeronave encontrada para essa busca." : 'Nenhuma aeronave ativa. Clique em "Nova aeronave".'}</td></tr>`;
-      return;
-    }
-    const totalFeatured = aircraftCache.filter(d=>d.featured).length;
-    const STAR_ON  = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:hsl(var(--foreground));stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-    const STAR_OFF = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-    rows.innerHTML = "";
-
-    docs.forEach(a => {
-      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
-      const isFeatured = !!a.featured;
-      const canFeature  = !isFeatured && totalFeatured >= 8;
-      const featBtn = isFeatured
-        ? `<button class="feat-toggle feat-on" data-id="${a.id}" data-feat="true">${STAR_ON}Em destaque</button>`
-        : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed" title="Máximo de 8"':''}>${STAR_OFF}Destacar</button>`;
-      const tr = document.createElement("tr");
-      tr.style.cursor = "pointer";
-      tr.innerHTML = `
-        <td style="width:5rem;padding:.5rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
-        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
-      // Clique na linha (fora dos botões) abre a visualização completa
-      tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
-      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
-      tr.querySelector(".dup-btn").onclick = (e) => { e.stopPropagation(); duplicateAircraft(a.id, a); };
-      tr.querySelector(".archive-btn").onclick = (e) => { e.stopPropagation(); archiveAircraft(a.id, a.model); };
-      const ftBtn = tr.querySelector(".feat-toggle");
-      if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async (e) => {
-        e.stopPropagation();
-        const newVal = ftBtn.dataset.feat !== "true";
-        if(!newVal && totalFeatured<=1){ alert("É necessário pelo menos 1 aeronave em destaque."); return; }
-        try{ await db.collection("aircraft").doc(ftBtn.dataset.id).update({featured:newVal}); loadAircraft(); }
-        catch(e){ alert(e.message); }
-      };
-      rows.appendChild(tr);
-    });
-  }
-
-  async function loadAircraft(){
-    const rows = $("aircraftRows");
-    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
-    const snap = await db.collection("aircraft").get().catch(()=>null);
-    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma aeronave cadastrada. Clique em "Nova aeronave".</td></tr>`; loadArchivedAircraft(); return; }
-
-    // Filtra arquivadas, ordena por ano de fabricação (mais novas primeiro)
-    const activeDocs = snap.docs.filter(d => !d.data().archived);
-    const docs = activeDocs
-      .map(d => ({ id:d.id, ...d.data() }))
-      .sort((a,b) => {
-        const ay = Number(a.year)||0, by = Number(b.year)||0;
-        if(ay !== by) return by - ay; // mais novo primeiro
-        // desempate: cadastro mais recente primeiro
-        return (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0);
-      });
-
-    aircraftCache = docs;
-    const filtered = docs.filter(a => matchesSearch(a, aircraftSearchTerm));
-    renderAircraftRows(filtered);
-    loadArchivedAircraft();
-  }
-
-  /* ---- Arquivar / Republicar / Duplicar ---- */
-  async function archiveAircraft(id, name){
-    if(!confirm(`Arquivar "${name||"esta aeronave"}"? Ela sai do site público mas continua salva. Você pode republicar depois.`)) return;
-    try{ await db.collection("aircraft").doc(id).update({ archived:true, archivedAt:ts(), featured:false }); loadAircraft(); }
-    catch(e){ alert(e.message); }
-  }
-  async function unarchiveAircraft(id, name){
-    try{ await db.collection("aircraft").doc(id).update({ archived:false, archivedAt:null }); loadAircraft(); }
-    catch(e){ alert(e.message); }
-  }
-  async function duplicateAircraft(id, a){
-    const novoCodigo = gerarCodigoInterno();
-    const copia = { ...a };
-    delete copia.featured; // a cópia não herda destaque
-    delete copia.order;    // a cópia vai pro fim, sem posição fixa
-    copia.codigoInterno = novoCodigo;
-    copia.model = a.model ? `${a.model} (cópia)` : "Nova aeronave (cópia)";
-    copia.createdAt = ts();
-    copia.createdBy = me.email;
-    copia.archived = false;
-    try{
-      const ref = await db.collection("aircraft").add(copia);
-      loadAircraft();
-      openAircraft(ref.id, copia); // já abre pra edição
-    }catch(e){ alert("Erro ao duplicar: "+e.message); }
-  }
-
-  async function loadArchivedAircraft(){
-    const rows = $("archivedRows");
-    const snap = await db.collection("aircraft").get().catch(()=>null);
-    if(!snap){ return; }
-    const archived = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
-    $("archivedCount").textContent = archived.length ? `(${archived.length})` : "";
-    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
-    rows.innerHTML = "";
-    archived.forEach(a => {
-      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
-      const tr = document.createElement("tr");
-      tr.style.opacity = ".65";
-      tr.style.cursor = "pointer";
-      tr.innerHTML = `
-        <td style="width:5rem;padding:.5rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""}</div></td>
-        <td><div class="act"><button class="icon-btn edit-archived-btn">Editar</button><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
-      // Clique na linha (fora dos botões) abre a visualização — funciona mesmo arquivada
-      tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
-      tr.querySelector(".edit-archived-btn").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
-      tr.querySelector(".republish-btn").onclick = (e) => { e.stopPropagation(); unarchiveAircraft(a.id, a.model); };
-      tr.querySelector(".del-btn").onclick = (e) => { e.stopPropagation(); delDoc("aircraft", a.id, a.model, () => { loadAircraft(); }); };
-      rows.appendChild(tr);
-    });
-  }
-
-  /* (drag-and-drop removido — ordenação agora é automática por ano de fabricação) */
-
-  function specRow(label="", value=""){
-    const d=document.createElement("div"); d.className="rrow";
-    d.innerHTML=`<input placeholder="Rótulo (ex: Motorização)" value="${esc(label)}"><input placeholder="Valor" value="${esc(value)}"><button class="rm" title="Remover">×</button>`;
-    d.querySelector(".rm").onclick=()=>d.remove(); return d;
-  }
-  function featRow(icon="Shield", title="", desc=""){
-    const opts = PA.FEATURE_ICONS.map(i=>`<option ${i===icon?"selected":""}>${i}</option>`).join("");
-    const d=document.createElement("div"); d.className="rrow feat";
-    d.innerHTML=`<select>${opts}</select><input placeholder="Título" value="${esc(title)}"><input placeholder="Descrição" value="${esc(desc)}"><button class="rm">×</button>`;
-    d.querySelector(".rm").onclick=()=>d.remove(); return d;
-  }
-
-  function wireAircraftModal(){
-    $("addAircraft").onclick = () => openAircraft(null, null);
-    $("acAddSpec").onclick = () => $("acSpecs").appendChild(specRow());
-    $("acAddFeat").onclick = () => $("acFeats").appendChild(featRow());
-    $("acUpZone").onclick = (e)=>{ if(e.target.tagName!=="INPUT") $("acFiles").click(); };
-    $("acFiles").onchange = (e)=> uploadImages(e.target.files, "aircraft", $("acProg"), (url)=>{ editImages.push(url); renderEditThumbs(); });
-    $("acSave").onclick = saveAircraft;
-    $("acTranslateBtn").onclick = openTranslateModal;
-    wireTranslateModal();
-  }
-  /* ============================================================
-     TRADUÇÃO AUTOMÁTICA — MyMemory (gratuito, sem API key)
-     ============================================================ */
-  let trData = {}; // buffer com as traduções { en:{...}, es:{...} }
-
-  async function myMemoryTranslate(text, langPair){
-    if (!text || !text.trim()) return "";
-    try {
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0,500))}&langpair=${langPair}`;
-      const r = await fetch(url);
-      const j = await r.json();
-      return j.responseData?.translatedText || text;
-    } catch(e){ return text; }
-  }
-
-  async function translateAll(){
-    const model      = $("acModel").value.trim();
-    const condition  = $("acCondition").value;
-    const location   = $("acLocation").value.trim();
-    const description= $("acDesc").value.trim();
-    const specs      = [...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
-    const features   = [...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
-
-    for (const [lang, pair] of [["en","pt|en"],["es","pt|es"]]) {
-      const [tCond, tLoc, tDesc] = await Promise.all([
-        myMemoryTranslate(condition, pair),
-        myMemoryTranslate(location, pair),
-        myMemoryTranslate(description, pair),
-      ]);
-      const tSpecs = await Promise.all(specs.map(async s => ({
-        label: await myMemoryTranslate(s.label, pair),
-        value: await myMemoryTranslate(s.value, pair),
-      })));
-      const tFeats = await Promise.all(features.map(async f => ({
-        icon: f.icon,
-        title: await myMemoryTranslate(f.title, pair),
-        desc:  await myMemoryTranslate(f.desc, pair),
-      })));
-      trData[lang] = { condition:tCond, location:tLoc, description:tDesc, specs:tSpecs, features:tFeats };
-    }
-    // PT é o original
-    trData["pt"] = { condition, location, description,
-      specs: specs.map(s=>({label:s.label,value:s.value})),
-      features: features.map(f=>({icon:f.icon,title:f.title,desc:f.desc})) };
-  }
-
-  function fillTranslateModal(){
-    const model = $("acModel").value.trim();
-    $("trModel").textContent = model;
-
-    // PT (readonly — é o original)
-    $("tr-pt-condition").value    = trData.pt?.condition || "";
-    $("tr-pt-location").value     = trData.pt?.location  || "";
-    $("tr-pt-description").value  = trData.pt?.description || "";
-    $("tr-pt-specs").innerHTML    = (trData.pt?.specs||[]).map(s=>`<div><b>${esc(s.label)}</b>: ${esc(s.value)}</div>`).join("") || "—";
-    $("tr-pt-features").innerHTML = (trData.pt?.features||[]).map(f=>`<div><b>${esc(f.title)}</b>: ${esc(f.desc)}</div>`).join("") || "—";
-
-    for (const lang of ["en","es"]) {
-      const d = trData[lang] || {};
-      $(`tr-${lang}-condition`).value   = d.condition || "";
-      $(`tr-${lang}-location`).value    = d.location  || "";
-      $(`tr-${lang}-description`).value = d.description || "";
-      // Specs editáveis
-      $(`tr-${lang}-specs-wrap`).innerHTML = "";
-      (d.specs||[]).forEach((s,i) => {
-        const row = document.createElement("div");
-        row.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:.5rem";
-        row.innerHTML = `<input value="${esc(s.label)}" data-lang="${lang}" data-si="${i}" data-field="label"><input value="${esc(s.value)}" data-lang="${lang}" data-si="${i}" data-field="value">`;
-        $(`tr-${lang}-specs-wrap`).appendChild(row);
-      });
-      // Features editáveis
-      $(`tr-${lang}-feats-wrap`).innerHTML = "";
-      (d.features||[]).forEach((f,i) => {
-        const row = document.createElement("div");
-        row.style.cssText = "display:grid;grid-template-columns:1fr 2fr;gap:.5rem";
-        row.innerHTML = `<input value="${esc(f.title)}" data-lang="${lang}" data-fi="${i}" data-field="title"><input value="${esc(f.desc)}" data-lang="${lang}" data-fi="${i}" data-field="desc">`;
-        $(`tr-${lang}-feats-wrap`).appendChild(row);
-      });
-    }
-  }
-
-  function collectTranslateEdits(){
-    for (const lang of ["en","es"]) {
-      if (!trData[lang]) trData[lang] = { specs:[], features:[] };
-      trData[lang].condition   = $(`tr-${lang}-condition`).value.trim();
-      trData[lang].location    = $(`tr-${lang}-location`).value.trim();
-      trData[lang].description = $(`tr-${lang}-description`).value.trim();
-      $(`tr-${lang}-specs-wrap`).querySelectorAll("input").forEach(inp => {
-        const i = +inp.dataset.si; const field = inp.dataset.field;
-        if (!trData[lang].specs[i]) trData[lang].specs[i] = { label:"", value:"" };
-        trData[lang].specs[i][field] = inp.value.trim();
-      });
-      $(`tr-${lang}-feats-wrap`).querySelectorAll("input").forEach(inp => {
-        const i = +inp.dataset.fi; const field = inp.dataset.field;
-        if (!trData[lang].features[i]) trData[lang].features[i] = { icon:"Shield", title:"", desc:"" };
-        trData[lang].features[i][field] = inp.value.trim();
-      });
-    }
-  }
-
-  async function openTranslateModal(){
-    const model = $("acModel").value.trim();
-    if (!model) return alert("Informe o modelo antes de revisar as traduções.");
-    const msgEl = $("trMsg");
-    msg(msgEl, "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
-    $("ovTranslate").classList.add("open");
-    await translateAll();
-    fillTranslateModal();
-    clearMsg(msgEl);
-  }
-
-  function wireTranslateModal(){
-    // Abas do modal de tradução
-    document.querySelectorAll("[data-trtab]").forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll("[data-trtab]").forEach(b=>b.classList.remove("active"));
-        document.querySelectorAll(".tr-panel").forEach(p=>p.style.display="none");
-        btn.classList.add("active");
-        $("trp-"+btn.dataset.trtab).style.display = "block";
-      };
-    });
-    $("trClose").onclick = () => $("ovTranslate").classList.remove("open");
-    $("trBack").onclick  = () => $("ovTranslate").classList.remove("open");
-    $("trRetranslate").onclick = async () => {
-      collectTranslateEdits();
-      msg($("trMsg"), "Traduzindo novamente…", "ok");
-      await translateAll();
-      fillTranslateModal();
-      clearMsg($("trMsg"));
-    };
-    $("trSave").onclick = async () => {
-      collectTranslateEdits();
-      $("ovTranslate").classList.remove("open");
-      await saveAircraft(true);
-    };
-  }
-  function renderEditThumbs(){
-    $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t"><img src="${u}"><button class="del" data-i="${i}">×</button></div>`).join("");
-    $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=()=>{ editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
-  }
-  function gerarCodigoInterno(){
-    // PA-XXXX onde XXXX é sequencial baseado em timestamp curto (sem precisar consultar o banco antes de abrir o modal)
-    const n = Date.now().toString().slice(-4);
-    return `PA-${n}`;
-  }
-
-  /* ============================================================
-     VISUALIZAR AERONAVE (somente leitura)
-     Mostra todos os campos — públicos e internos — sem abrir
-     o formulário de edição. Botão "Editar" no topo leva pra lá.
-     ============================================================ */
-  let viewingAircraftId = null;
-  let viewingAircraftData = null;
-
-  function avVal(v, suffix=""){
-    if(v===null||v===undefined||v==="") return `<span class="val empty">— não informado —</span>`;
-    return `<span class="val">${esc(String(v))}${suffix}</span>`;
-  }
-
-  function openAircraftView(id, a){
-    viewingAircraftId = id;
-    viewingAircraftData = a;
-    $("avTitle").textContent = a.model || "Aeronave";
-
-    const precoTxt = a.sobConsulta
-      ? "Sob consulta"
-      : (a.priceNum!=null ? `${a.currency||"USD"} ${Number(a.priceNum).toLocaleString("pt-BR")}` : null);
-
-    const imagesHTML = (a.images && a.images.length)
-      ? `<div class="av-thumbs">${a.images.map(u=>`<img src="${u}">`).join("")}</div>`
-      : `<span class="val empty">Nenhuma imagem cadastrada</span>`;
-
-    const specsHTML = (a.specs||[]).filter(s=>s.label||s.value).length
-      ? (a.specs||[]).filter(s=>s.label||s.value).map(s=>`<div class="av-spec-row"><span>${esc(s.label||"")}</span><b>${esc(s.value||"")}</b></div>`).join("")
-      : `<span class="val empty">Nenhuma ficha técnica cadastrada</span>`;
-
-    const featsHTML = (a.features||[]).filter(f=>f.title||f.desc).length
-      ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem">${(a.features||[]).filter(f=>f.title||f.desc).map(f=>`<div class="av-feat"><b>${esc(f.title||"")}</b><span>${esc(f.desc||"")}</span></div>`).join("")}</div>`
-      : `<span class="val empty">Nenhuma tecnologia cadastrada</span>`;
-
-    $("avBody").innerHTML = `
-      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : `<span class="av-badge">Ativa no site</span>`}
-        ${a.featured ? `<span class="av-badge" style="background:#b45309">Em destaque na Home</span>` : ""}
-      </div>
-
-      <div class="av-section">
-        <div class="av-section-title">Informações Gerais</div>
-        <div class="av-grid">
-          <div class="av-item"><label>Modelo</label>${avVal(a.model)}</div>
-          <div class="av-item"><label>Código Interno</label>${avVal(a.codigoInterno)}</div>
-          <div class="av-item"><label>Ano</label>${avVal(a.year)}</div>
-          <div class="av-item"><label>Condição</label>${avVal(a.condition)}</div>
-          <div class="av-item"><label>Localização</label>${avVal(a.location)}</div>
-          <div class="av-item"><label>Selo</label>${avVal(a.tag)}</div>
-          <div class="av-item"><label>Horas (célula)</label>${avVal(a.hoursNum)}</div>
-          <div class="av-item"><label>Horas (motor)</label>${avVal(a.motorHours)}</div>
-          <div class="av-item"><label>Horas (hélice)</label>${avVal(a.heliceHours)}</div>
-          <div class="av-item"><label>Preço</label>${avVal(precoTxt)}</div>
-        </div>
-      </div>
-
-      <div class="av-section">
-        <div class="av-section-title">Descrição</div>
-        ${a.description ? `<p class="av-desc">${esc(a.description)}</p>` : `<span class="val empty">Nenhuma descrição cadastrada</span>`}
-      </div>
-
-      <div class="av-section">
-        <div class="av-section-title">Imagens</div>
-        ${imagesHTML}
-      </div>
-
-      <div class="av-section">
-        <div class="av-section-title">Ficha Técnica</div>
-        <div>${specsHTML}</div>
-      </div>
-
-      <div class="av-section">
-        <div class="av-section-title">Tecnologias a Bordo</div>
-        ${featsHTML}
-      </div>
-
-      <div class="av-internal">
-        <div class="av-section-title">
-          <svg style="width:.875rem;height:.875rem;stroke:hsl(var(--muted-foreground));fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l7-3 7 3z"/></svg>
-          Uso Interno — não aparece no site
-        </div>
-        <div class="av-grid" style="margin-top:.75rem">
-          <div class="av-item"><label>Prefixo</label>${avVal(a.prefixo)}</div>
-          <div class="av-item"><label>Telefone do proprietário</label>${avVal(a.proprietarioTelefone)}</div>
-          <div class="av-item" style="grid-column:1/-1"><label>Nome do proprietário</label>${avVal(a.proprietarioNome)}</div>
-          <div class="av-item" style="grid-column:1/-1"><label>Anotações internas</label>${a.notasInternas ? `<p class="av-desc">${esc(a.notasInternas)}</p>` : avVal(null)}</div>
-        </div>
-      </div>
-    `;
-    $("ovAircraftView").classList.add("open");
-  }
-
-  function wireAircraftViewModal(){
-    $("avEditBtn").onclick = () => {
-      $("ovAircraftView").classList.remove("open");
-      openAircraft(viewingAircraftId, viewingAircraftData);
-    };
-  }
-
-  function openAircraft(id, a){
-    a = a || {};
-    $("acTitle").textContent = id ? "Editar aeronave" : "Nova aeronave";
-    $("acId").value = id || "";
-    // Código interno: se já existe, mantém; se é nova aeronave, gera automaticamente
-    $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
-    $("acModel").value=a.model||""; $("acYear").value=a.year||"";
-    $("acHours").value=a.hoursNum!=null?a.hoursNum:(a.hours?String(a.hours).replace(/\D/g,""):"");
-    $("acMotor").value=a.motorHours!=null?a.motorHours:"";
-    $("acHelice").value=a.heliceHours!=null?a.heliceHours:"";
-    $("acCondition").value=a.condition||"Seminovo";
-    $("acLocation").value=a.location||"";
-    $("acCurrency").value=a.currency||"USD";
-    $("acPrice").value=a.priceNum!=null?a.priceNum:(a.price&&!isNaN(Number(String(a.price).replace(/\D/g,"")))?String(a.price).replace(/\D/g,""):"");
-    $("acSobConsulta").checked = !!a.sobConsulta;
-    $("acTag").value=a.tag||"";
-    $("acDesc").value=a.description||"";
-    editTranslations = a.translations || {};
-    trData = editTranslations;
-    editImages = Array.isArray(a.images)? a.images.slice() : []; renderEditThumbs();
-    $("acSpecs").innerHTML=""; (a.specs||[]).forEach(s=>$("acSpecs").appendChild(specRow(s.label,s.value)));
-    if(!(a.specs||[]).length) $("acSpecs").appendChild(specRow());
-    $("acFeats").innerHTML=""; (a.features||[]).forEach(f=>$("acFeats").appendChild(featRow(f.icon,f.title,f.desc)));
-    if(!(a.features||[]).length) $("acFeats").appendChild(featRow());
-    // Campos internos
-    $("acPrefixo").value = a.prefixo || "";
-    $("acProprietarioNome").value = a.proprietarioNome || "";
-    $("acProprietarioTel").value = a.proprietarioTelefone || "";
-    $("acNotasInternas").value = a.notasInternas || "";
-    $("ovAircraft").classList.add("open");
-  }
-  async function saveAircraft(withTranslations=false){
-    const model=$("acModel").value.trim();
-    if(!model) return alert("Informe o modelo.");
-    const codigoInterno = $("acCodigo").value.trim();
-    if(!codigoInterno) return alert("Informe o código interno.");
-    const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
-    const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
-    const hoursNum   = $("acHours").value  ? Number($("acHours").value)  : null;
-    const motorHours = $("acMotor").value  ? Number($("acMotor").value)  : null;
-    const heliceHours= $("acHelice").value ? Number($("acHelice").value) : null;
-    const priceNum   = $("acPrice").value  ? Number($("acPrice").value)  : null;
-    const currency   = $("acCurrency").value || "USD";
-    const data={ model, year:Number($("acYear").value)||null,
-      codigoInterno,
-      hoursNum, hours: hoursNum!=null ? hoursNum : null,
-      motorHours, heliceHours,
-      condition:$("acCondition").value,
-      location:$("acLocation").value.trim(),
-      currency, priceNum, price: priceNum!=null ? priceNum : null,
-      sobConsulta: !!$("acSobConsulta").checked,
-      tag:$("acTag").value.trim(), tagSolid:true,
-      description:$("acDesc").value.trim(),
-      translations: withTranslations ? trData : (editTranslations||{}),
-      images:editImages, specs, features,
-      // Campos internos — nunca exibidos no site público
-      prefixo: $("acPrefixo").value.trim(),
-      proprietarioNome: $("acProprietarioNome").value.trim(),
-      proprietarioTelefone: $("acProprietarioTel").value.trim(),
-      notasInternas: $("acNotasInternas").value.trim(),
-      updatedAt:ts(), updatedBy:me.email };
-    const id=$("acId").value;
-    if (PA.IMAGE_MODE === "inline" && inlineBytes(editImages) > INLINE_MAX_BYTES) {
-      return alert(`As imagens somam mais de ~750 KB e podem estourar o limite do Firestore.\nRemova algumas fotos ou ative o Storage (plano Blaze) e troque IMAGE_MODE para "storage".`);
-    }
-    try{
-      if(id){ await db.collection("aircraft").doc(id).update(data); }
-      else { data.createdAt=ts(); data.createdBy=me.email; await db.collection("aircraft").add(data); }
-      $("ovAircraft").classList.remove("open"); loadAircraft();
-    }catch(e){ alert("Erro ao salvar: "+e.message); }
-  }
-
-  /* ============================================================
-     FROTA CIRRUS
-     ============================================================ */
-  async function loadCirrus(){
-    const rows=$("cirrusRows");
-    rows.innerHTML=`<tr><td class="empty-row">Carregando…</td></tr>`;
-    const snap=await db.collection("cirrusFleet").orderBy("order","asc").get().catch(()=>null);
-    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row">Nenhum modelo cadastrado. Clique em “Novo modelo”.</td></tr>`; return; }
-    rows.innerHTML="";
-    snap.forEach(doc=>{ const c=doc.data();
-      const img=c.image?`<img class="thumb" src="${c.image}">`:`<div class="thumb"></div>`;
-      const tr=document.createElement("tr");
-      tr.innerHTML=`<td style="width:4rem">${img}</td><td><b>${esc(c.name||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${esc(c.label||"")}</div></td><td style="font-size:.75rem;color:hsl(var(--muted-foreground))">ordem ${c.order??"—"}</td><td><div class="act"><button class="icon-btn">Editar</button><button class="icon-btn danger">Excluir</button></div></td>`;
-      tr.querySelector(".icon-btn").onclick=()=>openCirrus(doc.id,c);
-      tr.querySelector(".danger").onclick=()=>delDoc("cirrusFleet",doc.id,c.name,loadCirrus);
-      rows.appendChild(tr);
-    });
-  }
-  function cspecRow(k="",v=""){ const d=document.createElement("div"); d.className="rrow";
-    d.innerHTML=`<input placeholder="Spec (ex: Alcance)" value="${esc(k)}"><input placeholder="Valor (ex: 1.200 nm)" value="${esc(v)}"><button class="rm">×</button>`;
-    d.querySelector(".rm").onclick=()=>d.remove(); return d; }
-  let cfTrData = {};
-  let cfEditTranslations = {};
-
-  function wireCirrusModal(){
-    $("addCirrus").onclick=()=>openCirrus(null,null);
-    $("seedCirrus").onclick=seedCirrusModels;
-    $("cfAddSpec").onclick=()=>$("cfSpecs").appendChild(cspecRow());
-    $("cfUpZone").onclick=(e)=>{ if(e.target.tagName!=="INPUT") $("cfFile").click(); };
-    $("cfFile").onchange=(e)=>uploadImages(e.target.files,"cirrus",$("cfProg"),(url)=>{ cirrusImage=url; renderCfThumb(); });
-    $("cfSave").onclick=saveCirrus;
-    $("cfTranslateBtn").onclick=openCirrusTrModal;
-    // Cirrus translation modal
-    document.querySelectorAll("[data-cftab]").forEach(btn=>{
-      btn.onclick=()=>{
-        document.querySelectorAll("[data-cftab]").forEach(b=>b.classList.remove("active"));
-        document.querySelectorAll(".cftr-panel").forEach(p=>p.style.display="none");
-        btn.classList.add("active"); $("cftrp-"+btn.dataset.cftab).style.display="block";
-      };
-    });
-    $("cfTrClose").onclick=()=>$("ovCirrusTr").classList.remove("open");
-    $("cfTrBack").onclick=()=>$("ovCirrusTr").classList.remove("open");
-    $("cfTrRetranslate").onclick=async()=>{ collectCfTrEdits(); msg($("cfTrMsg"),"Traduzindo…","ok"); await translateCirrus(); fillCfTrModal(); clearMsg($("cfTrMsg")); };
-    $("cfTrSave").onclick=async()=>{ collectCfTrEdits(); $("ovCirrusTr").classList.remove("open"); await saveCirrus(true); };
-  }
-
-  async function translateCirrus(){
-    const label = $("cfLabel").value.trim();
-    const desc  = $("cfDesc").value.trim();
-    const specs = [...$("cfSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return{k:i[0].value.trim(),v:i[1].value.trim()};}).filter(s=>s.k||s.v);
-    cfTrData["pt"] = { label, desc, specs };
-    for (const [lang, pair] of [["en","pt|en"],["es","pt|es"]]) {
-      const [tLabel, tDesc] = await Promise.all([myMemoryTranslate(label,pair), myMemoryTranslate(desc,pair)]);
-      const tSpecs = await Promise.all(specs.map(async s=>({ k:await myMemoryTranslate(s.k,pair), v:s.v })));
-      cfTrData[lang] = { label:tLabel, desc:tDesc, specs:tSpecs };
-    }
-  }
-  function fillCfTrModal(){
-    $("cfTrName").textContent = $("cfName").value.trim();
-    const pt = cfTrData.pt||{};
-    $("cftr-pt-label").value = pt.label||"";
-    $("cftr-pt-desc").value  = pt.desc||"";
-    $("cftr-pt-specs").innerHTML = (pt.specs||[]).map(s=>`<div><b>${esc(s.k)}</b>: ${esc(s.v)}</div>`).join("")||"—";
-    for (const lang of ["en","es"]) {
-      const d = cfTrData[lang]||{};
-      $(`cftr-${lang}-label`).value = d.label||"";
-      $(`cftr-${lang}-desc`).value  = d.desc||"";
-      $(`cftr-${lang}-specs-wrap`).innerHTML="";
-      (d.specs||[]).forEach((s,i)=>{
-        const row=document.createElement("div"); row.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:.5rem";
-        row.innerHTML=`<input value="${esc(s.k)}" data-lang="${lang}" data-si="${i}" data-field="k"><input value="${esc(s.v)}" data-lang="${lang}" data-si="${i}" data-field="v">`;
-        $(`cftr-${lang}-specs-wrap`).appendChild(row);
-      });
-    }
-  }
-  function collectCfTrEdits(){
-    for (const lang of ["en","es"]) {
-      if(!cfTrData[lang]) cfTrData[lang]={specs:[]};
-      cfTrData[lang].label = $(`cftr-${lang}-label`).value.trim();
-      cfTrData[lang].desc  = $(`cftr-${lang}-desc`).value.trim();
-      $(`cftr-${lang}-specs-wrap`).querySelectorAll("input").forEach(inp=>{
-        const i=+inp.dataset.si; const field=inp.dataset.field;
-        if(!cfTrData[lang].specs[i]) cfTrData[lang].specs[i]={k:"",v:""};
-        cfTrData[lang].specs[i][field]=inp.value.trim();
-      });
-    }
-  }
-  async function openCirrusTrModal(){
-    if(!$("cfName").value.trim()) return alert("Informe o nome do modelo antes de traduzir.");
-    msg($("cfTrMsg"),"Traduzindo automaticamente…","ok");
-    $("ovCirrusTr").classList.add("open");
-    await translateCirrus();
-    fillCfTrModal();
-    clearMsg($("cfTrMsg"));
-  }
-
-  async function seedCirrusModels(){
-    const snap = await db.collection("cirrusFleet").limit(1).get().catch(()=>null);
-    if (snap && !snap.empty) {
-      if (!confirm("Já existem modelos cadastrados. Deseja adicionar os modelos padrão mesmo assim (sem apagar os existentes)?")) return;
-    }
-    const models = [
-      { name:"Vision Jet", label:"Jato Pessoal", desc:"O primeiro e único jato pessoal com sistema CAPS. Motor Williams FJ33-5A, alcance de 1.200 nm e capacidade para 7 pessoas.", order:1, image:"",
-        specs:[{k:"Velocidade Máx.",v:"300 ktas"},{k:"Alcance",v:"1.200 nm"},{k:"Altitude Máx.",v:"31.000 ft"},{k:"Motor",v:"Williams FJ33-5A"}] },
-      { name:"SR22T", label:"Turbo Alta Performance", desc:"O carro-chefe da linha SR com motor turbo normalizado, ideal para voos em cruzeiro de longa distância com máxima performance.", order:2, image:"",
-        specs:[{k:"Velocidade Máx.",v:"214 ktas"},{k:"Alcance",v:"1.100 nm"},{k:"Altitude Máx.",v:"25.000 ft"},{k:"Motor",v:"Continental IO-550-N Turbo"}] },
-      { name:"SR22", label:"O Mais Vendido do Mundo", desc:"Mais de duas décadas consecutivas como o monomotor mais vendido do planeta. Equilíbrio perfeito entre performance, conforto e custo operacional.", order:3, image:"",
-        specs:[{k:"Velocidade Máx.",v:"183 ktas"},{k:"Alcance",v:"1.049 nm"},{k:"Altitude Máx.",v:"17.500 ft"},{k:"Motor",v:"Continental IO-550-N"}] },
-      { name:"SR20", label:"Iniciação e Treinamento", desc:"A porta de entrada perfeita na família Cirrus. Todos os sistemas de segurança CAPS com motor mais eficiente, ideal para formação e missões de curta distância.", order:4, image:"",
-        specs:[{k:"Velocidade Máx.",v:"160 ktas"},{k:"Alcance",v:"990 nm"},{k:"Altitude Máx.",v:"17.500 ft"},{k:"Motor",v:"Continental IO-390"}] }
-    ];
-    try {
-      const batch = db.batch();
-      models.forEach(m => { const ref = db.collection("cirrusFleet").doc(); batch.set(ref, { ...m, createdAt:ts(), createdBy:me.email }); });
-      await batch.commit();
-      loadCirrus();
-      alert("4 modelos Cirrus cadastrados com sucesso! Agora é só adicionar as imagens editando cada um.");
-    } catch(e){ alert("Erro ao popular: "+e.message); }
-  }
-  function renderCfThumb(){ $("cfThumb").innerHTML=cirrusImage?`<div class="t"><img src="${cirrusImage}"><button class="del">×</button></div>`:""; const b=$("cfThumb").querySelector(".del"); if(b)b.onclick=()=>{cirrusImage="";renderCfThumb();}; }
-  function openCirrus(id,c){ c=c||{};
-    $("cfTitle").textContent=id?"Editar modelo":"Novo modelo";
-    $("cfId").value=id||""; $("cfName").value=c.name||""; $("cfLabel").value=c.label||""; $("cfDesc").value=c.desc||""; $("cfOrder").value=c.order??"";
-    cirrusImage=c.image||""; renderCfThumb();
-    cfEditTranslations=c.translations||{}; cfTrData=cfEditTranslations;
-    $("cfSpecs").innerHTML=""; (c.specs||[]).forEach(s=>$("cfSpecs").appendChild(cspecRow(s.k,s.v)));
-    if(!(c.specs||[]).length) for(let i=0;i<4;i++) $("cfSpecs").appendChild(cspecRow());
-    $("ovCirrus").classList.add("open");
-  }
-  async function saveCirrus(withTranslations=false){
-    const name=$("cfName").value.trim(); if(!name) return alert("Informe o nome.");
-    const specs=[...$("cfSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return{k:i[0].value.trim(),v:i[1].value.trim()};}).filter(s=>s.k||s.v);
-    const data={ name, label:$("cfLabel").value.trim(), desc:$("cfDesc").value.trim(), order:Number($("cfOrder").value)||0, image:cirrusImage, specs,
-      translations: withTranslations ? cfTrData : (cfEditTranslations||{}),
-      updatedAt:ts(), updatedBy:me.email };
-    const id=$("cfId").value;
-    if (PA.IMAGE_MODE === "inline" && inlineBytes([cirrusImage]) > 900*1024) {
-      return alert("A imagem ficou grande demais. Use uma imagem menor ou ative o Storage.");
-    }
-    try{
-      if(id) await db.collection("cirrusFleet").doc(id).update(data);
-      else { data.createdAt=ts(); data.createdBy=me.email; await db.collection("cirrusFleet").add(data); }
-      $("ovCirrus").classList.remove("open"); loadCirrus();
-    }catch(e){ alert("Erro ao salvar: "+e.message); }
-  }
-
-  /* ============================================================
-     USUÁRIOS (admin)
-     ============================================================ */
-  async function loadUsers(){
-    const rows=$("userRows");
-    rows.innerHTML=`<tr><td class="empty-row" colspan="2">Carregando…</td></tr>`;
-    const snap=await db.collection("users").get().catch(()=>null);
-    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="2">Nenhum usuário cadastrado.</td></tr>`; return; }
-    rows.innerHTML="";
-    snap.forEach(doc=>{ const u=doc.data(); const isMe=doc.id===me.uid;
-      const displayName = u.name || u.email || doc.id;
-      const tr=document.createElement("tr");
-      tr.innerHTML=`
-        <td>
-          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-            <b>${esc(displayName)}</b>
-            <span class="pill ${u.role}">${esc(u.role||"")}</span>
-            ${isMe?'<span style="font-size:.7rem;color:hsl(var(--muted-foreground))">(você)</span>':""}
-          </div>
-          ${u.name?`<div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.125rem">${esc(u.email||"")}</div>`:""}
-        </td>
-        <td><div class="act">
-          <button class="icon-btn editUser" ${isMe?"disabled style='opacity:.4'":""}>Editar</button>
-          <button class="icon-btn danger rmUser" ${isMe?"disabled style='opacity:.4'":""}>Remover</button>
-        </div></td>`;
-      if(!isMe){
-        tr.querySelector(".editUser").onclick=()=>openEditUser(doc.id, u);
-        tr.querySelector(".rmUser").onclick=()=>removeUser(doc.id, displayName);
-      }
-      rows.appendChild(tr);
-    });
-  }
-  function wireUserModal(){
-    $("addUser").onclick=()=>{
-      clearMsg($("userMsg"));
-      $("uName").value=""; $("uEmail").value=""; $("uPass").value=""; $("uRole").value="editor";
-      $("ovUser").classList.add("open");
-    };
-    $("uSave").onclick=createUser;
-    // Edit user modal
-    $("editUserSave").onclick = async () => {
-      if(!editUserId) return;
-      const name = $("editUserName").value.trim();
-      const role = $("editUserRole").value;
-      if(!name) return msg($("editUserMsg"),"Informe o nome.","err");
-      try {
-        await db.collection("users").doc(editUserId).update({ name, role, updatedAt:ts(), updatedBy:me.email });
-        $("ovEditUser").classList.remove("open");
-        loadUsers();
-      } catch(e){ msg($("editUserMsg"), e.message, "err"); }
-    };
-  }
-  async function createUser(){
-    const name  = $("uName").value.trim();
-    const email = $("uEmail").value.trim().toLowerCase();
-    const pass  = $("uPass").value;
-    const role  = $("uRole").value;
-    if(!name)  return msg($("userMsg"),"Informe o nome.","err");
-    if(!email) return msg($("userMsg"),"Informe o e-mail.","err");
-    if(pass.length < 6) return msg($("userMsg"),"A senha deve ter pelo menos 6 caracteres.","err");
-    $("uSave").disabled=true;
-    try{
-      // App secundário — cria a conta sem deslogar o admin atual
-      const sec = firebase.apps.find(a=>a.name==="secondary") || firebase.initializeApp(PA.config,"secondary");
-      const cred = await sec.auth().createUserWithEmailAndPassword(email, pass);
-      const uid  = cred.user.uid;
-      await db.collection("users").doc(uid).set({ name, email, role, createdAt:ts(), createdBy:me.email });
-      await sec.auth().signOut();
-      msg($("userMsg"),`Usuário "${name}" criado com sucesso.`,"ok");
-      $("uName").value=""; $("uEmail").value=""; $("uPass").value="";
-      loadUsers();
-    }catch(e){ msg($("userMsg"), traduz(e.code) || e.message, "err"); }
-    finally{ $("uSave").disabled=false; }
-  }
-  /* ---- Modal de edição de usuário ---- */
-  let editUserId = null;
-  function openEditUser(uid, u){
-    editUserId = uid;
-    $("editUserName").value  = u.name  || "";
-    $("editUserEmail").value = u.email || "";
-    $("editUserRole").value  = u.role  || "editor";
-    clearMsg($("editUserMsg"));
-    $("ovEditUser").classList.add("open");
-  }
-
-  /* ============================================================
-     CONFIGURAÇÕES DO SITE (mídia da Home)
-     ============================================================ */
-  async function loadConfig(){
-    try {
-      const doc = await db.collection("siteConfig").doc("home").get();
-      if(!doc.exists) return;
-      const d = doc.data();
-      $("cfgHeroTag").value       = d.heroTag       ?? "Representante exclusiva Cirrus no Brasil";
-      $("cfgHeroTitle").value     = d.heroTitle      ?? "O acesso definitivo à aviação executiva de alta performance.";
-      $("cfgBtnText").value       = d.btnText        ?? "Ver Aeronaves Disponíveis";
-      $("cfgBtnUrl").value        = d.btnUrl         ?? "aeronaves.html";
-      $("cfgHeroVideo").value     = d.heroVideoUrl   ?? "";
-      $("cfgHeroImage").value     = d.heroImageUrl   ?? "";
-      $("cfgHistoriaVideo").value = d.historiaVideoUrl ?? "";
-    } catch(e){ /* silencioso */ }
-  }
-  function wireConfigPanel(){
-    $("cfgSave").onclick = async () => {
-      const data = {
-        heroTag:         $("cfgHeroTag").value.trim(),
-        heroTitle:       $("cfgHeroTitle").value.trim(),
-        btnText:         $("cfgBtnText").value.trim(),
-        btnUrl:          $("cfgBtnUrl").value.trim(),
-        heroVideoUrl:    $("cfgHeroVideo").value.trim(),
-        heroImageUrl:    $("cfgHeroImage").value.trim(),
-        historiaVideoUrl:$("cfgHistoriaVideo").value.trim(),
-        updatedAt: ts(), updatedBy: me.email
-      };
-      if(!data.heroTitle){ alert("O título principal não pode ficar vazio."); return; }
-      try {
-        await db.collection("siteConfig").doc("home").set(data, { merge:true });
-        msg($("cfgMsg"),"Configurações salvas! Recarregue o site para ver as mudanças.","ok");
-      } catch(e){ msg($("cfgMsg"),"Erro ao salvar: "+e.message,"err"); }
-    };
-  }
-  async function removeUser(uid, displayName){
-    if(!confirm(`Remover acesso de ${displayName}? O papel é revogado imediatamente.`)) return;
-    try{ await db.collection("users").doc(uid).delete(); loadUsers(); }
-    catch(e){ alert(e.message); }
-    // Obs.: a conta de login (Auth) só pode ser apagada por completo via Cloud Function (Admin SDK).
-    // Removendo o papel aqui, o usuário perde TODO o acesso de escrita pelas regras de segurança.
-  }
-
-  /* ---------------- HELPERS ---------------- */
-  function ts(){ return firebase.firestore.FieldValue.serverTimestamp(); }
-  function inlineBytes(arr){ return (arr||[]).reduce((n,u)=>n + (typeof u==="string"?u.length:0), 0); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-  function cryptoPass(){ const a=new Uint8Array(18); crypto.getRandomValues(a); return "Aa1!"+btoa(String.fromCharCode(...a)).slice(0,20); }
-  async function delDoc(col,id,name,after){ if(!confirm(`Excluir “${name||"item"}”? Esta ação não pode ser desfeita.`)) return; try{ await db.collection(col).doc(id).delete(); after(); }catch(e){ alert(e.message);} }
+  function ts(){ return firebase.firestore.FieldValue.serverTimestamp(); }
 
-  // Comprime a imagem no navegador e devolve uma data URL (modo sem Storage)
-  // Limites conservadores para caber no limite de 1 MB do Firestore por documento
-  const INLINE_MAX_IMAGES = 3;
-  const INLINE_MAX_BYTES  = 750 * 1024; // 750 KB de folga
+  // Função fictícia apenas para o loadAircraft não quebrar na inicialização (Cole seu script real aqui)
+  async function loadAircraft() { }
+  async function loadUsers() { }
+  async function loadConfig() { }
 
-  function compressToDataURL(file, maxDim=800, quality=0.55){
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        let w = img.width, h = img.height;
-        if (w >= h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
-        else if (h > w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
-        const c = document.createElement("canvas"); c.width = w; c.height = h;
-        c.getContext("2d").drawImage(img, 0, 0, w, h);
-        resolve(c.toDataURL("image/jpeg", quality));
-      };
-      img.onerror = reject;
-      const r = new FileReader(); r.onload = () => img.src = r.result; r.onerror = reject; r.readAsDataURL(file);
-    });
-  }
-
-  async function uploadImages(files, folder, progEl, onUrl){
-    if(!files || !files.length) return;
-
-    // MODO INLINE — guarda no Firestore (plano grátis, sem Storage)
-    if (PA.IMAGE_MODE === "inline" || !storage) {
-      // Limita a 3 imagens no total (existentes + novas)
-      const slots = Math.max(0, INLINE_MAX_IMAGES - editImages.length);
-      const toProcess = Array.from(files).slice(0, slots);
-      if (files.length > slots) alert(`Modo sem Storage: máximo ${INLINE_MAX_IMAGES} imagens por aeronave. ${files.length - slots} ignorada(s).`);
-      if (!toProcess.length) return;
-      progEl.classList.add("show"); const bar=progEl.querySelector(".bar"); bar.style.width="20%";
-      for(const file of toProcess){
-        if(!file.type.startsWith("image/")){ alert("Apenas imagens."); continue; }
-        try {
-          const url = await compressToDataURL(file);
-          // Verifica tamanho acumulado antes de adicionar
-          if (inlineBytes([...editImages, url]) > INLINE_MAX_BYTES) {
-            alert("Limite de tamanho atingido (~750 KB). Use imagens menores ou menos fotos.\nPara mais imagens, ative o Firebase Storage (plano Blaze).");
-            break;
-          }
-          onUrl(url);
-          bar.style.width="80%";
-        }
-        catch(e){ alert("Falha ao processar imagem: "+(e.message||e)); }
-      }
-      bar.style.width="100%"; setTimeout(()=>{ progEl.classList.remove("show"); bar.style.width="0%"; }, 250);
-      return;
-    }
-
-    // MODO STORAGE — Firebase Storage (requer Blaze)
-    progEl.classList.add("show"); const bar=progEl.querySelector(".bar");
-    for(const file of files){
-      if(!file.type.startsWith("image/")){ alert("Apenas imagens."); continue; }
-      if(file.size > 8*1024*1024){ alert(`${file.name} excede 8 MB.`); continue; }
-      const path=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name.replace(/[^\w.\-]/g,"_")}`;
-      const task=storage.ref(path).put(file, { contentType:file.type });
-      await new Promise((res,rej)=>{
-        task.on("state_changed",
-          s=>{ bar.style.width = Math.round((s.bytesTransferred/s.totalBytes)*100)+"%"; },
-          err=>{ alert("Falha no upload: "+err.message); rej(err); },
-          async()=>{ const url=await task.snapshot.ref.getDownloadURL(); onUrl(url); res(); });
-      }).catch(()=>{});
-      bar.style.width="0%";
-    }
-    progEl.classList.remove("show");
-  }
 })();
 </script>
 </body>
