@@ -3,119 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>News &amp; Insights | Plane Aviation</title>
+<title>News & Insights | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
-  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
-  <style>
-    #site-header { display: block; height: 4rem; }
-    body { min-height: 100vh; }
-  </style>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
-  .sec-head2{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:2.5rem; }
-  .sec-head2 h2{ font-size:1.5rem; font-weight:700; letter-spacing:-.025em; margin-top:.25rem; }
-  .sec-head2 .note{ font-size:.75rem; color:hsl(var(--muted-foreground)); }
-  @media(max-width:639px){ .sec-head2 .note, .pod-links{ display:none; } }
+  /* ============================================================
+     NEWS & INSIGHTS — Dark Theme (Padrão Plane Aviation)
+     ============================================================ */
+  body { background-color: #000000 !important; color: #ffffff !important; }
+  #site-header { display: block; height: 4rem; }
+  
+  .page-hero { background: #000000 !important; color: #ffffff !important; padding: 6rem 0 2rem 0 !important; text-align: left !important; }
+  .page-hero .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); }
+  .page-hero .muted { color: rgba(255, 255, 255, 0.6) !important; max-width: 560px; margin-top: 1.25rem; line-height: 1.6; }
 
-  .art{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); overflow:hidden; background:hsl(var(--card)); display:flex; flex-direction:column; }
-  .art .imgph{ background:hsl(var(--muted)); border-bottom:1px solid hsl(var(--border)); display:flex; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)/.4); aspect-ratio:16/9; }
-  .art .imgph .box{ width:2.5rem; height:2.5rem; border:2px dashed hsl(var(--muted-foreground)/.2); border-radius:var(--radius-sm); margin:0 auto .5rem; display:flex; align-items:center; justify-content:center; }
-  .art .imgph .box span{ font-size:1.125rem; opacity:.2; }
-  .art .imgph .l{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
-  .art .body{ padding:1.5rem; display:flex; flex-direction:column; flex:1; }
-  .art .row{ display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; }
-  .art .date{ font-size:10px; color:hsl(var(--muted-foreground)); }
-  .art .cat{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:600; color:hsl(var(--foreground)/.6); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.125rem .5rem; }
-  .art h3{ font-size:.875rem; font-weight:700; line-height:1.4; margin-bottom:.5rem; flex:1; }
-  .art .ex{ font-size:.75rem; color:hsl(var(--muted-foreground)); line-height:1.6; margin-bottom:1.25rem; }
-  .art .read{ font-size:.75rem; font-weight:600; letter-spacing:.025em; text-transform:uppercase; color:hsl(var(--foreground)); border-bottom:1px solid hsl(var(--foreground)/.3); padding-bottom:.125rem; align-self:flex-start; transition:border-color .15s; }
-  .art .read:hover{ border-color:hsl(var(--foreground)); }
+  .news-section { background: #000000 !important; padding: 4rem 0; }
+  .news-section.alt { border-top: 1px solid rgba(255,255,255,0.08); }
 
-  .pod-links{ display:flex; align-items:center; gap:.5rem; }
-  .pod-links a{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:600; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.375rem .75rem; color:hsl(var(--muted-foreground)); transition:background .15s; }
-  .pod-links a:hover{ background:hsl(var(--card)); }
+  .sec-head2 { margin-bottom: 2.5rem; }
+  .sec-head2 .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); display: block; margin-bottom: 0.75rem; }
+  .sec-head2 h2 { font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif; font-size: 2.5rem; font-style: italic; text-transform: uppercase; font-weight: 800; color: #ffffff; margin: 0; line-height: 1; }
+  .sec-head2 .desc { font-size: 0.875rem; color: rgba(255, 255, 255, 0.5); max-width: 600px; margin-top: 1rem; line-height: 1.6; }
 
-  .ep{ background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:1.25rem; display:flex; flex-direction:column; gap:1.25rem; }
-  @media(min-width:640px){ .ep{ flex-direction:row; } }
-  .player{ flex-shrink:0; border:2px dashed hsl(var(--border)); border-radius:var(--radius-sm); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; background:hsl(var(--muted)); }
-  @media(min-width:640px){ .player{ width:14rem; } }
-  .player .pl{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:hsl(var(--muted-foreground)/.5); text-align:center; margin-bottom:.25rem; }
-  .wave{ display:flex; align-items:center; gap:.25rem; margin-top:.5rem; }
-  .wave i{ width:.25rem; background:hsl(var(--muted-foreground)/.2); border-radius:9999px; }
-  .player .dur{ font-size:10px; color:hsl(var(--muted-foreground)/.4); margin-top:.5rem; }
-  .ep .info{ display:flex; flex-direction:column; justify-content:space-between; flex:1; }
-  .ep .epnum{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:600; color:hsl(var(--muted-foreground)); }
-  .ep h3{ font-size:.875rem; font-weight:700; margin-top:.25rem; margin-bottom:.75rem; line-height:1.4; }
-  .ep .btns{ display:flex; flex-wrap:wrap; gap:.5rem; }
-  .ep .btns a{ display:inline-flex; align-items:center; gap:.375rem; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.5rem 1rem; border-radius:var(--radius-sm); }
-  .ep .btns .sp{ background:hsl(var(--foreground)); color:hsl(var(--background)); }
-  .ep .btns .sp:hover{ opacity:.9; }
-  .ep .btns .ap{ border:1px solid hsl(var(--foreground)); color:hsl(var(--foreground)); transition:background .15s,color .15s; }
-  .ep .btns .ap:hover{ background:hsl(var(--foreground)); color:hsl(var(--background)); }
+  /* --- Grid de Artigos --- */
+  .art { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, border-color 0.3s ease; text-decoration: none; }
+  .art:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.3); }
+  .art .imgph { aspect-ratio: 16/9; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .art .imgph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .art .body { padding: 2rem; display: flex; flex-direction: column; flex: 1; }
+  .art .row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .art .date { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+  .art .cat { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: rgba(255,255,255,0.1); padding: 0.25rem 0.5rem; border-radius: 4px; }
+  .art h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.4; letter-spacing: -0.02em; }
+  .art .ex { font-size: 0.875rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 1.5rem; flex: 1; }
+  .art .read { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; display: inline-flex; align-items: center; gap: 0.5rem; }
 
-  .news-cta{ padding:3.5rem 0; text-align:center; }
-  .news-cta h2{ font-size:1.25rem; font-weight:700; letter-spacing:-.025em; margin-bottom:.5rem; }
-  .nl-row{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.75rem; max-width:24rem; margin:0 auto; }
-  @media(min-width:640px){ .nl-row{ flex-direction:row; } }
-  .nl-row input{ width:100%; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.75rem 1rem; font-size:.875rem; background:hsl(var(--card)); }
-  .nl-row input:focus{ outline:none; border-color:hsl(var(--foreground)/.4); }
+  /* --- Grid de Podcasts --- */
+  .ep { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; transition: border-color 0.3s ease; }
+  .ep:hover { border-color: rgba(255,255,255,0.3); }
+  @media(min-width: 640px) { .ep { flex-direction: row; align-items: center; padding: 2rem; gap: 2.5rem; } }
+  
+  /* O segredo da proporção perfeita para a Thumbnail do YouTube (16:9 cravado) */
+  .ep .player { flex-shrink: 0; width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+  @media(min-width: 640px) { .ep .player { width: 20rem; } }
+  /* O object-fit:cover vai comer automaticamente as bordas pretas que vierem do YouTube */
+  .ep .player img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  
+  .ep .info { flex: 1; display: flex; flex-direction: column; }
+  .ep .epnum { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; display: block; }
+  .ep h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.4; letter-spacing: -0.02em; }
+  .ep p { font-size: 0.875rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 1.5rem; }
+  
+  /* Botão Padrão Outline Dark */
+  .btn-outline-dark { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; padding: 0.75rem 1.25rem; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s, border-color 0.2s; max-width: max-content; }
+  .btn-outline-dark:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+
+  /* --- Newsletter CTA --- */
+  .news-cta { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 4rem 2rem; text-align: center; margin: 4rem 0; }
+  .news-cta h2 { font-family: 'Grift', 'Bebas Neue', sans-serif; font-size: 2rem; font-weight: 800; font-style: italic; color: #fff; margin-bottom: 0.75rem; text-transform: uppercase; line-height: 1.1; }
+  .news-cta .muted { font-size: 0.875rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem; max-width: 28rem; margin-inline: auto; }
+  .nl-row { display: flex; flex-direction: column; gap: 0.75rem; max-width: 28rem; margin: 0 auto; }
+  @media(min-width: 640px) { .nl-row { flex-direction: row; } }
+  .nl-row input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.875rem 1.25rem; color: #fff; font-size: 0.875rem; transition: border-color 0.2s, background 0.2s; }
+  .nl-row input:focus { outline: none; border-color: #fff; background: rgba(255,255,255,0.08); }
+  .nl-row .btn-solid { background: #fff; color: #000; padding: 0.875rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; border: none; cursor: pointer; transition: opacity 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;}
+  .nl-row .btn-solid:hover { opacity: 0.85; }
 </style>
-  <script src="js/i18n.js" defer></script>
-  <script src="js/site.js" defer></script>
+<script src="js/i18n.js" defer></script>
+<script src="js/site.js" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
 <main>
 
   <!-- HERO -->
-  <section class="page-hero tall center">
+  <section class="page-hero">
     <div class="container">
       <span class="eyebrow" data-i18n="news_eyebrow">Conteúdo &amp; Mídia</span>
-      <h1 class="h-display" data-i18n="news_title">News &amp; Insights</h1>
-      <p style="font-size:1rem;max-width:36rem">Acompanhe as principais análises, tendências de mercado e episódios do nosso podcast oficial.</p>
+      <h1 class="h-display" data-i18n="news_title" style="margin-top: 0.5rem;">News &amp; Insights</h1>
+      <p class="muted">Acompanhe as principais análises, tendências de mercado e episódios do nosso podcast oficial sobre o universo da aviação executiva.</p>
     </div>
   </section>
 
   <!-- ARTIGOS -->
-  <section style="padding:4rem 0">
+  <section class="news-section">
     <div class="container">
       <div class="sec-head2">
-        <div>
-          <span class="eyebrow">Editorial</span>
-          <h2 data-i18n="news_art_title">Artigos e Análises Técnicas</h2>
-        </div>
-        <span class="note">3 publicações recentes</span>
+        <span class="eyebrow">Editorial</span>
+        <h2 data-i18n="news_art_title">Artigos e Análises Técnicas</h2>
       </div>
-      <div class="grid g1 md-g3" id="artGrid" style="gap:1.5rem"></div>
+      <div class="grid g1 md-g3" id="artGrid" style="gap:1.5rem">
+        <p style="color:rgba(255,255,255,0.4);">Carregando artigos...</p>
+      </div>
     </div>
   </section>
 
-  <!-- DIVIDER -->
-  <div style="border-top:1px solid hsl(var(--border));margin:0 1rem"></div>
-
   <!-- PODCAST -->
-  <section style="padding:4rem 0;background:hsl(var(--muted))">
+  <section class="news-section alt">
     <div class="container">
       <div class="sec-head2">
-        <div>
-          <span class="eyebrow">Áudio</span>
-          <h2 data-i18n="news_pod_title">Plane Aviation Podcast</h2>
-        </div>
-        <div class="pod-links">
-          <a href="#">YouTube</a>
-        </div>
+        <span class="eyebrow">Áudio & Vídeo</span>
+        <h2 data-i18n="news_pod_title">Plane Aviation Podcast</h2>
+        <!-- Descrição inserida abaixo do título, conforme solicitado -->
+        <p class="desc">Junte-se aos nossos especialistas para discussões aprofundadas sobre operação, manutenção, tendências de mercado e as inovações que moldam o futuro da aviação geral.</p>
       </div>
-      <div id="epList" style="display:flex;flex-direction:column;gap:1rem"></div>
+      <div id="epList" style="display:flex;flex-direction:column;gap:1.5rem">
+        <p style="color:rgba(255,255,255,0.4);">Carregando episódios...</p>
+      </div>
     </div>
   </section>
 
   <!-- NEWSLETTER CTA -->
-  <section class="news-cta">
+  <section>
     <div class="container">
-      <h2 data-i18n="news_nl_title">Fique por dentro do mercado de aviação executiva.</h2>
-      <p class="muted" style="font-size:.875rem;margin-bottom:1.75rem;max-width:28rem;margin-left:auto;margin-right:auto">Assine nossa newsletter e receba artigos e novos episódios diretamente no seu e-mail.</p>
-      <div class="nl-row">
-        <input type="email" placeholder="seu@email.com">
-        <button class="btn btn-solid btn-wide" style="width:auto" data-i18n="news_nl_btn"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Assinar</button>
+      <div class="news-cta">
+        <h2 data-i18n="news_nl_title">Fique por dentro do mercado.</h2>
+        <p class="muted">Assine nossa newsletter e receba análises do mercado e novos episódios diretamente no seu e-mail.</p>
+        <div class="nl-row">
+          <input type="email" placeholder="Seu e-mail corporativo">
+          <button class="btn btn-solid" data-i18n="news_nl_btn">
+            ASSINAR
+            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -132,81 +142,76 @@ document.addEventListener("DOMContentLoaded", () => {
   loadNewsData();
 });
 
+// Função auxiliar para extrair o ID do vídeo de qualquer formato de link do YouTube
+function getYouTubeId(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 async function loadNewsData() {
   if (!window.PA || !PA.configured) return;
+
+  const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
   // 1. CARREGAR ARTIGOS
   const artGrid = document.getElementById("artGrid");
   try {
     const artSnap = await PA.db.collection("articles").orderBy("createdAt", "desc").get();
     if(artSnap.empty) {
-      artGrid.innerHTML = "<p style='color:hsl(var(--muted-foreground)); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
+      artGrid.innerHTML = "<p style='color:rgba(255,255,255,0.4); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
     } else {
       artGrid.innerHTML = artSnap.docs.map(doc => {
         const a = doc.data();
         const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
         const imgHtml = a.imageUrl 
-          ? `<img src="${a.imageUrl}" style="width:100%; height:100%; object-fit:cover;">`
-          : `<div class="center"><div class="box"><span>◫</span></div><span class="l">SEM IMAGEM</span></div>`;
+          ? `<img src="${a.imageUrl}" alt="${a.title}">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:0.75rem;letter-spacing:0.1em;">SEM IMAGEM</div>`;
           
         return `
-        <div class="art">
-          <div class="imgph" style="padding:0; overflow:hidden;">${imgHtml}</div>
+        <a href="artigo.html?id=${doc.id}" class="art">
+          <div class="imgph">${imgHtml}</div>
           <div class="body">
-            <div class="row"><span class="date">${dateStr}</span><span class="date">·</span><span class="cat">${a.category || 'Geral'}</span></div>
+            <div class="row">
+              <span class="date">${dateStr}</span>
+              <span class="cat">${a.category || 'Geral'}</span>
+            </div>
             <h3>${a.title}</h3>
             <p class="ex">${(a.excerpt || '').substring(0, 120)}...</p>
-            <a href="artigo.html?id=${doc.id}" class="read" data-i18n="news_read">Ler Artigo Completo</a>
+            <span class="read">Ler Artigo Completo ${ARROW}</span>
           </div>
-        </div>`;
+        </a>`;
       }).join("");
     }
   } catch(e) { console.error(e); }
 
-  // 2. CARREGAR PODCASTS (Apenas YouTube com Thumbnail Automática)
+  // 2. CARREGAR PODCASTS
   const epList = document.getElementById("epList");
-  
-  // Função auxiliar para extrair o ID do vídeo de qualquer link do YouTube
-  function getYouTubeId(url) {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  }
-
   try {
     const podSnap = await PA.db.collection("podcasts").orderBy("createdAt", "desc").get();
     if(podSnap.empty) {
-      epList.innerHTML = "<p style='color:hsl(var(--muted-foreground));'>Nenhum episódio publicado ainda.</p>";
+      epList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum episódio publicado ainda.</p>";
     } else {
       epList.innerHTML = podSnap.docs.map(doc => {
         const p = doc.data();
-        const dateStr = p.createdAt ? new Date(p.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
+        const dateStr = p.createdAt ? new Date(p.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'}) : "";
         
-        // Pega o ID e monta a capa. hqdefault.jpg é a imagem de alta qualidade gerada pelo próprio YouTube.
         const videoId = getYouTubeId(p.youtubeUrl);
         let thumbHtml = "";
         
         if (videoId) {
-          // Se achou o ID do YouTube, exibe a capa com o tempo de duração por cima (estilo Netflix/YouTube)
-          const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          // Utiliza maxresdefault (resolução HD). O object-fit: cover do CSS corta as bordas pretas se existirem
+          const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
           thumbHtml = `
-            <div class="player" style="padding:0; overflow:hidden; border:1px solid hsl(var(--border)); position:relative; min-height:8rem;">
-              <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Capa do Episódio">
-              <div style="position:absolute; bottom:0.5rem; right:0.5rem; background:rgba(0,0,0,0.8); color:#fff; font-size:10px; font-weight:700; padding:0.25rem 0.5rem; border-radius:4px; z-index:2;">
-                ${p.duration || '0 min'}
-              </div>
+            <div class="player">
+              <img src="${thumbUrl}" alt="Capa do Episódio" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">
             </div>
           `;
         } else {
-          // Fallback visual caso o administrador coloque um link inválido ou que não seja do YouTube
-          const waveHeights = [8,20,24,19,9,20,24,18,10,21,24,17];
-          const wave = `<div class="wave">${waveHeights.map(h=>`<i style="height:${h}px"></i>`).join("")}</div>`;
           thumbHtml = `
-            <div class="player">
-              <span class="pl">Podcast</span>
-              ${wave}
-              <span class="dur">${p.duration || '0 min'}</span>
+            <div class="player" style="display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.1em;font-size:0.75rem;">
+              Podcast
             </div>
           `;
         }
@@ -216,15 +221,14 @@ async function loadNewsData() {
           ${thumbHtml}
           <div class="info">
             <div>
-              <span class="epnum">Episódio ${p.episode || '-'} · ${dateStr}</span>
-              <h3>Episódio ${p.episode || '-'} – ${p.title}</h3>
-              <p style="font-size:0.875rem; color:hsl(var(--muted-foreground)); margin-bottom:1rem;">${p.desc || ''}</p>
+              <span class="epnum">${dateStr}</span>
+              <h3>${p.title}</h3>
+              <p>${p.desc || ''}</p>
             </div>
-            <div class="btns">
-              <a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="sp" style="background:#FF0000; color:#fff; border:none;">
-                ▶ Assistir no YouTube
-              </a>
-            </div>
+            <a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">
+              ASSISTIR NO YOUTUBE
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </a>
           </div>
         </div>`;
       }).join("");
