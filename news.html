@@ -163,28 +163,57 @@ async function loadNewsData() {
     }
   } catch(e) { console.error(e); }
 
-  // 2. CARREGAR PODCASTS (Apenas YouTube)
+  // 2. CARREGAR PODCASTS (Apenas YouTube com Thumbnail Automática)
   const epList = document.getElementById("epList");
+  
+  // Função auxiliar para extrair o ID do vídeo de qualquer link do YouTube
+  function getYouTubeId(url) {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
   try {
     const podSnap = await PA.db.collection("podcasts").orderBy("createdAt", "desc").get();
     if(podSnap.empty) {
       epList.innerHTML = "<p style='color:hsl(var(--muted-foreground));'>Nenhum episódio publicado ainda.</p>";
     } else {
-      // Wave visual
-      const waveHeights = [8,20,24,19,9,20,24,18,10,21,24,17];
-      const wave = `<div class="wave">${waveHeights.map(h=>`<i style="height:${h}px"></i>`).join("")}</div>`;
-
       epList.innerHTML = podSnap.docs.map(doc => {
         const p = doc.data();
         const dateStr = p.createdAt ? new Date(p.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
         
+        // Pega o ID e monta a capa. hqdefault.jpg é a imagem de alta qualidade gerada pelo próprio YouTube.
+        const videoId = getYouTubeId(p.youtubeUrl);
+        let thumbHtml = "";
+        
+        if (videoId) {
+          // Se achou o ID do YouTube, exibe a capa com o tempo de duração por cima (estilo Netflix/YouTube)
+          const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          thumbHtml = `
+            <div class="player" style="padding:0; overflow:hidden; border:1px solid hsl(var(--border)); position:relative; min-height:8rem;">
+              <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" alt="Capa do Episódio">
+              <div style="position:absolute; bottom:0.5rem; right:0.5rem; background:rgba(0,0,0,0.8); color:#fff; font-size:10px; font-weight:700; padding:0.25rem 0.5rem; border-radius:4px; z-index:2;">
+                ${p.duration || '0 min'}
+              </div>
+            </div>
+          `;
+        } else {
+          // Fallback visual caso o administrador coloque um link inválido ou que não seja do YouTube
+          const waveHeights = [8,20,24,19,9,20,24,18,10,21,24,17];
+          const wave = `<div class="wave">${waveHeights.map(h=>`<i style="height:${h}px"></i>`).join("")}</div>`;
+          thumbHtml = `
+            <div class="player">
+              <span class="pl">Podcast</span>
+              ${wave}
+              <span class="dur">${p.duration || '0 min'}</span>
+            </div>
+          `;
+        }
+        
         return `
         <div class="ep">
-          <div class="player">
-            <span class="pl">Podcast</span>
-            ${wave}
-            <span class="dur">${p.duration || '0 min'}</span>
-          </div>
+          ${thumbHtml}
           <div class="info">
             <div>
               <span class="epnum">Episódio ${p.episode || '-'} · ${dateStr}</span>
@@ -192,7 +221,6 @@ async function loadNewsData() {
               <p style="font-size:0.875rem; color:hsl(var(--muted-foreground)); margin-bottom:1rem;">${p.desc || ''}</p>
             </div>
             <div class="btns">
-              <!-- Botão Único para YouTube com o ícone vermelho padrão -->
               <a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="sp" style="background:#FF0000; color:#fff; border:none;">
                 ▶ Assistir no YouTube
               </a>
