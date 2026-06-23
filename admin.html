@@ -576,11 +576,8 @@
     <div class="modal-head"><h3 id="podModalTitle">Novo Podcast</h3><button class="x-btn" data-close>✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="podId">
-      <div class="grid2">
-        <div class="fld"><label>Número do Episódio</label><input id="podEp" type="number" placeholder="Ex: 12"></div>
-        <div class="fld"><label>Duração</label><input id="podDur" placeholder="Ex: 48 min"></div>
-      </div>
       <div class="fld"><label>Título do Episódio *</label><input id="podTitle" placeholder="Ex: Tendências e o futuro..."></div>
+      <div class="fld"><label>Duração</label><input id="podDur" placeholder="Ex: 48 min"></div>
       <div class="fld"><label>Descrição Breve</label><textarea id="podDesc" rows="3" style="resize:vertical"></textarea></div>
       <div class="fld"><label>Link do YouTube *</label><input id="podLink" placeholder="https://youtube.com/watch?v=..."></div>
     </div>
@@ -1371,7 +1368,7 @@
       rows.innerHTML = snap.docs.map(doc => {
         const p = doc.data();
         return `<tr>
-          <td><b>Episódio ${esc(p.episode)} - ${esc(p.title)}</b></td>
+          <td><b>${esc(p.title)}</b></td>
           <td style="text-align:right"><div class="act"><button class="icon-btn edit-pod" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-pod" data-id="${doc.id}">Excluir</button></div></td>
         </tr>`;
       }).join("");
@@ -1383,9 +1380,8 @@
   function openPodcast(id, p) {
     $("podModalTitle").textContent = id ? "Editar Podcast" : "Novo Podcast";
     $("podId").value = id || "";
-    $("podEp").value = p.episode || "";
-    $("podDur").value = p.duration || "";
     $("podTitle").value = p.title || "";
+    $("podDur").value = p.duration || "";
     $("podDesc").value = p.desc || "";
     $("podLink").value = p.youtubeUrl || "";
     $("ovPodcast").classList.add("open");
@@ -1393,12 +1389,24 @@
 
   async function savePodcast() {
     if(!$("podTitle").value.trim() || !$("podLink").value.trim()) return alert("Título e Link do YouTube são obrigatórios.");
-    const data = { episode: $("podEp").value, duration: $("podDur").value, title: $("podTitle").value.trim(), desc: $("podDesc").value.trim(), youtubeUrl: $("podLink").value.trim(), updatedAt: ts() };
+    
+    const data = { 
+      title: $("podTitle").value.trim(), 
+      duration: $("podDur").value.trim(), 
+      desc: $("podDesc").value.trim(), 
+      youtubeUrl: $("podLink").value.trim(), 
+      updatedAt: ts() 
+    };
+    
     try {
       if($("podId").value) await db.collection("podcasts").doc($("podId").value).update(data);
       else await db.collection("podcasts").add({ ...data, createdAt: ts(), createdBy: me.email });
-      $("ovPodcast").classList.remove("open"); loadPodcasts();
-    } catch(e) { alert(e.message); }
+      
+      $("ovPodcast").classList.remove("open"); 
+      loadPodcasts();
+    } catch(e) { 
+      alert(e.message); 
+    }
   }
 })();
 </script>
