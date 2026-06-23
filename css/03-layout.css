@@ -47,9 +47,10 @@ body { padding-top: 0; }
 .logo svg { height: 34px; width: auto; display: block; }
 @media(max-width:639px) { .logo svg { height: 26px; } }
 
-.nav { display: none; align-items: center; gap: 2rem; }
+.nav { display: none; align-items: center; gap: 3rem; } /* Espaçamento aumentado de 2rem para 3rem */
 .nav a {
-  font-size: 11px; font-weight: 500; letter-spacing: .04em;
+  font-size: 13px; /* Fonte aumentada de 11px para 13px */
+  font-weight: 500; letter-spacing: .04em;
   text-transform: uppercase; white-space: nowrap;
   color: hsl(var(--foreground)); transition: opacity .15s;
 }
