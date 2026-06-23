@@ -41,7 +41,7 @@
     /* Seção principal da frota */
     .fleet-section {
       background: #000000 !important;
-      padding: 3rem 0 6rem 0;
+      padding: 3rem 0 4rem 0;
     }
 
     /* Grid dos modelos */
@@ -58,7 +58,7 @@
       }
     }
 
-    /* Estilo dos Cards */
+    /* Estilo dos Cards da Frota */
     .fleet-card {
       background: #0a0a0a !important;
       border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -74,7 +74,6 @@
       border-color: rgba(255, 255, 255, 0.3) !important;
     }
 
-    /* Imagem da Aeronave blindada (Não quebra layout e não amassa) */
     .fleet-img {
       position: relative;
       aspect-ratio: 16/10;
@@ -86,7 +85,7 @@
     .fleet-img img {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
+      object-fit: cover;
       display: block;
     }
     
@@ -102,7 +101,6 @@
       letter-spacing: 0.1em;
     }
 
-    /* Corpo do Card */
     .fleet-body {
       padding: 2.5rem;
       display: flex;
@@ -138,7 +136,6 @@
       flex: 1;
     }
 
-    /* Tabela de Especificações Interna */
     .fleet-specs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -166,7 +163,6 @@
       color: #fff;
     }
 
-    /* Botão CTA Principal do Card */
     .fleet-actions {
       margin-top: 2.5rem;
     }
@@ -191,6 +187,106 @@
     
     .btn-solid-white:hover {
       opacity: 0.85;
+    }
+
+    /* =========================================
+       NOVA SEÇÃO: REDE DE PARCEIROS / ASSISTÊNCIA
+       ========================================= */
+    .partners-section {
+      background: #000000 !important;
+      padding: 4rem 0 6rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: none; /* Oculta por padrão, o JS mostra se tiver parceiros */
+    }
+
+    .partners-header {
+      margin-bottom: 3rem;
+    }
+    
+    .partners-header .eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .partners-header h2 {
+      font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      font-style: italic;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .partners-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media(min-width: 640px) {
+      .partners-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(min-width: 1024px) {
+      .partners-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .partner-card {
+      background: #0a0a0a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.2s;
+    }
+
+    .partner-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .partner-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .partner-desc {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .partner-btn {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.625rem 1.25rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      align-self: flex-start;
+    }
+
+    .partner-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
     }
   </style>
 </head>
@@ -217,6 +313,19 @@
         </div>
       </div>
     </section>
+
+    <section class="partners-section" id="partnersSection">
+      <div class="container">
+        <div class="partners-header">
+          <span class="eyebrow">Suporte Operacional</span>
+          <h2>Precisando de Assistência?</h2>
+          <p class="muted" style="max-width: 600px; margin-top: 0.75rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">A Plane Aviation foca exclusivamente na assessoria comercial. Para serviços complementares, conectamos você à nossa rede certificada de parceiros.</p>
+        </div>
+        
+        <div class="partners-grid" id="partnersGrid">
+          </div>
+      </div>
+    </section>
   </main>
 
   <div id="site-footer"></div>
@@ -229,26 +338,29 @@
   <script src="js/site.js" defer></script>
 
   <script>
+    const ARROW_SVG = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1.2em;height:1.2em;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
+
     document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(loadCirrusFleet, 500);
-      document.addEventListener("pa:langchange", loadCirrusFleet);
+      setTimeout(() => {
+        loadCirrusFleet();
+        loadPartners();
+      }, 500);
+      document.addEventListener("pa:langchange", () => {
+        loadCirrusFleet();
+        loadPartners();
+      });
     });
 
+    // 1. CARREGAR A FROTA CIRRUS
     async function loadCirrusFleet() {
-      if (!window.PA || !PA.configured) {
-        console.warn("Firebase não configurado.");
-        return;
-      }
-      
+      if (!window.PA || !PA.configured) return;
       const grid = document.getElementById("fleetGrid");
       
-      // Funções auxiliares para tradução
       function getLoc(p, field) {
         const lang = window.PA_I18N ? PA_I18N.getLang() : "pt";
         if (lang === "pt") return p[field] || "";
         return p.translations?.[lang]?.[field] || p[field] || "";
       }
-      
       function getLocArray(p, field) {
         const lang = window.PA_I18N ? PA_I18N.getLang() : "pt";
         if (lang === "pt") return p[field] || [];
@@ -257,24 +369,17 @@
 
       try {
         const snap = await PA.db.collection("cirrusFleet").orderBy("order", "asc").get();
-        
-        if (snap.empty) {
-          grid.innerHTML = `<p style="color: rgba(255,255,255,0.4);">Nenhum modelo cadastrado na frota no momento.</p>`;
-          return;
-        }
+        if (snap.empty) { grid.innerHTML = `<p style="color: rgba(255,255,255,0.4);">Nenhum modelo cadastrado.</p>`; return; }
 
         let html = "";
-        
         snap.forEach(doc => {
           const c = doc.data();
-          
           const name = c.name || "";
           const label = getLoc(c, "label");
           const desc = getLoc(c, "desc");
           const specs = getLocArray(c, "specs");
           
-          // Inteligência para associar a imagem local baseada no nome do modelo
-          let imagePath = c.image; // Usa a do banco se o Admin fizer upload
+          let imagePath = c.image; 
           if (!imagePath) {
             const lowerName = name.toLowerCase();
             if (lowerName.includes("vision")) imagePath = "images/vision-jet.webp";
@@ -283,17 +388,12 @@
             else if (lowerName.includes("sr20")) imagePath = "images/sr20.webp";
           }
           
-          const img = imagePath 
-            ? `<img src="${imagePath}" alt="${name}">` 
-            : `<div class="ph">[Imagem]</div>`;
+          const img = imagePath ? `<img src="${imagePath}" alt="${name}">` : `<div class="ph">[Imagem]</div>`;
           
           let specsHtml = "";
           if (specs && specs.length) {
             specsHtml = `<div class="fleet-specs">` + specs.map(s => `
-              <div class="f-spec">
-                <span class="f-spec-k">${s.k || ''}</span>
-                <span class="f-spec-v">${s.v || ''}</span>
-              </div>
+              <div class="f-spec"><span class="f-spec-k">${s.k || ''}</span><span class="f-spec-v">${s.v || ''}</span></div>
             `).join('') + `</div>`;
           }
 
@@ -304,25 +404,53 @@
                 <div class="fleet-label">${label}</div>
                 <h2 class="fleet-name">${name}</h2>
                 <p class="fleet-desc">${desc}</p>
-                
                 ${specsHtml}
-                
                 <div class="fleet-actions">
                   <a href="contato.html?motivo=comprar" class="btn-solid-white">
-                    TENHO INTERESSE
-                    <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1.1em;height:1.1em;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+                    TENHO INTERESSE ${ARROW_SVG}
                   </a>
                 </div>
               </div>
+            </div>`;
+        });
+        grid.innerHTML = html;
+      } catch (e) {
+        grid.innerHTML = `<p style="color: #b42318;">Erro ao carregar a frota.</p>`;
+      }
+    }
+
+    // 2. CARREGAR A REDE DE PARCEIROS (SERVIÇOS)
+    async function loadPartners() {
+      if (!window.PA || !PA.configured) return;
+      const grid = document.getElementById("partnersGrid");
+      const section = document.getElementById("partnersSection");
+
+      try {
+        const snap = await PA.db.collection("partners").orderBy("order", "asc").get();
+        
+        if (snap.empty) {
+          section.style.display = "none";
+          return;
+        }
+
+        let html = "";
+        snap.forEach(doc => {
+          const p = doc.data();
+          html += `
+            <div class="partner-card">
+              <h3 class="partner-title">${p.title}</h3>
+              <p class="partner-desc">${p.desc}</p>
+              <a href="${p.url || '#'}" target="${p.url ? '_blank' : '_self'}" class="partner-btn">
+                ${p.btnText || 'Acessar'} ${ARROW_SVG}
+              </a>
             </div>
           `;
         });
         
         grid.innerHTML = html;
-        
+        section.style.display = "block";
       } catch (e) {
-        console.error("Erro ao carregar frota:", e);
-        grid.innerHTML = `<p style="color: #b42318;">Ops! Ocorreu um erro ao carregar a frota.</p>`;
+        console.error("Erro ao carregar parceiros:", e);
       }
     }
   </script>

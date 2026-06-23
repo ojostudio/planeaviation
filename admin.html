@@ -180,6 +180,7 @@
       <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Conteúdo</button>
+      <button class="tab" data-tab="partners">Parceiros</button>
     </div>
 
     <div class="panel" id="panel-leads">
@@ -264,7 +265,15 @@
         </div>
 
       </div>
-    </div>
+
+      <div class="panel" id="panel-partners">
+        <div class="row-head">
+          <div><h2>Parceiros</h2><p class="sub">Empresas e serviços de apoio (manutenção, hangaragem, etc) indicados no Universo Cirrus.</p></div>
+          <button class="btn btn-solid btn-sm" id="addPartner">+ Novo Parceiro</button>
+        </div>
+        <table class="tbl"><tbody id="partnerRows"></tbody></table>
+      </div>
+      </div>
 
   </div></div>
 
@@ -491,6 +500,26 @@
   </div>
 </div>
 
+<div class="overlay" id="ovPartner">
+  <div class="modal" style="max-width:32rem">
+    <div class="modal-head"><h3 id="ptTitle">Novo Parceiro</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="ptId">
+      <div class="fld"><label>Nome / Serviço (Título) *</label><input id="ptName" placeholder="Ex: Assistência Técnica Autorizada"></div>
+      <div class="fld"><label>Descrição Breve</label><textarea id="ptDesc" rows="3" style="resize:vertical" placeholder="Sobre o serviço..."></textarea></div>
+      <div class="grid2">
+        <div class="fld"><label>Texto do Botão</label><input id="ptBtnText" placeholder="Ex: Acessar Site"></div>
+        <div class="fld"><label>Link (URL)</label><input id="ptBtnUrl" placeholder="https://..."></div>
+      </div>
+      <div class="fld"><label>Ordem de exibição</label><input id="ptOrder" type="number" placeholder="1"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-solid btn-sm" id="ptSave">Salvar Parceiro</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/firebase-config.js"></script>
 <script>
 (function(){
@@ -553,8 +582,9 @@
     // Carrega tudo
     loadAircraft(); 
     loadLeads();
+    loadPartners();
     if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
-    wireAircraftModal(); wireUserModal(); wireAircraftViewModal();
+    wireAircraftModal(); wireUserModal(); wireAircraftViewModal(); wirePartnerModal();
 
     $("archivedToggle").onclick = () => {
       const sec = $("archivedSection");
@@ -1064,7 +1094,7 @@
   async function removeUser(uid, displayName){ if(!confirm(`Remover acesso de ${displayName}?`)) return; try{ await db.collection("users").doc(uid).delete(); loadUsers(); }catch(e){ alert(e.message); } }
 
   /* ============================================================
-     CONFIGURAÇÕES DO SITE
+     CONTEÚDO DO SITE
      ============================================================ */
   async function loadConfig(){
     try {
@@ -1089,6 +1119,61 @@
       }
       try { await db.collection("siteConfig").doc("home").set({ slides, updatedAt:ts(), updatedBy:me.email }, { merge:true }); msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); loadConfig(); } catch(e){ alert(e.message); }
     };
+  }
+
+  /* ============================================================
+     PARCEIROS (CRUD)
+     ============================================================ */
+  async function loadPartners(){
+    const rows=$("partnerRows"); rows.innerHTML=`<tr><td class="empty-row" colspan="3">Carregando parceiros…</td></tr>`;
+    try {
+      const snap=await db.collection("partners").orderBy("order","asc").get();
+      if(!snap || snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhum parceiro cadastrado.</td></tr>`; return; }
+      rows.innerHTML = snap.docs.map(doc => { 
+        const p=doc.data(); 
+        return `<tr>
+          <td><b>${esc(p.title)}</b><br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(p.desc).slice(0,60)}...</span></td>
+          <td>Ordem: ${p.order||"0"}</td>
+          <td><div class="act"><button class="icon-btn edit-pt" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-pt" data-id="${doc.id}">Excluir</button></div></td>
+        </tr>`; 
+      }).join("");
+      rows.querySelectorAll(".edit-pt").forEach(b => b.onclick = async () => { const doc = await db.collection("partners").doc(b.dataset.id).get(); openPartner(doc.id, doc.data()); });
+      rows.querySelectorAll(".del-pt").forEach(b => b.onclick = () => delDoc("partners", b.dataset.id, "Parceiro", loadPartners));
+    } catch(e){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Erro de conexão.</td></tr>`; }
+  }
+
+  function wirePartnerModal(){
+    $("addPartner").onclick=()=>openPartner(null,null); 
+    $("ptSave").onclick=()=>savePartner(); 
+  }
+
+  function openPartner(id, p){ 
+    p=p||{}; 
+    $("ptId").value=id||""; 
+    $("ptName").value=p.title||""; 
+    $("ptDesc").value=p.desc||""; 
+    $("ptBtnText").value=p.btnText||""; 
+    $("ptBtnUrl").value=p.url||""; 
+    $("ptOrder").value=p.order||""; 
+    $("ovPartner").classList.add("open"); 
+  }
+
+  async function savePartner(){
+    const data={ 
+      title:$("ptName").value.trim(), 
+      desc:$("ptDesc").value.trim(), 
+      btnText:$("ptBtnText").value.trim(), 
+      url:$("ptBtnUrl").value.trim(), 
+      order:Number($("ptOrder").value)||0, 
+      updatedAt:ts(), 
+      updatedBy:me.email 
+    };
+    if(!data.title) return alert("O título é obrigatório.");
+    try {
+      if($("ptId").value) await db.collection("partners").doc($("ptId").value).update(data); 
+      else await db.collection("partners").add({ ...data, createdAt:ts(), createdBy:me.email });
+      $("ovPartner").classList.remove("open"); loadPartners();
+    } catch (e) { alert(e.message); }
   }
 
   /* ---------------- HELPERS DE UPLOAD ---------------- */
