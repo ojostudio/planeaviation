@@ -101,8 +101,7 @@
           <h2 data-i18n="news_pod_title">Plane Aviation Podcast</h2>
         </div>
         <div class="pod-links">
-          <a href="#">Spotify</a>
-          <a href="#">Apple Podcasts</a>
+          <a href="#">YouTube</a>
         </div>
       </div>
       <div id="epList" style="display:flex;flex-direction:column;gap:1rem"></div>
@@ -124,48 +123,86 @@
 </main>
 <div id="site-footer"></div>
 
-<script>
-  const articles = [
-    ["28 Mai 2026","Mercado","Análise de mercado: a evolução da frota de jatos leves na América Latina","Um panorama detalhado sobre o crescimento da frota executiva e os modelos mais demandados nos últimos cinco anos."],
-    ["14 Mai 2026","Tecnologia","Safe Return e autonomia de voo: como a Cirrus está redefinindo segurança na aviação geral","Entenda como o sistema autônomo de pouso emergencial Safe Return opera e por que ele representa uma revolução de segurança."],
-    ["02 Mai 2026","Regulatório","Importação de aeronaves no Brasil: o que mudou na regulamentação em 2026","As principais alterações no processo de homologação e importação de aeronaves executivas após as novas diretrizes da ANAC."]
-  ];
-  document.getElementById("artGrid").innerHTML = articles.map(a => `
-    <div class="art">
-      <div class="imgph"><div class="center"><div class="box"><span>◫</span></div><span class="l">[ Placeholder: Imagem do Artigo ]</span></div></div>
-      <div class="body">
-        <div class="row"><span class="date">${a[0]}</span><span class="date">·</span><span class="cat">${a[1]}</span></div>
-        <h3>${a[2]}</h3>
-        <p class="ex">${a[3]}</p>
-        <a href="#" class="read" data-i18n="news_read"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Ler Artigo Completo</a>
-      </div>
-    </div>`).join("");
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
 
-  const waveHeights = [8,20,24,19,9,20,24,18,10,21,24,17];
-  const wave = `<div class="wave">${waveHeights.map(h=>`<i style="height:${h}px"></i>`).join("")}</div>`;
-  const episodes = [
-    ["12","Tendências e o futuro da aviação pessoal com especialistas do setor","48 min","22 Mai 2026"],
-    ["11","Custo total de operação: o que você precisa saber antes de comprar um Cirrus","52 min","08 Mai 2026"],
-    ["10","Vision Jet vs turbohélices: qual aeronave faz mais sentido para o executivo brasileiro","41 min","24 Abr 2026"]
-  ];
-  document.getElementById("epList").innerHTML = episodes.map(ep => `
-    <div class="ep">
-      <div class="player">
-        <span class="pl">[ Player de Áudio / Waveform ]</span>
-        ${wave}
-        <span class="dur">${ep[2]}</span>
-      </div>
-      <div class="info">
-        <div>
-          <span class="epnum">Episódio ${ep[0]} · ${ep[3]}</span>
-          <h3>Episódio ${ep[0]} – ${ep[1]}</h3>
-        </div>
-        <div class="btns">
-          <a href="#" class="sp">▶ Ouvir no Spotify <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
-          <a href="#" class="ap">▶ Ouvir no Apple Podcasts <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg></a>
-        </div>
-      </div>
-    </div>`).join("");
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  loadNewsData();
+});
+
+async function loadNewsData() {
+  if (!window.PA || !PA.configured) return;
+
+  // 1. CARREGAR ARTIGOS
+  const artGrid = document.getElementById("artGrid");
+  try {
+    const artSnap = await PA.db.collection("articles").orderBy("createdAt", "desc").get();
+    if(artSnap.empty) {
+      artGrid.innerHTML = "<p style='color:hsl(var(--muted-foreground)); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
+    } else {
+      artGrid.innerHTML = artSnap.docs.map(doc => {
+        const a = doc.data();
+        const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
+        const imgHtml = a.imageUrl 
+          ? `<img src="${a.imageUrl}" style="width:100%; height:100%; object-fit:cover;">`
+          : `<div class="center"><div class="box"><span>◫</span></div><span class="l">SEM IMAGEM</span></div>`;
+          
+        return `
+        <div class="art">
+          <div class="imgph" style="padding:0; overflow:hidden;">${imgHtml}</div>
+          <div class="body">
+            <div class="row"><span class="date">${dateStr}</span><span class="date">·</span><span class="cat">${a.category || 'Geral'}</span></div>
+            <h3>${a.title}</h3>
+            <p class="ex">${(a.excerpt || '').substring(0, 120)}...</p>
+            <a href="artigo.html?id=${doc.id}" class="read" data-i18n="news_read">Ler Artigo Completo</a>
+          </div>
+        </div>`;
+      }).join("");
+    }
+  } catch(e) { console.error(e); }
+
+  // 2. CARREGAR PODCASTS (Apenas YouTube)
+  const epList = document.getElementById("epList");
+  try {
+    const podSnap = await PA.db.collection("podcasts").orderBy("createdAt", "desc").get();
+    if(podSnap.empty) {
+      epList.innerHTML = "<p style='color:hsl(var(--muted-foreground));'>Nenhum episódio publicado ainda.</p>";
+    } else {
+      // Wave visual
+      const waveHeights = [8,20,24,19,9,20,24,18,10,21,24,17];
+      const wave = `<div class="wave">${waveHeights.map(h=>`<i style="height:${h}px"></i>`).join("")}</div>`;
+
+      epList.innerHTML = podSnap.docs.map(doc => {
+        const p = doc.data();
+        const dateStr = p.createdAt ? new Date(p.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
+        
+        return `
+        <div class="ep">
+          <div class="player">
+            <span class="pl">Podcast</span>
+            ${wave}
+            <span class="dur">${p.duration || '0 min'}</span>
+          </div>
+          <div class="info">
+            <div>
+              <span class="epnum">Episódio ${p.episode || '-'} · ${dateStr}</span>
+              <h3>Episódio ${p.episode || '-'} – ${p.title}</h3>
+              <p style="font-size:0.875rem; color:hsl(var(--muted-foreground)); margin-bottom:1rem;">${p.desc || ''}</p>
+            </div>
+            <div class="btns">
+              <!-- Botão Único para YouTube com o ícone vermelho padrão -->
+              <a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="sp" style="background:#FF0000; color:#fff; border:none;">
+                ▶ Assistir no YouTube
+              </a>
+            </div>
+          </div>
+        </div>`;
+      }).join("");
+    }
+  } catch(e) { console.error(e); }
+}
 </script>
 </body>
 </html>

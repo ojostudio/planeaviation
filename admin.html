@@ -181,6 +181,7 @@
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Conteúdo</button>
       <button class="tab" data-tab="partners">Parceiros</button>
+      <button class="tab" data-tab="news">News & Insights</button>
     </div>
 
     <div class="panel" id="panel-leads">
@@ -269,6 +270,29 @@
         <button class="btn btn-solid btn-sm" id="addPartner">+ Novo Parceiro</button>
       </div>
       <table class="tbl"><tbody id="partnerRows"></tbody></table>
+    </div>
+
+    <!-- PAINEL NEWS & INSIGHTS -->
+    <div class="panel container" id="panel-news" style="padding-top:0;padding-bottom:0">
+      <div class="row-head">
+        <div><h2>News & Insights</h2><p class="sub">Gerencie artigos do blog e os episódios do podcast.</p></div>
+      </div>
+      
+      <!-- Sub-abas -->
+      <div class="tabs" style="margin-bottom:1.5rem; border-bottom:none">
+        <button class="tab sub-tab active" data-sub="artigos" style="border-bottom: 2px solid hsl(var(--foreground)); color:hsl(var(--foreground))">Artigos</button>
+        <button class="tab sub-tab" data-sub="podcasts" style="border-bottom: 2px solid transparent;">Podcasts</button>
+      </div>
+
+      <div id="sub-artigos">
+        <div style="margin-bottom:1rem; text-align:right;"><button class="btn btn-solid btn-sm" id="addArticle">+ Novo Artigo</button></div>
+        <table class="tbl"><tbody id="articleRows"></tbody></table>
+      </div>
+
+      <div id="sub-podcasts" style="display:none">
+        <div style="margin-bottom:1rem; text-align:right;"><button class="btn btn-solid btn-sm" id="addPodcast">+ Novo Podcast</button></div>
+        <table class="tbl"><tbody id="podcastRows"></tbody></table>
+      </div>
     </div>
 
   </div>
@@ -517,6 +541,56 @@
   </div>
 </div>
 
+<!-- Modal Artigo -->
+<div class="overlay" id="ovArticle">
+  <div class="modal" style="max-width:48rem">
+    <div class="modal-head"><h3 id="artModalTitle">Novo Artigo</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="artId">
+      <div class="grid2">
+        <div class="fld"><label>Título do Artigo *</label><input id="artTitle" placeholder="Ex: O futuro da aviação..."></div>
+        <div class="fld"><label>Categoria</label><input id="artCategory" placeholder="Ex: Mercado, Tecnologia..."></div>
+      </div>
+      <div class="fld"><label>Resumo Breve (Exibido no card)</label><textarea id="artExcerpt" rows="2" style="resize:vertical"></textarea></div>
+      <div class="fld">
+        <label>Capa do Artigo (Imagem)</label>
+        <div class="uploader" id="artUpZone"><div class="hint">Clique para enviar capa (JPG/PNG)</div><input type="file" id="artFile" accept="image/*"></div>
+        <div class="prog" id="artProg"><div class="bar"></div></div>
+        <div class="thumbs-edit" id="artThumb"></div>
+      </div>
+      <div class="fld">
+        <label>Conteúdo Completo</label>
+        <textarea id="artContent" rows="12" style="resize:vertical; font-family:var(--font)" placeholder="Escreva seu artigo aqui. Quebras de linha (Enter) criarão novos parágrafos no site."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-solid btn-sm" id="artSave">Salvar Artigo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Podcast -->
+<div class="overlay" id="ovPodcast">
+  <div class="modal" style="max-width:32rem">
+    <div class="modal-head"><h3 id="podModalTitle">Novo Podcast</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="podId">
+      <div class="grid2">
+        <div class="fld"><label>Número do Episódio</label><input id="podEp" type="number" placeholder="Ex: 12"></div>
+        <div class="fld"><label>Duração</label><input id="podDur" placeholder="Ex: 48 min"></div>
+      </div>
+      <div class="fld"><label>Título do Episódio *</label><input id="podTitle" placeholder="Ex: Tendências e o futuro..."></div>
+      <div class="fld"><label>Descrição Breve</label><textarea id="podDesc" rows="3" style="resize:vertical"></textarea></div>
+      <div class="fld"><label>Link do YouTube *</label><input id="podLink" placeholder="https://youtube.com/watch?v=..."></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-solid btn-sm" id="podSave">Salvar Podcast</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/firebase-config.js"></script>
 <script>
 (function(){
@@ -580,6 +654,9 @@
     loadAircraft(); 
     loadLeads();
     loadPartners();
+    loadArticles();
+    loadPodcasts();
+    wireNewsModals();
     if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
     wireAircraftModal(); wireUserModal(); wireAircraftViewModal(); wirePartnerModal();
 
@@ -1213,6 +1290,116 @@
     progEl.classList.remove("show");
   }
 })();
+
+/* ============================================================
+     NEWS & INSIGHTS (Artigos e Podcasts)
+     ============================================================ */
+  let artCoverUrl = "";
+  
+  function wireNewsModals() {
+    // Lógica das sub-abas
+    document.querySelectorAll(".sub-tab").forEach(t => t.onclick = () => {
+      document.querySelectorAll(".sub-tab").forEach(x=>{ x.style.borderColor="transparent"; x.style.color="hsl(var(--muted-foreground))"; });
+      t.style.borderColor="hsl(var(--foreground))"; t.style.color="hsl(var(--foreground))";
+      $("sub-artigos").style.display = t.dataset.sub==="artigos" ? "block" : "none";
+      $("sub-podcasts").style.display = t.dataset.sub==="podcasts" ? "block" : "none";
+    });
+
+    $("addArticle").onclick = () => openArticle(null, {});
+    $("addPodcast").onclick = () => openPodcast(null, {});
+    $("artSave").onclick = saveArticle;
+    $("podSave").onclick = savePodcast;
+
+    // Upload de capa do artigo
+    $("artUpZone").onclick = (e) => { if(e.target.tagName!=="INPUT") $("artFile").click(); };
+    $("artFile").onchange = (e) => {
+      const f = e.target.files;
+      if(f.length) uploadImages(f, "articles", $("artProg"), (url) => { 
+        artCoverUrl = url; 
+        $("artThumb").innerHTML = `<div class="t"><img src="${url}"><button class="del" onclick="artCoverUrl=''; document.getElementById('artThumb').innerHTML=''">×</button></div>`; 
+      });
+    };
+  }
+
+  // --- CRUD Artigos ---
+  async function loadArticles() {
+    const rows = $("articleRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando artigos...</td></tr>`;
+    try {
+      const snap = await db.collection("articles").orderBy("createdAt", "desc").get();
+      if(snap.empty) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum artigo cadastrado.</td></tr>`; return; }
+      rows.innerHTML = snap.docs.map(doc => {
+        const a = doc.data();
+        const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString() : "";
+        return `<tr>
+          <td><b>${esc(a.title)}</b><br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(a.category)} · ${dateStr}</span></td>
+          <td style="text-align:right"><div class="act"><button class="icon-btn edit-art" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-art" data-id="${doc.id}">Excluir</button></div></td>
+        </tr>`;
+      }).join("");
+      rows.querySelectorAll(".edit-art").forEach(b => b.onclick = async () => openArticle(b.dataset.id, (await db.collection("articles").doc(b.dataset.id).get()).data()));
+      rows.querySelectorAll(".del-art").forEach(b => b.onclick = () => delDoc("articles", b.dataset.id, "Artigo", loadArticles));
+    } catch(e) {}
+  }
+
+  function openArticle(id, a) {
+    $("artModalTitle").textContent = id ? "Editar Artigo" : "Novo Artigo";
+    $("artId").value = id || "";
+    $("artTitle").value = a.title || "";
+    $("artCategory").value = a.category || "";
+    $("artExcerpt").value = a.excerpt || "";
+    $("artContent").value = a.content || "";
+    artCoverUrl = a.imageUrl || "";
+    $("artThumb").innerHTML = artCoverUrl ? `<div class="t"><img src="${artCoverUrl}"><button class="del" onclick="artCoverUrl=''; document.getElementById('artThumb').innerHTML=''">×</button></div>` : "";
+    $("ovArticle").classList.add("open");
+  }
+
+  async function saveArticle() {
+    if(!$("artTitle").value.trim()) return alert("O título é obrigatório.");
+    const data = { title: $("artTitle").value.trim(), category: $("artCategory").value.trim(), excerpt: $("artExcerpt").value.trim(), content: $("artContent").value.trim(), imageUrl: artCoverUrl, updatedAt: ts() };
+    try {
+      if($("artId").value) await db.collection("articles").doc($("artId").value).update(data);
+      else await db.collection("articles").add({ ...data, createdAt: ts(), createdBy: me.email });
+      $("ovArticle").classList.remove("open"); loadArticles();
+    } catch(e) { alert(e.message); }
+  }
+
+  // --- CRUD Podcasts ---
+  async function loadPodcasts() {
+    const rows = $("podcastRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando podcasts...</td></tr>`;
+    try {
+      const snap = await db.collection("podcasts").orderBy("createdAt", "desc").get();
+      if(snap.empty) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum episódio cadastrado.</td></tr>`; return; }
+      rows.innerHTML = snap.docs.map(doc => {
+        const p = doc.data();
+        return `<tr>
+          <td><b>Episódio ${esc(p.episode)} - ${esc(p.title)}</b></td>
+          <td style="text-align:right"><div class="act"><button class="icon-btn edit-pod" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-pod" data-id="${doc.id}">Excluir</button></div></td>
+        </tr>`;
+      }).join("");
+      rows.querySelectorAll(".edit-pod").forEach(b => b.onclick = async () => openPodcast(b.dataset.id, (await db.collection("podcasts").doc(b.dataset.id).get()).data()));
+      rows.querySelectorAll(".del-pod").forEach(b => b.onclick = () => delDoc("podcasts", b.dataset.id, "Podcast", loadPodcasts));
+    } catch(e) {}
+  }
+
+  function openPodcast(id, p) {
+    $("podModalTitle").textContent = id ? "Editar Podcast" : "Novo Podcast";
+    $("podId").value = id || "";
+    $("podEp").value = p.episode || "";
+    $("podDur").value = p.duration || "";
+    $("podTitle").value = p.title || "";
+    $("podDesc").value = p.desc || "";
+    $("podLink").value = p.youtubeUrl || "";
+    $("ovPodcast").classList.add("open");
+  }
+
+  async function savePodcast() {
+    if(!$("podTitle").value.trim() || !$("podLink").value.trim()) return alert("Título e Link do YouTube são obrigatórios.");
+    const data = { episode: $("podEp").value, duration: $("podDur").value, title: $("podTitle").value.trim(), desc: $("podDesc").value.trim(), youtubeUrl: $("podLink").value.trim(), updatedAt: ts() };
+    try {
+      if($("podId").value) await db.collection("podcasts").doc($("podId").value).update(data);
+      else await db.collection("podcasts").add({ ...data, createdAt: ts(), createdBy: me.email });
+      $("ovPodcast").classList.remove("open"); loadPodcasts();
+    } catch(e) { alert(e.message); }
+  }
 </script>
 </body>
 </html>
