@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artigo | Plane Aviation</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  #site-header { display: block; height: 4rem; }
+  body { min-height: 100vh; background: hsl(var(--background)); }
+  
+  .art-hero { padding: 5rem 0 3rem; text-align: center; }
+  .art-cat { font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #d9202a; margin-bottom: 1rem; display: block; }
+  .art-title { font-size: clamp(2rem, 4vw, 3.5rem); font-family: 'Grift', sans-serif; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 1.1; margin-bottom: 1.5rem; max-width: 800px; margin-inline: auto; }
+  .art-meta { font-size: 0.875rem; color: hsl(var(--muted-foreground)); }
+  
+  .art-cover { width: 100%; max-width: 1000px; margin: 0 auto 3rem; aspect-ratio: 16/7; background: hsl(var(--muted)); border-radius: 16px; overflow: hidden; }
+  .art-cover img { width: 100%; height: 100%; object-fit: cover; }
+  
+  .art-content { max-width: 680px; margin: 0 auto 5rem; font-size: 1.125rem; line-height: 1.8; color: hsl(var(--foreground)); }
+  .art-content p { margin-bottom: 1.5rem; }
+</style>
+<script src="js/i18n.js" defer></script>
+<script src="js/site.js" defer></script>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+  <article id="artContainer" style="display:none;">
+    <header class="art-hero container">
+      <span class="art-cat" id="artCat"></span>
+      <h1 class="art-title" id="artTitle"></h1>
+      <div class="art-meta" id="artDate"></div>
+    </header>
+    
+    <div class="container">
+      <div class="art-cover" id="artCover"></div>
+      <div class="art-content" id="artBody"></div>
+    </div>
+  </article>
+
+  <div id="artLoading" class="container" style="padding: 5rem 0; text-align: center; color: hsl(var(--muted-foreground));">Carregando artigo...</div>
+</main>
+<div id="site-footer"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const pageId = new URLSearchParams(location.search).get("id");
+  if(!window.PA || !PA.configured || !pageId) {
+    document.getElementById("artLoading").textContent = "Artigo não encontrado.";
+    return;
+  }
+  try {
+    const doc = await PA.db.collection("articles").doc(pageId).get();
+    if(!doc.exists) throw new Error();
+    const art = doc.data();
+    
+    document.getElementById("artCat").textContent = art.category || "Editorial";
+    document.getElementById("artTitle").textContent = art.title || "Sem título";
+    
+    const dateObj = art.createdAt ? new Date(art.createdAt.seconds * 1000) : new Date();
+    document.getElementById("artDate").textContent = dateObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'});
+    
+    if(art.imageUrl) {
+      document.getElementById("artCover").innerHTML = `<img src="${art.imageUrl}" alt="${art.title}">`;
+    } else {
+      document.getElementById("artCover").style.display = "none";
+    }
+    
+    // Converte quebras de linha em parágrafos <p>
+    const contentHtml = (art.content || "").split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+    document.getElementById("artBody").innerHTML = contentHtml;
+    
+    document.title = `${art.title} | Plane Aviation`;
+    document.getElementById("artLoading").style.display = "none";
+    document.getElementById("artContainer").style.display = "block";
+  } catch(e) {
+    document.getElementById("artLoading").textContent = "Artigo não encontrado ou removido.";
+  }
+});
+</script>
+</body>
+</html>
