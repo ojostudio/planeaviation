@@ -21,7 +21,7 @@
   const NAV = [
     { key:"nav_aircraft", href:"aeronaves.html" },
     { key:"nav_cirrus",   href:"universo-cirrus.html" },
-    { key:"nav_services", href:"servicos.html" },
+   /* ---- { key:"nav_services", href:"servicos.html" },---- */
     { key:"nav_about",    href:"sobre.html" },
     { key:"nav_contact",  href:"contato.html" },
   ];
