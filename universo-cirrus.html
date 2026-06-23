@@ -58,7 +58,7 @@
       }
     }
 
-    /* Estilo dos Cards (Idêntico à vitrine de Aeronaves e Contato) */
+    /* Estilo dos Cards */
     .fleet-card {
       background: #0a0a0a !important;
       border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -74,18 +74,19 @@
       border-color: rgba(255, 255, 255, 0.3) !important;
     }
 
-    /* Imagem da Aeronave */
+    /* Imagem da Aeronave blindada (Não quebra layout e não amassa) */
     .fleet-img {
       position: relative;
       aspect-ratio: 16/10;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      overflow: hidden;
     }
     
     .fleet-img img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
       display: block;
     }
     
@@ -229,10 +230,7 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Pequeno timeout para garantir que o Firebase inicializou no site.js
       setTimeout(loadCirrusFleet, 500);
-      
-      // Se houver mudança de idioma, recarregar a frota
       document.addEventListener("pa:langchange", loadCirrusFleet);
     });
 
@@ -244,7 +242,7 @@
       
       const grid = document.getElementById("fleetGrid");
       
-      // Função auxiliar para tradução
+      // Funções auxiliares para tradução
       function getLoc(p, field) {
         const lang = window.PA_I18N ? PA_I18N.getLang() : "pt";
         if (lang === "pt") return p[field] || "";
@@ -258,7 +256,6 @@
       }
 
       try {
-        // Puxa a frota da coleção cirrusFleet lá do seu Painel Admin, ordenando pelo campo Order
         const snap = await PA.db.collection("cirrusFleet").orderBy("order", "asc").get();
         
         if (snap.empty) {
@@ -271,14 +268,23 @@
         snap.forEach(doc => {
           const c = doc.data();
           
-          // Pega os textos com suporte a internacionalização
           const name = c.name || "";
           const label = getLoc(c, "label");
           const desc = getLoc(c, "desc");
           const specs = getLocArray(c, "specs");
           
-          const img = c.image 
-            ? `<img src="${c.image}" alt="${name}">` 
+          // Inteligência para associar a imagem local baseada no nome do modelo
+          let imagePath = c.image; // Usa a do banco se o Admin fizer upload
+          if (!imagePath) {
+            const lowerName = name.toLowerCase();
+            if (lowerName.includes("vision")) imagePath = "images/vision-jet.webp";
+            else if (lowerName.includes("sr22t")) imagePath = "images/sr22t.webp";
+            else if (lowerName.includes("sr22")) imagePath = "images/sr22.webp";
+            else if (lowerName.includes("sr20")) imagePath = "images/sr20.webp";
+          }
+          
+          const img = imagePath 
+            ? `<img src="${imagePath}" alt="${name}">` 
             : `<div class="ph">[Imagem]</div>`;
           
           let specsHtml = "";
