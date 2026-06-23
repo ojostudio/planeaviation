@@ -19,7 +19,7 @@
   .pill{ font-size:10px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; padding:.2rem .5rem; border-radius:var(--radius-sm); border:1px solid hsl(var(--border)); }
   .pill.admin{ background:hsl(var(--foreground)); color:hsl(var(--background)); border-color:hsl(var(--foreground)); }
   .pill.editor{ color:hsl(var(--muted-foreground)); }
-  .pill.novo{ background:#b42318; color:#fff; border-color:#b42318; }
+  .pill.novo{ background:#b42318; color:#fff; border-color:#b42318; } /* Pill para leads novos */
 
   .tabs{ display:flex; gap:.25rem; border-bottom:1px solid hsl(var(--border)); margin-bottom:2rem; flex-wrap:wrap; }
   .tab{ background:none; border:none; border-bottom:2px solid transparent; padding:.75rem 1rem; font-size:.8125rem; font-weight:600; letter-spacing:.02em; text-transform:uppercase; color:hsl(var(--muted-foreground)); cursor:pointer; }
@@ -45,7 +45,7 @@
   .feat-toggle.feat-on{ border-color:hsl(var(--foreground)); color:hsl(var(--foreground)); background:hsl(var(--foreground)/.05); font-weight:700; }
   .empty-row{ text-align:center; color:hsl(var(--muted-foreground)); padding:3rem 1rem; font-size:.875rem; }
 
-  /* Modais */
+  /* Modal */
   .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-start; justify-content:center; z-index:60; padding:2rem 1rem; overflow-y:auto; }
   .overlay.open{ display:flex; }
   .modal{ background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); width:100%; max-width:42rem; margin:auto; }
@@ -108,17 +108,18 @@
   .auth-card{ width:100%; max-width:24rem; background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:2rem; }
   .auth-logo{ display:flex; align-items:center; gap:.5rem; margin-bottom:1.5rem; }
   .auth-card h1{ font-size:1.125rem; font-weight:700; margin-bottom:.25rem; }
+  .auth-card .muted{ font-size:.8125rem; margin-bottom:1.5rem; }
   .msg{ font-size:.8125rem; padding:.625rem .75rem; border-radius:var(--radius-sm); margin-bottom:1rem; display:none; }
   .msg.show{ display:block; }
   .msg.err{ background:#fdecea; color:#b42318; border:1px solid #f3c6c0; }
   .msg.ok{ background:#eafaf0; color:#1a7f47; border:1px solid #bfe6cd; }
   .link-btn{ background:none; border:none; color:hsl(var(--foreground)); text-decoration:underline; font-size:.8125rem; cursor:pointer; padding:0; }
+  .notice{ max-width:40rem; margin:3rem auto; background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:2rem; }
+  .notice h2{ font-size:1.125rem; font-weight:700; margin-bottom:.75rem; }
+  .notice p, .notice li{ font-size:.875rem; color:hsl(var(--muted-foreground)); line-height:1.6; }
+  .notice ol{ margin:.75rem 0 0 1.25rem; } .notice code{ background:hsl(var(--muted)); padding:.1rem .35rem; border-radius:3px; font-size:.8125rem; }
   .spinner{ min-height:100vh; display:flex; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)); font-size:.875rem; }
-  
-  /* Auxiliares */
   .badge-count { background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px; display:inline-block; }
-  .banner-block { border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card)); margin-bottom: 1.5rem; }
-  .banner-block h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.5rem; }
 </style>
 </head>
 <body>
@@ -128,13 +129,42 @@
 <div id="view-setup" style="display:none">
   <div class="notice">
     <h2>Configure o Firebase para ativar o painel</h2>
-    <p>Este painel usa Firebase (Auth + Firestore + Storage).</p>
+    <p>Este painel usa Firebase (Auth + Firestore + Storage). Para ligá-lo:</p>
+    <ol>
+      <li>Crie um projeto em <code>console.firebase.google.com</code>.</li>
+      <li>Ative <b>Authentication → E-mail/senha</b>, crie um <b>Firestore</b> e o <b>Storage</b>.</li>
+      <li>Cole as chaves do app em <code>firebase-config.js</code>.</li>
+      <li>Publique as regras de <code>firestore.rules</code> e <code>storage.rules</code>.</li>
+      <li>Crie o primeiro admin (passo a passo no <code>SETUP.md</code>).</li>
+    </ol>
   </div>
 </div>
 
 <div id="view-login" class="center-screen" style="display:none">
   <div class="auth-card">
-    <div class="auth-logo" style="margin-bottom:1.5rem"><svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:32px;width:auto;display:block"><g> <path d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76s1.29,16.03-.43,24.62c-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-5.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg></a>
+    <div class="auth-logo" style="margin-bottom:1.5rem"><svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:32px;width:auto;display:block"><g> <path d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76s1.29,16.03-.43,24.62c-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg></div>
+    <h1>Painel Administrativo</h1>
+    <p class="muted">Acesso restrito à equipe autorizada.</p>
+    <div id="loginMsg" class="msg"></div>
+    <div class="fld"><label>E-mail</label><input type="email" id="loginEmail" placeholder="voce@empresa.com" autocomplete="username"></div>
+    <div class="fld"><label>Senha</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn btn-solid btn-md" id="loginBtn" style="width:100%">Entrar</button>
+    <div style="margin-top:1rem;text-align:center"><button class="link-btn" id="forgotBtn">Esqueci minha senha</button></div>
+  </div>
+</div>
+
+<div id="view-denied" class="center-screen" style="display:none">
+  <div class="auth-card center">
+    <h1>Sem permissão de acesso</h1>
+    <p class="muted">Sua conta está autenticada, mas ainda não tem um papel (admin/editor) atribuído. Peça a um administrador para liberar seu acesso.</p>
+    <button class="btn btn-outline btn-sm" id="denyLogout" style="margin-top:1rem">Sair</button>
+  </div>
+</div>
+
+<div id="view-app" style="display:none">
+  <div class="admin-top">
+    <div class="container">
+      <a href="index.html" target="_blank" class="logo" aria-label="Ver site"><svg viewBox="0 0 1920 459.95" xmlns="http://www.w3.org/2000/svg" style="height:32px;width:auto;display:block"><g> <path d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76s1.29,16.03-.43,24.62c-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/> <path d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/> <path d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/> <path d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/> <path d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/> <path d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/> <path d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/> <path d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/> <path d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/> <path d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/> <path d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/> <path d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/> <path d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/> </g> <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/></svg></a>
       <div class="who">
         <span><b id="meName"></b> <span id="meEmail" style="font-size:.7rem;color:hsl(var(--muted-foreground))"></span></span>
         <span class="pill" id="mePill"></span>
@@ -147,11 +177,10 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
-      <button class="tab" data-tab="cirrus">Frota Cirrus</button>
-      <button class="tab" data-tab="partners">Rede de Parceiros</button>
       <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Conteúdo</button>
+      <button class="tab" data-tab="partners">Parceiros</button>
     </div>
 
     <div class="panel" id="panel-leads">
@@ -161,14 +190,6 @@
       <table class="tbl"><tbody id="leadsRows"></tbody></table>
     </div>
     
-    <div class="panel" id="panel-partners">
-      <div class="row-head">
-        <div><h2>Rede de Parceiros</h2><p class="sub">Empresas e serviços de apoio (manutenção, hangaragem, etc) indicados no Universo Cirrus.</p></div>
-        <button class="btn btn-solid btn-sm" id="addPartner">+ Novo Parceiro</button>
-      </div>
-      <table class="tbl"><tbody id="partnerRows"></tbody></table>
-    </div>
-
     <div class="panel active" id="panel-aircraft">
       <div class="row-head">
         <div><h2>Aeronaves à venda</h2><p class="sub">Aparecem na sessão <b>Aeronaves Disponíveis</b>, ordenadas automaticamente por ano (mais novas primeiro).</p></div>
@@ -188,17 +209,6 @@
           <table class="tbl"><tbody id="archivedRows"></tbody></table>
         </div>
       </div>
-    </div>
-
-    <div class="panel" id="panel-cirrus">
-      <div class="row-head">
-        <div><h2>Frota Cirrus</h2><p class="sub">Modelos demonstrativos exibidos na página <b>Universo Cirrus</b>.</p></div>
-        <div style="display:flex; gap:.5rem;">
-          <button class="btn btn-outline btn-sm" id="seedCirrus">↓ Popular modelos padrão</button>
-          <button class="btn btn-solid btn-sm" id="addCirrus">+ Novo modelo</button>
-        </div>
-      </div>
-      <table class="tbl"><tbody id="cirrusRows"></tbody></table>
     </div>
 
     <div class="panel" id="panel-users">
@@ -248,13 +258,27 @@
         </div>
 
       </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel" id="panel-partners">
+      <div class="row-head">
+        <div><h2>Parceiros</h2><p class="sub">Empresas e serviços de apoio (manutenção, hangaragem, etc) indicados no Universo Cirrus.</p></div>
+        <button class="btn btn-solid btn-sm" id="addPartner">+ Novo Parceiro</button>
+      </div>
+      <table class="tbl"><tbody id="partnerRows"></tbody></table>
     </div>
 
   </div></div>
 
 <div class="overlay" id="ovLead">
   <div class="modal" style="max-width:36rem">
-    <div class="modal-head"><h3>Detalhes da Mensagem</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-head">
+      <h3>Detalhes da Mensagem</h3>
+      <button class="x-btn" data-close>✕</button>
+    </div>
     <div class="modal-body">
       <div class="av-grid">
         <div class="av-item"><label>Nome</label><span class="val" id="ldName"></span></div>
@@ -429,24 +453,6 @@
   </div>
 </div>
 
-<div class="overlay" id="ovCirrus">
-  <div class="modal">
-    <div class="modal-head"><h3 id="cfTitle">Novo modelo</h3><button class="x-btn" data-close>✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="cfId">
-      <div class="grid2"><div class="fld"><label>Nome *</label><input id="cfName" placeholder="Vision Jet"></div><div class="fld"><label>Etiqueta</label><input id="cfLabel" placeholder="Jato Pessoal"></div></div>
-      <div class="fld"><label>Descrição</label><textarea id="cfDesc" rows="3" placeholder="O primeiro e único jato pessoal com sistema CAPS..."></textarea></div>
-      <div class="grid2"><div class="fld"><label>Ordem de exibição</label><input id="cfOrder" type="number" placeholder="1"></div><div class="fld"><label>Imagem</label><div class="uploader" id="cfUpZone"><div class="hint">Enviar imagem</div><input type="file" id="cfFile" accept="image/*"></div><div class="prog" id="cfProg"><div class="bar"></div></div></div></div>
-      <div class="thumbs-edit" id="cfThumb"></div>
-      <div class="fld"><label>Especificações (4 itens)</label><div class="repeater" id="cfSpecs"></div><button class="mini" id="cfAddSpec">+ Adicionar spec</button></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
-      <button class="btn btn-solid btn-sm" id="cfSave">Salvar modelo</button>
-    </div>
-  </div>
-</div>
-
 <div class="overlay" id="ovUser">
   <div class="modal" style="max-width:28rem">
     <div class="modal-head"><h3>Criar usuário</h3><button class="x-btn" data-close>✕</button></div>
@@ -523,12 +529,10 @@
   let me = null;
   let editImages = [];
   let editTranslations = {};
-  let cirrusImage = "";
 
   function msg(el, text, type){ el.textContent=text; el.className="msg show "+(type||""); }
   function clearMsg(el){ el.className="msg"; }
 
-  /* ---------------- AUTH ENGINE ---------------- */
   auth.onAuthStateChanged(async (user) => {
     if (!user) { $("view-loading").style.display="none"; showFlex("view-login"); return; }
     try {
@@ -571,21 +575,12 @@
 
     document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".overlay").classList.remove("open"));
 
-    // Carrega módulos e ganchos do sistema de abas
+    // Carrega tudo
     loadAircraft(); 
     loadLeads();
     loadPartners();
-    loadCirrus();
-    if(me.role==="admin") {
-      loadUsers();
-      loadConfig();
-      wireConfigPanel();
-    }
-    wireAircraftModal();
-    wireUserModal();
-    wireAircraftViewModal();
-    wirePartnerModal();
-    wireCirrusModal();
+    if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
+    wireAircraftModal(); wireUserModal(); wireAircraftViewModal(); wirePartnerModal();
 
     $("archivedToggle").onclick = () => {
       const sec = $("archivedSection");
@@ -602,7 +597,7 @@
   }
 
   /* ============================================================
-     LEADS / MENSAGENS CRM
+     LEADS / MENSAGENS
      ============================================================ */
   async function loadLeads() {
     const rows = $("leadsRows");
@@ -633,7 +628,7 @@
         
         const tr = document.createElement("tr");
         tr.style.cursor = "pointer";
-        if(isNew) tr.style.backgroundColor = "rgba(180, 35, 24, 0.05)";
+        tr.style.backgroundColor = isNew ? "rgba(180, 35, 24, 0.05)" : "transparent"; 
         
         tr.innerHTML = `
           <td>
@@ -646,7 +641,7 @@
           <td style="color:hsl(var(--muted-foreground))">${esc(l.email)}<br><span style="font-size:.75rem">${esc(l.phone)}</span></td>
           <td>
             <div style="font-size:.8125rem">${dateStr}</div>
-            <div class="act" style="margin-top:.5rem"><button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button></div>
+            <div class="act" style="margin-top:.5rem"><button class="icon-btn danger del-lead">Excluir</button></div>
           </td>
         `;
 
@@ -660,6 +655,7 @@
           await db.collection("leads").doc(l.id).delete();
           loadLeads();
         };
+
         rows.appendChild(tr);
       });
     } catch(err) {
@@ -692,177 +688,409 @@
   }
 
   /* ============================================================
-     AERONAVES À VENDA ENGINE
+     AERONAVES À VENDA
      ============================================================ */
   let aircraftSearchTerm = "";
-  let aircraftCache = [];
+  let aircraftCache = []; 
 
   function matchesSearch(a, term){
     if(!term) return true;
     const t = term.toLowerCase();
-    return (a.model||"").toLowerCase().includes(t) || (a.codigoInterno||"").toLowerCase().includes(t) || (a.prefixo||"").toLowerCase().includes(t);
+    return (a.model||"").toLowerCase().includes(t)
+        || (a.codigoInterno||"").toLowerCase().includes(t)
+        || (a.prefixo||"").toLowerCase().includes(t);
   }
 
   function renderAircraftRows(docs){
     const rows = $("aircraftRows");
-    rows.innerHTML = "";
     if(!docs.length){
-      rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhuma aeronave ativa encontrada.</td></tr>`;
+      rows.innerHTML = `<tr><td class="empty-row" colspan="3">${aircraftSearchTerm ? "Nenhuma aeronave encontrada." : 'Nenhuma aeronave ativa.'}</td></tr>`;
       return;
     }
     const totalFeatured = aircraftCache.filter(d=>d.featured).length;
     const STAR_ON  = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;fill:hsl(var(--foreground));stroke:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     const STAR_OFF = `<svg style="width:.875rem;height:.875rem;vertical-align:middle;stroke:hsl(var(--muted-foreground));fill:none;margin-right:.3rem" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-    
+    rows.innerHTML = "";
+
     docs.forEach(a => {
-      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb"></div>`;
-      const isFeatured = !!a.featured; const canFeature = !isFeatured && totalFeatured >= 8;
-      const featBtn = isFeatured ? `<button class="feat-toggle feat-on" data-id="${a.id}" data-feat="true">${STAR_ON}Destaque</button>` : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled':''}>${STAR_OFF}Destacar</button>`;
+      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
+      const isFeatured = !!a.featured;
+      const canFeature  = !isFeatured && totalFeatured >= 8;
+      const featBtn = isFeatured
+        ? `<button class="feat-toggle feat-on" data-id="${a.id}" data-feat="true">${STAR_ON}Em destaque</button>`
+        : `<button class="feat-toggle" data-id="${a.id}" data-feat="false" ${canFeature?'disabled style="opacity:.4;cursor:not-allowed"':''}>${STAR_OFF}Destacar</button>`;
       
-      const tr = document.createElement("tr"); tr.style.cursor = "pointer";
-      tr.innerHTML = `<td style="width:5rem;padding:.5rem">${img}</td><td><b>${esc(a.model)}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))"><span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno||"")}</span> · ${esc(a.condition)} · ${a.year}</div></td><td><div class="act">${featBtn}<button class="icon-btn edit-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
+      const tr = document.createElement("tr");
+      tr.style.cursor = "pointer";
+      tr.innerHTML = `
+        <td style="width:5rem;padding:.5rem">${img}</td>
+        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
+        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
       
       tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
-      tr.querySelector(".edit-btn").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
       tr.querySelector(".dup-btn").onclick = (e) => { e.stopPropagation(); duplicateAircraft(a.id, a); };
       tr.querySelector(".archive-btn").onclick = (e) => { e.stopPropagation(); archiveAircraft(a.id, a.model); };
       
       const ftBtn = tr.querySelector(".feat-toggle");
-      if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async (e) => { e.stopPropagation(); const newVal = ftBtn.dataset.feat !== "true"; await db.collection("aircraft").doc(ftBtn.dataset.id).update({featured:newVal}); loadAircraft(); };
+      if(ftBtn && !ftBtn.disabled) ftBtn.onclick = async (e) => {
+        e.stopPropagation();
+        const newVal = ftBtn.dataset.feat !== "true";
+        if(!newVal && totalFeatured<=1){ alert("É necessário pelo menos 1 aeronave em destaque."); return; }
+        try{ await db.collection("aircraft").doc(ftBtn.dataset.id).update({featured:newVal}); loadAircraft(); }
+        catch(e){ alert(e.message); }
+      };
       rows.appendChild(tr);
     });
   }
 
-  async function loadAircraft(){
-    const rows = $("aircraftRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
+  async function loadLeads() {
+    const rows = $("leadsRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens…</td></tr>`;
     try {
-      const snap = await db.collection("aircraft").get();
-      if(!snap || snap.empty) { rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma aeronave cadastrada.</td></tr>`; loadArchivedAircraft(); return; }
-      const activeDocs = snap.docs.filter(d => !d.data().archived);
-      aircraftCache = activeDocs.map(d => ({ id:d.id, ...d.data() })).sort((a,b) => (Number(b.year)||0) - (Number(a.year)||0));
-      renderAircraftRows(aircraftCache); loadArchivedAircraft();
-    } catch(e){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Erro ao carregar frota.</td></tr>`; }
+      const snap = await db.collection("leads").orderBy("createdAt", "desc").get();
+      if(snap.empty) { rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma mensagem.</td></tr>`; $("unreadBadge").style.display = "none"; return; }
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const unreadCount = docs.filter(d => d.status === "novo").length;
+      if(unreadCount > 0) { $("unreadBadge").textContent = unreadCount; $("unreadBadge").style.display = "inline-block"; } else { $("unreadBadge").style.display = "none"; }
+      rows.innerHTML = docs.map(l => `<tr style="cursor:pointer; ${l.status==='novo'?'background:rgba(180,35,24,0.05)':''}"><td><b>${esc(l.name)}</b>${l.status==='novo'?' <span class="pill novo">NOVO</span>':''}<br><span style="font-size:.75rem">${esc(l.subject)}</span></td><td>${esc(l.email)}<br><span style="font-size:.75rem">${esc(l.phone)}</span></td><td><button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button></td></tr>`).join("");
+      rows.querySelectorAll("tr").forEach((tr, i) => tr.onclick = (e) => { if(!e.target.classList.contains("del-lead")) openLeadModal(docs[i].id, docs[i]); });
+      rows.querySelectorAll(".del-lead").forEach(b => b.onclick = async (e) => { e.stopPropagation(); if(confirm("Excluir lead?")) { await db.collection("leads").doc(b.dataset.id).delete(); loadLeads(); } });
+    } catch(err) {}
   }
 
-  async function archiveAircraft(id, name){ try{ await db.collection("aircraft").doc(id).update({ archived:true, archivedAt:ts(), featured:false }); loadAircraft(); } catch(e){} }
-  async function unarchiveAircraft(id, name){ try{ await db.collection("aircraft").doc(id).update({ archived:false, archivedAt:null }); loadAircraft(); } catch(e){} }
-  async function duplicateAircraft(id, a){ const copia = { ...a }; delete copia.featured; copia.codigoInterno = gerarCodigoInterno(); copia.model = `${a.model} (cópia)`; copia.createdAt = ts(); copia.createdBy = me.email; copia.archived = false; try { await db.collection("aircraft").add(copia); loadAircraft(); }catch(e){} }
-  
+  async function openLeadModal(id, lead) {
+    const dateStr = lead.createdAt ? new Date(lead.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "";
+    $("ldName").textContent = lead.name; $("ldEmail").textContent = lead.email; $("ldPhone").textContent = lead.phone; $("ldDate").textContent = dateStr; $("ldSubject").textContent = lead.subject; $("ldAircraft").textContent = lead.aircraft || "Nenhuma"; $("ldMessage").textContent = lead.message;
+    $("ldWhatsApp").href = `https://wa.me/55${(lead.phone || "").replace(/\D/g, '')}`; $("ldMailTo").href = `mailto:${lead.email}`;
+    $("ovLead").classList.add("open");
+    if(lead.status === "novo") { await db.collection("leads").doc(id).update({ status: "lido" }); loadLeads(); }
+  }
+
+  async function loadAircraft(){
+    const rows = $("aircraftRows");
+    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
+    const snap = await db.collection("aircraft").get().catch(()=>null);
+    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma aeronave cadastrada.</td></tr>`; loadArchivedAircraft(); return; }
+
+    const activeDocs = snap.docs.filter(d => !d.data().archived);
+    const docs = activeDocs
+      .map(d => ({ id:d.id, ...d.data() }))
+      .sort((a,b) => {
+        const ay = Number(a.year)||0, by = Number(b.year)||0;
+        if(ay !== by) return by - ay; 
+        return (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0);
+      });
+
+    aircraftCache = docs;
+    const filtered = docs.filter(a => matchesSearch(a, aircraftSearchTerm));
+    renderAircraftRows(filtered);
+    loadArchivedAircraft();
+  }
+
+  async function archiveAircraft(id, name){
+    if(!confirm(`Arquivar "${name||"esta aeronave"}"? Ela sai do site público mas continua salva.`)) return;
+    try{ await db.collection("aircraft").doc(id).update({ archived:true, archivedAt:ts(), featured:false }); loadAircraft(); }
+    catch(e){ alert(e.message); }
+  }
+  async function unarchiveAircraft(id, name){
+    try{ await db.collection("aircraft").doc(id).update({ archived:false, archivedAt:null }); loadAircraft(); }
+    catch(e){ alert(e.message); }
+  }
+  async function duplicateAircraft(id, a){
+    const novoCodigo = gerarCodigoInterno();
+    const copia = { ...a };
+    delete copia.featured; 
+    delete copia.order;    
+    copia.codigoInterno = novoCodigo;
+    copia.model = a.model ? `${a.model} (cópia)` : "Nova aeronave (cópia)";
+    copia.createdAt = ts();
+    copia.createdBy = me.email;
+    copia.archived = false;
+    try{
+      const ref = await db.collection("aircraft").add(copia);
+      loadAircraft();
+      openAircraft(ref.id, copia); 
+    }catch(e){ alert("Erro ao duplicar: "+e.message); }
+  }
+
   async function loadArchivedAircraft(){
-    const rows = $("archivedRows"); const snap = await db.collection("aircraft").get().catch(()=>null); if(!snap) return;
+    const rows = $("archivedRows");
+    const snap = await db.collection("aircraft").get().catch(()=>null);
+    if(!snap){ return; }
     const archived = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
-    $("archivedCount").textContent = archived.length ? `(${archived.length})` : ""; if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
-    rows.innerHTML = archived.map(a => `<tr><td><b>${esc(a.model)}</b> (<span style="font-family:monospace">${esc(a.codigoInterno)}</span>)</td><td><div class="act"><button class="icon-btn republish-btn" data-id="${a.id}">Republicar</button><button class="icon-btn danger del-btn" data-id="${a.id}">Excluir</button></div></td></tr>`).join("");
-    rows.querySelectorAll(".republish-btn").forEach(b => b.onclick = async () => { await unarchiveAircraft(b.dataset.id); loadAircraft(); });
-    rows.querySelectorAll(".del-btn").forEach(b => b.onclick = async () => { await delDoc("aircraft", b.dataset.id, "Aeronave", loadAircraft); });
+    $("archivedCount").textContent = archived.length ? `(${archived.length})` : "";
+    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
+    rows.innerHTML = "";
+    archived.forEach(a => {
+      const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
+      const tr = document.createElement("tr");
+      tr.style.opacity = ".65";
+      tr.style.cursor = "pointer";
+      tr.innerHTML = `
+        <td style="width:5rem;padding:.5rem">${img}</td>
+        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""}</div></td>
+        <td><div class="act"><button class="icon-btn edit-archived-btn">Editar</button><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
+      tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
+      tr.querySelector(".edit-archived-btn").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".republish-btn").onclick = (e) => { e.stopPropagation(); unarchiveAircraft(a.id, a.model); };
+      tr.querySelector(".del-btn").onclick = (e) => { e.stopPropagation(); delDoc("aircraft", a.id, a.model, () => { loadAircraft(); }); };
+      rows.appendChild(tr);
+    });
   }
 
-  function specRow(label="", value=""){ const d=document.createElement("div"); d.className="rrow"; d.innerHTML=`<input placeholder="Rótulo" value="${esc(label)}"><input placeholder="Valor" value="${esc(value)}"><button class="rm">×</button>`; d.querySelector(".rm").onclick=()=>d.remove(); return d; }
-  function featRow(icon="Shield", title="", desc=""){ const opts = PA.FEATURE_ICONS.map(i=>`<option ${i===icon?"selected":""}>${i}</option>`).join(""); const d=document.createElement("div"); d.className="rrow feat"; d.innerHTML=`<select>${opts}</select><input placeholder="Título" value="${esc(title)}"><input placeholder="Descrição" value="${esc(desc)}"><button class="rm">×</button>`; d.querySelector(".rm").onclick=()=>d.remove(); return d; }
+  function specRow(label="", value=""){
+    const d=document.createElement("div"); d.className="rrow";
+    d.innerHTML=`<input placeholder="Rótulo" value="${esc(label)}"><input placeholder="Valor" value="${esc(value)}"><button class="rm" title="Remover">×</button>`;
+    d.querySelector(".rm").onclick=()=>d.remove(); return d;
+  }
+  function featRow(icon="Shield", title="", desc=""){
+    const opts = PA.FEATURE_ICONS.map(i=>`<option ${i===icon?"selected":""}>${i}</option>`).join("");
+    const d=document.createElement("div"); d.className="rrow feat";
+    d.innerHTML=`<select>${opts}</select><input placeholder="Título" value="${esc(title)}"><input placeholder="Descrição" value="${esc(desc)}"><button class="rm">×</button>`;
+    d.querySelector(".rm").onclick=()=>d.remove(); return d;
+  }
 
   function wireAircraftModal(){
-    $("addAircraft").onclick = () => openAircraft(null, null); $("acAddSpec").onclick = () => $("acSpecs").appendChild(specRow()); $("acAddFeat").onclick = () => $("acFeats").appendChild(featRow());
-    $("acUpZone").onclick = (e)=>{ if(e.target.tagName!=="INPUT") $("acFiles").click(); }; $("acFiles").onchange = (e)=> uploadImages(e.target.files, "aircraft", $("acProg"), (url)=>{ editImages.push(url); renderEditThumbs(); });
-    $("acSave").onclick = () => saveAircraft(false); $("acTranslateBtn").onclick = openTranslateModal; wireTranslateModal();
+    $("addAircraft").onclick = () => openAircraft(null, null);
+    $("acAddSpec").onclick = () => $("acSpecs").appendChild(specRow());
+    $("acAddFeat").onclick = () => $("acFeats").appendChild(featRow());
+    $("acUpZone").onclick = (e)=>{ if(e.target.tagName!=="INPUT") $("acFiles").click(); };
+    $("acFiles").onchange = (e)=> uploadImages(e.target.files, "aircraft", $("acProg"), (url)=>{ editImages.push(url); renderEditThumbs(); });
+    $("acSave").onclick = saveAircraft;
+    $("acTranslateBtn").onclick = openTranslateModal;
+    wireTranslateModal();
   }
 
-  function renderEditThumbs(){ $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t"><img src="${u}"><button class="del" data-i="${i}">×</button></div>`).join(""); $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=()=>{ editImages.splice(+b.dataset.i,1); renderEditThumbs(); }); }
-  
+  /* TRADUÇÃO */
+  let trData = {};
+  async function myMemoryTranslate(text, langPair){
+    if (!text || !text.trim()) return "";
+    try {
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0,500))}&langpair=${langPair}`;
+      const r = await fetch(url);
+      const j = await r.json();
+      return j.responseData?.translatedText || text;
+    } catch(e){ return text; }
+  }
+  async function translateAll(){
+    const condition  = $("acCondition").value;
+    const location   = $("acLocation").value.trim();
+    const description= $("acDesc").value.trim();
+    const specs      = [...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
+    const features   = [...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
+
+    for (const [lang, pair] of [["en","pt|en"],["es","pt|es"]]) {
+      const [tCond, tLoc, tDesc] = await Promise.all([ myMemoryTranslate(condition, pair), myMemoryTranslate(location, pair), myMemoryTranslate(description, pair) ]);
+      const tSpecs = await Promise.all(specs.map(async s => ({ label: await myMemoryTranslate(s.label, pair), value: await myMemoryTranslate(s.value, pair) })));
+      const tFeats = await Promise.all(features.map(async f => ({ icon: f.icon, title: await myMemoryTranslate(f.title, pair), desc:  await myMemoryTranslate(f.desc, pair) })));
+      trData[lang] = { condition:tCond, location:tLoc, description:tDesc, specs:tSpecs, features:tFeats };
+    }
+    trData["pt"] = { condition, location, description, specs: specs.map(s=>({label:s.label,value:s.value})), features: features.map(f=>({icon:f.icon,title:f.title,desc:f.desc})) };
+  }
+  function fillTranslateModal(){
+    $("trModel").textContent = $("acModel").value.trim();
+    $("tr-pt-condition").value    = trData.pt?.condition || "";
+    $("tr-pt-location").value     = trData.pt?.location  || "";
+    $("tr-pt-description").value  = trData.pt?.description || "";
+    $("tr-pt-specs").innerHTML    = (trData.pt?.specs||[]).map(s=>`<div><b>${esc(s.label)}</b>: ${esc(s.value)}</div>`).join("") || "—";
+    $("tr-pt-features").innerHTML = (trData.pt?.features||[]).map(f=>`<div><b>${esc(f.title)}</b>: ${esc(f.desc)}</div>`).join("") || "—";
+
+    for (const lang of ["en","es"]) {
+      const d = trData[lang] || {};
+      $(`tr-${lang}-condition`).value   = d.condition || "";
+      $(`tr-${lang}-location`).value    = d.location  || "";
+      $(`tr-${lang}-description`).value = d.description || "";
+      $(`tr-${lang}-specs-wrap`).innerHTML = "";
+      (d.specs||[]).forEach((s,i) => {
+        const row = document.createElement("div"); row.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:.5rem";
+        row.innerHTML = `<input value="${esc(s.label)}" data-lang="${lang}" data-si="${i}" data-field="label"><input value="${esc(s.value)}" data-lang="${lang}" data-si="${i}" data-field="value">`;
+        $(`tr-${lang}-specs-wrap`).appendChild(row);
+      });
+      $(`tr-${lang}-feats-wrap`).innerHTML = "";
+      (d.features||[]).forEach((f,i) => {
+        const row = document.createElement("div"); row.style.cssText = "display:grid;grid-template-columns:1fr 2fr;gap:.5rem";
+        row.innerHTML = `<input value="${esc(f.title)}" data-lang="${lang}" data-fi="${i}" data-field="title"><input value="${esc(f.desc)}" data-lang="${lang}" data-fi="${i}" data-field="desc">`;
+        $(`tr-${lang}-feats-wrap`).appendChild(row);
+      });
+    }
+  }
+  function collectTranslateEdits(){
+    for (const lang of ["en","es"]) {
+      if (!trData[lang]) trData[lang] = { specs:[], features:[] };
+      trData[lang].condition   = $(`tr-${lang}-condition`).value.trim();
+      trData[lang].location    = $(`tr-${lang}-location`).value.trim();
+      trData[lang].description = $(`tr-${lang}-description`).value.trim();
+      $(`tr-${lang}-specs-wrap`).querySelectorAll("input").forEach(inp => {
+        const i = +inp.dataset.si; const field = inp.dataset.field;
+        if (!trData[lang].specs[i]) trData[lang].specs[i] = { label:"", value:"" };
+        trData[lang].specs[i][field] = inp.value.trim();
+      });
+      $(`tr-${lang}-feats-wrap`).querySelectorAll("input").forEach(inp => {
+        const i = +inp.dataset.fi; const field = inp.dataset.field;
+        if (!trData[lang].features[i]) trData[lang].features[i] = { icon:"Shield", title:"", desc:"" };
+        trData[lang].features[i][field] = inp.value.trim();
+      });
+    }
+  }
+  async function openTranslateModal(){
+    const model = $("acModel").value.trim();
+    if (!model) return alert("Informe o modelo antes de revisar as traduções.");
+    msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
+    $("ovTranslate").classList.add("open");
+    await translateAll();
+    fillTranslateModal();
+    clearMsg($("trMsg"));
+  }
+  function wireTranslateModal(){
+    document.querySelectorAll("[data-trtab]").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll("[data-trtab]").forEach(b=>b.classList.remove("active"));
+        document.querySelectorAll(".tr-panel").forEach(p=>p.style.display="none");
+        btn.classList.add("active"); $("trp-"+btn.dataset.trtab).style.display = "block";
+      };
+    });
+    $("trClose").onclick = () => $("ovTranslate").classList.remove("open");
+    $("trBack").onclick  = () => $("ovTranslate").classList.remove("open");
+    $("trRetranslate").onclick = async () => { collectTranslateEdits(); msg($("trMsg"), "Traduzindo novamente…", "ok"); await translateAll(); fillTranslateModal(); clearMsg($("trMsg")); };
+    $("trSave").onclick = async () => { collectTranslateEdits(); $("ovTranslate").classList.remove("open"); await saveAircraft(true); };
+  }
+
+  function renderEditThumbs(){
+    $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t"><img src="${u}"><button class="del" data-i="${i}">×</button></div>`).join("");
+    $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=()=>{ editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
+  }
+  function gerarCodigoInterno(){ return `PA-${Date.now().toString().slice(-4)}`; }
+
+  /* LEITURA DE AERONAVE */
+  let viewingAircraftId = null;
+  let viewingAircraftData = null;
+  function avVal(v, suffix=""){ return (v===null||v===undefined||v==="") ? `<span class="val empty">— não informado —</span>` : `<span class="val">${esc(String(v))}${suffix}</span>`; }
+  function openAircraftView(id, a){
+    viewingAircraftId = id; viewingAircraftData = a;
+    $("avTitle").textContent = a.model || "Aeronave";
+    const precoTxt = a.sobConsulta ? "Sob consulta" : (a.priceNum!=null ? `${a.currency||"USD"} ${Number(a.priceNum).toLocaleString("pt-BR")}` : null);
+    const imagesHTML = (a.images && a.images.length) ? `<div class="av-thumbs">${a.images.map(u=>`<img src="${u}">`).join("")}</div>` : `<span class="val empty">Nenhuma imagem</span>`;
+    const specsHTML = (a.specs||[]).filter(s=>s.label||s.value).length ? (a.specs||[]).filter(s=>s.label||s.value).map(s=>`<div class="av-spec-row"><span>${esc(s.label||"")}</span><b>${esc(s.value||"")}</b></div>`).join("") : `<span class="val empty">Sem ficha</span>`;
+    const featsHTML = (a.features||[]).filter(f=>f.title||f.desc).length ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem">${(a.features||[]).filter(f=>f.title||f.desc).map(f=>`<div class="av-feat"><b>${esc(f.title||"")}</b><span>${esc(f.desc||"")}</span></div>`).join("")}</div>` : `<span class="val empty">Sem tecnologias</span>`;
+
+    $("avBody").innerHTML = `
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : `<span class="av-badge">Ativa no site</span>`}
+        ${a.featured ? `<span class="av-badge" style="background:#b45309">Em destaque na Home</span>` : ""}
+      </div>
+      <div class="av-section"><div class="av-section-title">Informações Gerais</div>
+        <div class="av-grid">
+          <div class="av-item"><label>Modelo</label>${avVal(a.model)}</div>
+          <div class="av-item"><label>Código Interno</label>${avVal(a.codigoInterno)}</div>
+          <div class="av-item"><label>Ano</label>${avVal(a.year)}</div>
+          <div class="av-item"><label>Condição</label>${avVal(a.condition)}</div>
+          <div class="av-item"><label>Localização</label>${avVal(a.location)}</div>
+          <div class="av-item"><label>Selo</label>${avVal(a.tag)}</div>
+          <div class="av-item"><label>Horas (célula)</label>${avVal(a.hoursNum)}</div>
+          <div class="av-item"><label>Horas (motor)</label>${avVal(a.motorHours)}</div>
+          <div class="av-item"><label>Horas (hélice)</label>${avVal(a.heliceHours)}</div>
+          <div class="av-item"><label>Preço</label>${avVal(precoTxt)}</div>
+        </div>
+      </div>
+      <div class="av-section"><div class="av-section-title">Descrição</div>${a.description ? `<p class="av-desc">${esc(a.description)}</p>` : `<span class="val empty">Sem descrição</span>`}</div>
+      <div class="av-section"><div class="av-section-title">Imagens</div>${imagesHTML}</div>
+      <div class="av-section"><div class="av-section-title">Ficha Técnica</div><div>${specsHTML}</div></div>
+      <div class="av-section"><div class="av-section-title">Tecnologias a Bordo</div>${featsHTML}</div>
+      <div class="av-internal"><div class="av-section-title">Uso Interno — não aparece no site</div>
+        <div class="av-grid" style="margin-top:.75rem">
+          <div class="av-item"><label>Prefixo</label>${avVal(a.prefixo)}</div>
+          <div class="av-item"><label>Telefone</label>${avVal(a.proprietarioTelefone)}</div>
+          <div class="av-item" style="grid-column:1/-1"><label>Proprietário</label>${avVal(a.proprietarioNome)}</div>
+          <div class="av-item" style="grid-column:1/-1"><label>Anotações</label>${a.notasInternas ? `<p class="av-desc">${esc(a.notasInternas)}</p>` : avVal(null)}</div>
+        </div>
+      </div>`;
+    $("ovAircraftView").classList.add("open");
+  }
+  function wireAircraftViewModal(){ $("avEditBtn").onclick = () => { $("ovAircraftView").classList.remove("open"); openAircraft(viewingAircraftId, viewingAircraftData); }; }
+
   function openAircraft(id, a){
-    a = a || {}; $("acId").value = id || ""; $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
-    $("acModel").value=a.model||""; $("acYear").value=a.year||""; $("acHours").value=a.hoursNum||""; $("acCondition").value=a.condition||"Seminovo"; $("acLocation").value=a.location||""; $("acCurrency").value=a.currency||"USD"; $("acPrice").value=a.priceNum||""; $("acSobConsulta").checked = !!a.sobConsulta; $("acTag").value=a.tag||""; $("acDesc").value=a.description||"";
-    editTranslations = a.translations || {}; trData = editTranslations; editImages = Array.isArray(a.images)? a.images.slice() : []; renderEditThumbs();
-    $("acSpecs").innerHTML=""; (a.specs||[]).forEach(s=>$("acSpecs").appendChild(specRow(s.label,s.value))); if(!($("acSpecs").children.length)) $("acSpecs").appendChild(specRow());
-    $("acFeats").innerHTML=""; (a.features||[]).forEach(f=>$("acFeats").appendChild(featRow(f.icon,f.title,f.desc))); if(!($("acFeats").children.length)) $("acFeats").appendChild(featRow());
-    $("acPrefixo").value = a.prefixo || ""; $("acProprietarioNome").value = a.proprietarioNome || ""; $("acProprietarioTel").value = a.proprietarioTelefone || ""; $("acNotasInternas").value = a.notasInternas || "";
+    a = a || {};
+    $("acTitle").textContent = id ? "Editar aeronave" : "Nova aeronave";
+    $("acId").value = id || "";
+    $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
+    $("acModel").value=a.model||""; $("acYear").value=a.year||"";
+    $("acHours").value=a.hoursNum!=null?a.hoursNum:(a.hours?String(a.hours).replace(/\D/g,""):"");
+    $("acMotor").value=a.motorHours!=null?a.motorHours:""; $("acHelice").value=a.heliceHours!=null?a.heliceHours:"";
+    $("acCondition").value=a.condition||"Seminovo"; $("acLocation").value=a.location||"";
+    $("acCurrency").value=a.currency||"USD";
+    $("acPrice").value=a.priceNum!=null?a.priceNum:(a.price&&!isNaN(Number(String(a.price).replace(/\D/g,"")))?String(a.price).replace(/\D/g,""):"");
+    $("acSobConsulta").checked = !!a.sobConsulta; $("acTag").value=a.tag||""; $("acDesc").value=a.description||"";
+    editTranslations = a.translations || {}; trData = editTranslations;
+    editImages = Array.isArray(a.images)? a.images.slice() : []; renderEditThumbs();
+    $("acSpecs").innerHTML=""; (a.specs||[]).forEach(s=>$("acSpecs").appendChild(specRow(s.label,s.value)));
+    if(!(a.specs||[]).length) $("acSpecs").appendChild(specRow());
+    $("acFeats").innerHTML=""; (a.features||[]).forEach(f=>$("acFeats").appendChild(featRow(f.icon,f.title,f.desc)));
+    if(!(a.features||[]).length) $("acFeats").appendChild(featRow());
+    $("acPrefixo").value = a.prefixo || ""; $("acProprietarioNome").value = a.proprietarioNome || "";
+    $("acProprietarioTel").value = a.proprietarioTelefone || ""; $("acNotasInternas").value = a.notasInternas || "";
     $("ovAircraft").classList.add("open");
   }
 
-  async function saveAircraft(wTr=false){
-    const model=$("acModel").value.trim(); const codigo=$("acCodigo").value.trim(); if(!model || !codigo) return alert("Preencha Modelo e Código Interno.");
+  async function saveAircraft(withTranslations=false){
+    const model=$("acModel").value.trim(); if(!model) return alert("Informe o modelo.");
+    const codigoInterno = $("acCodigo").value.trim(); if(!codigoInterno) return alert("Informe o código interno.");
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
-    const data={ model, year:Number($("acYear").value)||null, codigoInterno:codigo, hoursNum:$("acHours").value?Number($("acHours").value):null, condition:$("acCondition").value, location:$("acLocation").value.trim(), currency:$("acCurrency").value, priceNum:$("acPrice").value?Number($("acPrice").value):null, sobConsulta:!!$("acSobConsulta").checked, tag:$("acTag").value.trim(), description:$("acDesc").value.trim(), translations:wTr?trData:editTranslations, images:editImages, specs, features, prefixo:$("acPrefixo").value.trim(), proprietarioNome:$("acProprietarioNome").value.trim(), proprietarioTelefone:$("acProprietarioTel").value.trim(), notasInternas:$("acNotasInternas").value.trim(), updatedAt:ts(), updatedBy:me.email };
-    try { if($("acId").value) await db.collection("aircraft").doc($("acId").value).update(data); else await db.collection("aircraft").add({ ...data, createdAt:ts(), createdBy:me.email }); $("ovAircraft").classList.remove("open"); loadAircraft(); } catch(e){ alert(e.message); }
-  }
-
-  function wireAircraftViewModal(){ $("avEditBtn").onclick = () => { $("ovAircraftView").classList.remove("open"); openAircraft(viewingAircraftId, viewingAircraftData); }; }
-  function openAircraftView(id, a){ viewingAircraftId = id; viewingAircraftData = a; $("avTitle").textContent = a.model; $("ovAircraftView").classList.add("open"); const avBody=$("avBody"); avBody.innerHTML=`<div class="av-section"><div class="av-section-title">Ficha Básica</div><div class="av-grid"><div class="av-item"><label>Modelo</label><div class="val">${esc(a.model)}</div></div><div class="av-item"><label>Ano</label><div class="val">${a.year||"—"}</div></div><div class="av-item"><label>Preço</label><div class="val">${a.sobConsulta?'Sob Consulta':(a.priceNum||"—")}</div></div><div class="av-item"><label>Cód Interno</label><div class="val">${esc(a.codigoInterno||"—")}</div></div></div></div><div class="av-internal"><div class="av-section-title">Dados Privados</div><div class="av-grid"><div class="av-item"><label>Prefixo</label><div class="val">${esc(a.prefixo||"—")}</div></div><div class="av-item"><label>Proprietário</label><div class="val">${esc(a.proprietarioNome||"—")}</div></div></div></div>`; }
-  
-  function translateAll(){} function fillTranslateModal(){} function collectTranslateEdits(){} function wireTranslateModal(){}
-
-  /* ============================================================
-     FROTA CIRRUS
-     ============================================================ */
-  async function loadCirrus(){
-    const rows=$("cirrusRows"); rows.innerHTML=`<tr><td class="empty-row">Carregando frota demonstrativa…</td></tr>`;
-    try {
-      const snap=await db.collection("cirrusFleet").orderBy("order","asc").get();
-      if(!snap || snap.empty){ rows.innerHTML=`<tr><td class="empty-row">Nenhum modelo cadastrado na frota.</td></tr>`; return; }
-      rows.innerHTML = snap.docs.map(doc => { const c=doc.data(); const img=c.image?`<img class="thumb" src="${c.image}">`:`<div class="thumb"></div>`; return `<tr><td style="width:4rem">${img}</td><td><b>${esc(c.name)}</b><br><span style="font-size:11px">${esc(c.label||"")}</span></td><td>Ordem: ${c.order||"0"}</td><td><div class="act"><button class="icon-btn edit-cf" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-cf" data-id="${doc.id}">Excluir</button></div></td></tr>`; }).join("");
-      rows.querySelectorAll(".edit-cf").forEach(b => b.onclick = async () => { const doc = await db.collection("cirrusFleet").doc(b.dataset.id).get(); openCirrus(doc.id, doc.data()); });
-      rows.querySelectorAll(".del-cf").forEach(b => b.onclick = () => delDoc("cirrusFleet", b.dataset.id, "Modelo", loadCirrus));
-    } catch(e){ rows.innerHTML=`<tr><td class="empty-row">Erro de conexão.</td></tr>`; }
-  }
-  function cspecRow(k="",v=""){ const d=document.createElement("div"); d.className="rrow"; d.innerHTML=`<input placeholder="Spec" value="${esc(k)}"><input placeholder="Valor" value="${esc(v)}"><button class="rm">×</button>`; d.querySelector(".rm").onclick=()=>d.remove(); return d; }
-  function wireCirrusModal(){
-    $("seedCirrus").onclick=seedCirrusModels;
-    $("addCirrus").onclick=()=>openCirrus(null,null);
-    $("cfAddSpec").onclick=()=>$("cfSpecs").appendChild(cspecRow());
-    $("cfUpZone").onclick=()=>$("cfFile").click();
-    $("cfFile").onchange=(e)=>uploadImages(e.target.files,"cirrus",$("cfProg"),(url)=>{ cirrusImage=url; renderCfThumb(); });
-    $("cfSave").onclick=()=>saveCirrus();
-  }
-  function openCirrus(id,c){ c=c||{}; $("cfId").value=id||""; $("cfName").value=c.name||""; $("cfLabel").value=c.label||""; $("cfDesc").value=c.desc||""; $("cfOrder").value=c.order||""; cirrusImage=c.image||""; renderCfThumb(); $("cfSpecs").innerHTML=""; (c.specs||[]).forEach(s=>$("cfSpecs").appendChild(cspecRow(s.k,s.v))); if(!($("cfSpecs").children.length)) for(let i=0;i<4;i++) $("cfSpecs").appendChild(cspecRow()); $("ovCirrus").classList.add("open"); }
-  async function saveCirrus(){
-    const specs=[...$("cfSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {k:i[0].value.trim(),v:i[1].value.trim()};}).filter(s=>s.k||s.v);
-    const data={ name:$("cfName").value.trim(), label:$("cfLabel").value.trim(), desc:$("cfDesc").value.trim(), order:Number($("cfOrder").value)||0, image:cirrusImage||"", specs, updatedAt:ts(), updatedBy:me.email };
-    if($("cfId").value) await db.collection("cirrusFleet").doc($("cfId").value).update(data); else await db.collection("cirrusFleet").add({ ...data, createdAt:ts(), createdBy:me.email });
-    $("ovCirrus").classList.remove("open"); loadCirrus();
-  }
-  async function seedCirrusModels(){
-    const models = [
-      { name:"Vision Jet", label:"Jato Pessoal", desc:"O primeiro e único jato pessoal com sistema CAPS.", order:1, image:"", specs:[{k:"Velocidade Máx.",v:"300 ktas"},{k:"Alcance",v:"1.200 nm"},{k:"Altitude Máx.",v:"31.000 ft"},{k:"Motor",v:"Williams FJ33-5A"}] },
-      { name:"SR22T", label:"Turbo Alta Performance", desc:"O carro-chefe da linha SR com motor turbo normalizado.", order:2, image:"", specs:[{k:"Velocidade Máx.",v:"214 ktas"},{k:"Alcance",v:"1.100 nm"},{k:"Altitude Máx.",v:"25.000 ft"},{k:"Motor",v:"Continental IO-550-N Turbo"}] },
-      { name:"SR22", label:"O Mais Vendido do Mundo", desc:"Equilíbrio perfeito entre performance e conforto.", order:3, image:"", specs:[{k:"Velocidade Máx.",v:"183 ktas"},{k:"Alcance",v:"1.049 nm"},{k:"Altitude Máx.",v:"17.500 ft"},{k:"Motor",v:"Continental IO-550-N"}] },
-      { name:"SR20", label:"Iniciação e Treinamento", desc:"A porta de entrada perfeita na família Cirrus.", order:4, image:"", specs:[{k:"Velocidade Máx.",v:"160 ktas"},{k:"Alcance",v:"990 nm"},{k:"Altitude Máx.",v:"17.500 ft"},{k:"Motor",v:"Continental IO-390"}] }
-    ];
-    try {
-      const batch = db.batch(); models.forEach(m => { const ref = db.collection("cirrusFleet").doc(); batch.set(ref, { ...m, createdAt:ts(), createdBy:me.email }); });
-      await batch.commit(); loadCirrus(); alert("Modelos padrão gerados!");
-    } catch(e) { alert(e.message); }
+    const data={ model, year:Number($("acYear").value)||null, codigoInterno, hoursNum:$("acHours").value?Number($("acHours").value):null, motorHours:$("acMotor").value?Number($("acMotor").value):null, heliceHours:$("acHelice").value?Number($("acHelice").value):null, condition:$("acCondition").value, location:$("acLocation").value.trim(), currency:$("acCurrency").value||"USD", priceNum:$("acPrice").value?Number($("acPrice").value):null, sobConsulta:!!$("acSobConsulta").checked, tag:$("acTag").value.trim(), tagSolid:true, description:$("acDesc").value.trim(), translations:withTranslations?trData:(editTranslations||{}), images:editImages, specs, features, prefixo:$("acPrefixo").value.trim(), proprietarioNome:$("acProprietarioNome").value.trim(), proprietarioTelefone:$("acProprietarioTel").value.trim(), notasInternas:$("acNotasInternas").value.trim(), updatedAt:ts(), updatedBy:me.email };
+    const id=$("acId").value;
+    if (PA.IMAGE_MODE === "inline" && inlineBytes(editImages) > 750 * 1024) return alert(`Limite de imagens excedido para modo sem Storage.`);
+    try{
+      if(id) await db.collection("aircraft").doc(id).update(data);
+      else { data.createdAt=ts(); data.createdBy=me.email; await db.collection("aircraft").add(data); }
+      $("ovAircraft").classList.remove("open"); loadAircraft();
+    }catch(e){ alert("Erro ao salvar: "+e.message); }
   }
 
   /* ============================================================
-     USUÁRIOS & PERMISSÕES
+     USUÁRIOS (admin)
      ============================================================ */
   async function loadUsers(){
     const rows=$("userRows"); rows.innerHTML=`<tr><td class="empty-row" colspan="2">Carregando…</td></tr>`;
-    try {
-      const snap=await db.collection("users").get(); if(snap.empty) return; rows.innerHTML="";
-      snap.forEach(doc=>{ const u=doc.data(); const isMe=doc.id===me.uid; const tr=document.createElement("tr");
-        tr.innerHTML=`<td><b>${esc(u.name||u.email)}</b> <span class="pill ${u.role}">${u.role}</span></td><td><div class="act"><button class="icon-btn editUser" ${isMe?"disabled":""}>Editar</button><button class="icon-btn danger rmUser" ${isMe?"disabled":""}>Remover</button></div></td>`;
-        if(!isMe){ tr.querySelector(".editUser").onclick=()=>openEditUser(doc.id, u); tr.querySelector(".rmUser").onclick=()=>removeUser(doc.id, u.name); } rows.appendChild(tr);
-      });
-    } catch(e){}
+    const snap=await db.collection("users").get().catch(()=>null);
+    if(!snap||snap.empty){ rows.innerHTML=`<tr><td class="empty-row" colspan="2">Nenhum usuário cadastrado.</td></tr>`; return; }
+    rows.innerHTML="";
+    snap.forEach(doc=>{ const u=doc.data(); const isMe=doc.id===me.uid;
+      const displayName = u.name || u.email || doc.id;
+      const tr=document.createElement("tr");
+      tr.innerHTML=`
+        <td><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap"><b>${esc(displayName)}</b><span class="pill ${u.role}">${esc(u.role||"")}</span>${isMe?'<span style="font-size:.7rem;color:hsl(var(--muted-foreground))">(você)</span>':""}</div>${u.name?`<div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.125rem">${esc(u.email||"")}</div>`:""}</td>
+        <td><div class="act"><button class="icon-btn editUser" ${isMe?"disabled style='opacity:.4'":""}>Editar</button><button class="icon-btn danger rmUser" ${isMe?"disabled style='opacity:.4'":""}>Remover</button></div></td>`;
+      if(!isMe){ tr.querySelector(".editUser").onclick=()=>openEditUser(doc.id, u); tr.querySelector(".rmUser").onclick=()=>removeUser(doc.id, displayName); }
+      rows.appendChild(tr);
+    });
   }
   function wireUserModal(){
-    $("addUser").onclick=()=>{ clearMsg($("userMsg")); $("uName").value=""; $("uEmail").value=""; $("uPass").value=""; $("ovUser").classList.add("open"); }; $("uSave").onclick=createUser;
-    $("editUserSave").onclick = async () => { await db.collection("users").doc(editUserId).update({ name:$("editUserName").value.trim(), role:$("editUserRole").value }); $("ovEditUser").classList.remove("open"); loadUsers(); };
+    $("addUser").onclick=()=>{ clearMsg($("userMsg")); $("uName").value=""; $("uEmail").value=""; $("uPass").value=""; $("uRole").value="editor"; $("ovUser").classList.add("open"); };
+    $("uSave").onclick=createUser;
+    $("editUserSave").onclick = async () => {
+      if(!editUserId) return;
+      const name = $("editUserName").value.trim(), role = $("editUserRole").value;
+      if(!name) return msg($("editUserMsg"),"Informe o nome.","err");
+      try { await db.collection("users").doc(editUserId).update({ name, role, updatedAt:ts(), updatedBy:me.email }); $("ovEditUser").classList.remove("open"); loadUsers(); } catch(e){ msg($("editUserMsg"), e.message, "err"); }
+    };
   }
   async function createUser(){
     const name=$("uName").value.trim(), email=$("uEmail").value.trim().toLowerCase(), pass=$("uPass").value, role=$("uRole").value;
-    const sec = firebase.apps.find(a=>a.name==="secondary") || firebase.initializeApp(PA.config,"secondary");
-    const cred = await sec.auth().createUserWithEmailAndPassword(email, pass);
-    await db.collection("users").doc(cred.user.uid).set({ name, email, role, createdAt:ts(), createdBy:me.email });
-    await sec.auth().signOut(); $("ovUser").classList.remove("open"); loadUsers();
+    if(!name||!email||pass.length<6) return msg($("userMsg"),"Preencha tudo (senha mín 6).","err");
+    $("uSave").disabled=true;
+    try{
+      const sec = firebase.apps.find(a=>a.name==="secondary") || firebase.initializeApp(PA.config,"secondary");
+      const cred = await sec.auth().createUserWithEmailAndPassword(email, pass);
+      await db.collection("users").doc(cred.user.uid).set({ name, email, role, createdAt:ts(), createdBy:me.email });
+      await sec.auth().signOut(); msg($("userMsg"),`Usuário criado.`,"ok"); loadUsers();
+    }catch(e){ msg($("userMsg"), e.message, "err"); } finally{ $("uSave").disabled=false; }
   }
   let editUserId = null;
   function openEditUser(uid, u){ editUserId = uid; $("editUserName").value=u.name||""; $("editUserEmail").value=u.email||""; $("editUserRole").value=u.role||"editor"; clearMsg($("editUserMsg")); $("ovEditUser").classList.add("open"); }
-  async function removeUser(uid, displayName){ if(!confirm(`Remover acesso de ${displayName}?`)) return; try{ await db.collection("users").doc(uid).delete(); loadUsers(); }catch(e){} }
+  async function removeUser(uid, displayName){ if(!confirm(`Remover acesso de ${displayName}?`)) return; try{ await db.collection("users").doc(uid).delete(); loadUsers(); }catch(e){ alert(e.message); } }
 
   /* ============================================================
-     CONTEÚDO EDITORIAL DA HOME (Multi-Banners)
+     CONTEÚDO DO SITE
      ============================================================ */
   async function loadConfig(){
     try {
@@ -870,6 +1098,7 @@
       if (d.slides && d.slides.length) {
         d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; } });
       } else {
+        // Fallback antigo
         $("cfgHeroTag1").value = d.heroTag??""; $("cfgHeroTitle1").value = d.heroTitle??""; $("cfgBtnText1").value = d.btnText??""; $("cfgBtnUrl1").value = d.btnUrl??""; $("cfgHeroImage1").value = d.heroImageUrl??""; $("cfgHeroVideo1").value = d.heroVideoUrl??"";
       }
     } catch(e){}
@@ -881,7 +1110,7 @@
       for(let num=1; num<=3; num++) {
         const titleVal = $(`cfgHeroTitle${num}`).value.trim();
         if(titleVal || num === 1) { 
-          slides.push({ tag:$("cfgHeroTag"+num).value.trim(), title:titleVal || "O ACESSO DEFINITIVO À AVIAÇÃO EXECUTIVA DE ALTA PERFORMANCE.", btnText:$("cfgBtnText"+num).value.trim(), btnUrl:$("cfgBtnUrl"+num).value.trim(), imgUrl:$("cfgHeroImage"+num).value.trim(), videoUrl:$("cfgHeroVideo"+num).value.trim() });
+          slides.push({ tag:$("cfgHeroTag"+num).value.trim(), title:titleVal || "O ACESSO DEFINITIVO", btnText:$("cfgBtnText"+num).value.trim(), btnUrl:$("cfgBtnUrl"+num).value.trim(), imgUrl:$("cfgHeroImage"+num).value.trim(), videoUrl:$("cfgHeroVideo"+num).value.trim() });
         }
       }
       try { await db.collection("siteConfig").doc("home").set({ slides, updatedAt:ts(), updatedBy:me.email }, { merge:true }); msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); loadConfig(); } catch(e){ alert(e.message); }
@@ -947,7 +1176,7 @@
   function ts(){ return firebase.firestore.FieldValue.serverTimestamp(); }
   function inlineBytes(arr){ return (arr||[]).reduce((n,u)=>n + (typeof u==="string"?u.length:0), 0); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-  async function delDoc(col,id,name,after){ if(!confirm(`Excluir permanentemente “${name}”?`)) return; try{ await db.collection(col).doc(id).delete(); after(); }catch(e){ alert(e.message);} }
+  async function delDoc(col,id,name,after){ if(!confirm(`Excluir “${name||"item"}”?`)) return; try{ await db.collection(col).doc(id).delete(); after(); }catch(e){ alert(e.message);} }
   function compressToDataURL(file, maxDim=800, quality=0.55){
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -959,14 +1188,26 @@
     });
   }
   async function uploadImages(files, folder, progEl, onUrl){
-    if(!files.length) return; progEl.classList.add("show"); const bar=progEl.querySelector(".bar"); bar.style.width="20%";
+    if(!files || !files.length) return;
     if (PA.IMAGE_MODE === "inline" || !storage) {
-      for(const file of files){ if(!file.type.startsWith("image/")) continue; try { const url = await compressToDataURL(file); onUrl(url); bar.style.width="100%"; } catch(e){} }
-      setTimeout(()=>progEl.classList.remove("show"), 250); return;
+      const slots = Math.max(0, 3 - editImages.length); const toProcess = Array.from(files).slice(0, slots);
+      if (files.length > slots) alert(`Modo sem Storage: máx 3 imagens.`); if (!toProcess.length) return;
+      progEl.classList.add("show"); const bar=progEl.querySelector(".bar"); bar.style.width="20%";
+      for(const file of toProcess){
+        if(!file.type.startsWith("image/")) continue;
+        try { const url = await compressToDataURL(file); if (inlineBytes([...editImages, url]) > 750*1024) { alert("Limite de tamanho atingido."); break; } onUrl(url); bar.style.width="80%"; } catch(e){ }
+      }
+      bar.style.width="100%"; setTimeout(()=>{ progEl.classList.remove("show"); bar.style.width="0%"; }, 250);
+      return;
     }
+    progEl.classList.add("show"); const bar=progEl.querySelector(".bar");
     for(const file of files){
-      const path=`${folder}/${Date.now()}-${file.name.replace(/[^\w.\-]/g,"_")}`; const task=storage.ref(path).put(file);
-      await new Promise((res)=>{ task.on("state_changed", s=>{ bar.style.width=Math.round((s.bytesTransferred/s.totalBytes)*100)+"%"; }, null, async()=>{ const url=await task.snapshot.ref.getDownloadURL(); onUrl(url); res(); }); });
+      if(!file.type.startsWith("image/")){ alert("Apenas imagens."); continue; }
+      if(file.size > 8*1024*1024){ alert(`${file.name} excede 8 MB.`); continue; }
+      const path=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name.replace(/[^\w.\-]/g,"_")}`;
+      const task=storage.ref(path).put(file, { contentType:file.type });
+      await new Promise((res,rej)=>{ task.on("state_changed", s=>{ bar.style.width = Math.round((s.bytesTransferred/s.totalBytes)*100)+"%"; }, err=>{ alert(err.message); rej(); }, async()=>{ const url=await task.snapshot.ref.getDownloadURL(); onUrl(url); res(); }); }).catch(()=>{});
+      bar.style.width="0%";
     }
     progEl.classList.remove("show");
   }
