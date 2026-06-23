@@ -212,14 +212,6 @@
       </div>
     </div>
 
-    <div class="panel" id="panel-users">
-      <div class="row-head">
-        <div><h2>Usuários &amp; Permissões</h2><p class="sub">Adicione, remova ou edite usuários, assim como suas permissões dentro do Painel Administrativo.</p></div>
-        <button class="btn btn-solid btn-sm" id="addUser">+ Criar usuário</button>
-      </div>
-      <table class="tbl"><tbody id="userRows"></tbody></table>
-    </div>
-
     <div class="panel" id="panel-config">
       <div class="row-head">
         <div><h2>Conteúdo Home Page</h2><p class="sub">Adicione ou substitua imagens, títulos, mídias e CTAs dos 3 banners rotativos principais.</p></div>
@@ -259,12 +251,9 @@
         </div>
 
       </div>
+    </div> <!-- Fim Correto do panel-config (sem sobras) -->
 
-      </div>
-
-    </div>
-
-    <div class="panel container" id="panel-partners" style="padding-top:0;padding-bottom:0">
+    <div class="panel" id="panel-partners">
       <div class="row-head">
         <div><h2>Parceiros</h2><p class="sub">Empresas e serviços de apoio (manutenção, hangaragem, etc) indicados no Universo Cirrus.</p></div>
         <button class="btn btn-solid btn-sm" id="addPartner">+ Novo Parceiro</button>
@@ -273,7 +262,7 @@
     </div>
 
     <!-- PAINEL NEWS & INSIGHTS -->
-    <div class="panel container" id="panel-news" style="padding-top:0;padding-bottom:0">
+    <div class="panel" id="panel-news">
       <div class="row-head">
         <div><h2>News & Insights</h2><p class="sub">Gerencie artigos do blog e os episódios do podcast.</p></div>
       </div>
@@ -295,7 +284,9 @@
       </div>
     </div>
 
-  </div>
+  </div> <!-- FIM DO CONTAINER PRINCIPAL -->
+</div> <!-- FIM DO VIEW-APP -->
+</div>
 </div>
 
 <div class="overlay" id="ovLead">
