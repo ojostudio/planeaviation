@@ -177,9 +177,10 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
-      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none">0</span></button>
+      <button class="tab" data-tab="cirrus">Frota Cirrus</button>
+      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
-      <button class="tab admin-only" data-tab="config">Configurações</button>
+      <button class="tab admin-only" data-tab="config">Conteúdo</button>
     </div>
 
     <div class="panel" id="panel-leads">
@@ -189,6 +190,13 @@
       <table class="tbl"><tbody id="leadsRows"></tbody></table>
     </div>
 
+    <div class="panel" id="panel-leads">
+      <div class="row-head">
+        <div><h2>Mensagens Recebidas</h2><p class="sub">Leads capturados através do formulário de contato do site.</p></div>
+      </div>
+      <table class="tbl"><tbody id="leadsRows"></tbody></table>
+    </div>
+    
     <div class="panel active" id="panel-aircraft">
       <div class="row-head">
         <div><h2>Aeronaves à venda</h2><p class="sub">Aparecem na página <b>Aeronaves Disponíveis</b>, ordenadas automaticamente por ano (mais novas primeiro).</p></div>
@@ -220,44 +228,40 @@
 
     <div class="panel" id="panel-config">
       <div class="row-head">
-        <div><h2>Configurações do Site</h2><p class="sub">Mídia da página inicial.</p></div>
-        <button class="btn btn-solid btn-sm" id="cfgSave">Salvar configurações</button>
+        <div><h2>Conteúdo Editorial da Home</h2><p class="sub">Gerencie as imagens, títulos, mídias e CTAs dos 3 banners rotativos principais.</p></div>
+        <button class="btn btn-solid btn-sm" id="cfgSave">Salvar Alterações</button>
       </div>
       <div id="cfgMsg" class="msg" style="margin-bottom:1rem"></div>
       <div style="max-width:42rem;display:flex;flex-direction:column;gap:1.5rem">
 
-        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
-          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:1rem">Hero — Textos e botão</h3>
-          <div class="fld">
-            <label>Tag (eyebrow) — deixe vazio para ocultar</label>
-            <input id="cfgHeroTag" placeholder="Ex: Representante exclusiva Cirrus no Brasil">
-          </div>
-          <div class="fld">
-            <label>Título principal *</label>
-            <textarea id="cfgHeroTitle" rows="2" style="resize:none">O acesso definitivo à aviação executiva de alta performance.</textarea>
-          </div>
-          <div class="fld">
-            <label>Texto do botão</label>
-            <input id="cfgBtnText" placeholder="Ex: Ver Aeronaves Disponíveis">
-          </div>
-          <div class="fld">
-            <label>Link do botão</label>
-            <input id="cfgBtnUrl" type="url" placeholder="Ex: aeronaves.html ou https://...">
-          </div>
+        <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
+          <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.5rem;">Banner 1 (Principal)</h3>
+          <div class="fld"><label>Tag Superior (Eyebrow)</label><input id="cfgHeroTag1" placeholder="Ex: FALE COM UM CONSULTOR"></div>
+          <div class="fld"><label>Título Principal *</label><textarea id="cfgHeroTitle1" rows="2" style="resize:none"></textarea></div>
+          <div class="fld"><label>Texto do Botão</label><input id="cfgBtnText1"></div>
+          <div class="fld"><label>Link do Botão</label><input id="cfgBtnUrl1"></div>
+          <div class="fld"><label>URL da Imagem (Fundo)</label><input id="cfgHeroImage1" type="url"></div>
+          <div class="fld"><label>URL do Vídeo MP4 (Substitui a Imagem)</label><input id="cfgHeroVideo1" type="url"></div>
         </div>
 
-        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
-          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Hero — Vídeo ou imagem de fundo</h3>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">Vídeo tem prioridade sobre imagem se os dois forem preenchidos.</p>
-          <div class="fld"><label>URL do vídeo de fundo (MP4)</label><input id="cfgHeroVideo" type="url" placeholder="https://... .mp4"></div>
-          <div style="text-align:center;font-size:.75rem;color:hsl(var(--muted-foreground));margin:.5rem 0">— ou —</div>
-          <div class="fld"><label>URL da imagem de fundo (JPG/PNG/WebP)</label><input id="cfgHeroImage" type="url" placeholder="https://... .jpg"></div>
+        <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
+          <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.5rem;">Banner 2</h3>
+          <div class="fld"><label>Tag Superior (Eyebrow)</label><input id="cfgHeroTag2" placeholder="Ex: PROJETE DE FÁBRICA"></div>
+          <div class="fld"><label>Título Principal</label><textarea id="cfgHeroTitle2" rows="2" style="resize:none"></textarea></div>
+          <div class="fld"><label>Texto do Botão</label><input id="cfgBtnText2"></div>
+          <div class="fld"><label>Link do Botão</label><input id="cfgBtnUrl2"></div>
+          <div class="fld"><label>URL da Imagem (Fundo)</label><input id="cfgHeroImage2" type="url"></div>
+          <div class="fld"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo2" type="url"></div>
         </div>
 
-        <div style="border:1px solid hsl(var(--border));border-radius:var(--radius-sm);padding:1.5rem">
-          <h3 style="font-size:.875rem;font-weight:700;margin-bottom:.25rem">Vídeo "Nossa História"</h3>
-          <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem">Aceita YouTube, Vimeo ou MP4 direto.</p>
-          <div class="fld"><label>URL do vídeo</label><input id="cfgHistoriaVideo" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."></div>
+        <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
+          <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.5rem;">Banner 3</h3>
+          <div class="fld"><label>Tag Superior (Eyebrow)</label><input id="cfgHeroTag3" placeholder="Ex: ESTOQUE DISPONÍVEL"></div>
+          <div class="fld"><label>Título Principal</label><textarea id="cfgHeroTitle3" rows="2" style="resize:none"></textarea></div>
+          <div class="fld"><label>Texto do Botão</label><input id="cfgBtnText3"></div>
+          <div class="fld"><label>Link do Botão</label><input id="cfgBtnUrl3"></div>
+          <div class="fld"><label>URL da Imagem (Fundo)</label><input id="cfgHeroImage3" type="url"></div>
+          <div class="fld"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo3" type="url"></div>
         </div>
 
       </div>
@@ -279,7 +283,7 @@
         <div class="av-item"><label>Data</label><span class="val" id="ldDate"></span></div>
         <div class="av-item" style="grid-column:1/-1"><label>Assunto / Interesse</label><span class="val" id="ldSubject"></span></div>
         <div class="av-item" style="grid-column:1/-1"><label>Aeronave Selecionada</label><span class="val" id="ldAircraft"></span></div>
-        <div class="av-item" style="grid-column:1/-1"><label>Mensagem</label><p class="av-desc" id="ldMessage"></p></div>
+        <div class="av-item" style="grid-column:1/-1"><label>Mensagem</label><p class="av-desc" id="ldMessage" style="white-space:pre-wrap;"></p></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -715,6 +719,28 @@
     });
   }
 
+  async function loadLeads() {
+    const rows = $("leadsRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens…</td></tr>`;
+    try {
+      const snap = await db.collection("leads").orderBy("createdAt", "desc").get();
+      if(snap.empty) { rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma mensagem.</td></tr>`; $("unreadBadge").style.display = "none"; return; }
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const unreadCount = docs.filter(d => d.status === "novo").length;
+      if(unreadCount > 0) { $("unreadBadge").textContent = unreadCount; $("unreadBadge").style.display = "inline-block"; } else { $("unreadBadge").style.display = "none"; }
+      rows.innerHTML = docs.map(l => `<tr style="cursor:pointer; ${l.status==='novo'?'background:rgba(180,35,24,0.05)':''}"><td><b>${esc(l.name)}</b>${l.status==='novo'?' <span class="pill novo">NOVO</span>':''}<br><span style="font-size:.75rem">${esc(l.subject)}</span></td><td>${esc(l.email)}<br><span style="font-size:.75rem">${esc(l.phone)}</span></td><td><button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button></td></tr>`).join("");
+      rows.querySelectorAll("tr").forEach((tr, i) => tr.onclick = (e) => { if(!e.target.classList.contains("del-lead")) openLeadModal(docs[i].id, docs[i]); });
+      rows.querySelectorAll(".del-lead").forEach(b => b.onclick = async (e) => { e.stopPropagation(); if(confirm("Excluir lead?")) { await db.collection("leads").doc(b.dataset.id).delete(); loadLeads(); } });
+    } catch(err) {}
+  }
+
+  async function openLeadModal(id, lead) {
+    const dateStr = lead.createdAt ? new Date(lead.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "";
+    $("ldName").textContent = lead.name; $("ldEmail").textContent = lead.email; $("ldPhone").textContent = lead.phone; $("ldDate").textContent = dateStr; $("ldSubject").textContent = lead.subject; $("ldAircraft").textContent = lead.aircraft || "Nenhuma"; $("ldMessage").textContent = lead.message;
+    $("ldWhatsApp").href = `https://wa.me/55${(lead.phone || "").replace(/\D/g, '')}`; $("ldMailTo").href = `mailto:${lead.email}`;
+    $("ovLead").classList.add("open");
+    if(lead.status === "novo") { await db.collection("leads").doc(id).update({ status: "lido" }); loadLeads(); }
+  }
+
   async function loadAircraft(){
     const rows = $("aircraftRows");
     rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
@@ -1043,17 +1069,26 @@
      ============================================================ */
   async function loadConfig(){
     try {
-      const doc = await db.collection("siteConfig").doc("home").get();
-      if(!doc.exists) return; const d = doc.data();
-      $("cfgHeroTag").value = d.heroTag??""; $("cfgHeroTitle").value = d.heroTitle??""; $("cfgBtnText").value = d.btnText??""; $("cfgBtnUrl").value = d.btnUrl??"";
-      $("cfgHeroVideo").value = d.heroVideoUrl??""; $("cfgHeroImage").value = d.heroImageUrl??""; $("cfgHistoriaVideo").value = d.historiaVideoUrl??"";
+      const doc = await db.collection("siteConfig").doc("home").get(); if(!doc.exists) return; const d = doc.data();
+      if (d.slides && d.slides.length) {
+        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; } });
+      } else {
+        // Fallback antigo
+        $("cfgHeroTag1").value = d.heroTag??""; $("cfgHeroTitle1").value = d.heroTitle??""; $("cfgBtnText1").value = d.btnText??""; $("cfgBtnUrl1").value = d.btnUrl??""; $("cfgHeroImage1").value = d.heroImageUrl??""; $("cfgHeroVideo1").value = d.heroVideoUrl??"";
+      }
     } catch(e){}
   }
+
   function wireConfigPanel(){
     $("cfgSave").onclick = async () => {
-      const data = { heroTag:$("cfgHeroTag").value.trim(), heroTitle:$("cfgHeroTitle").value.trim(), btnText:$("cfgBtnText").value.trim(), btnUrl:$("cfgBtnUrl").value.trim(), heroVideoUrl:$("cfgHeroVideo").value.trim(), heroImageUrl:$("cfgHeroImage").value.trim(), historiaVideoUrl:$("cfgHistoriaVideo").value.trim(), updatedAt:ts(), updatedBy:me.email };
-      if(!data.heroTitle) return alert("Título principal vazio.");
-      try { await db.collection("siteConfig").doc("home").set(data, { merge:true }); msg($("cfgMsg"),"Salvo!","ok"); } catch(e){ msg($("cfgMsg"),e.message,"err"); }
+      const slides = [];
+      for(let num=1; num<=3; num++) {
+        const titleVal = $(`cfgHeroTitle${num}`).value.trim();
+        if(titleVal || num === 1) { 
+          slides.push({ tag:$("cfgHeroTag"+num).value.trim(), title:titleVal || "O ACESSO DEFINITIVO", btnText:$("cfgBtnText"+num).value.trim(), btnUrl:$("cfgBtnUrl"+num).value.trim(), imgUrl:$("cfgHeroImage"+num).value.trim(), videoUrl:$("cfgHeroVideo"+num).value.trim() });
+        }
+      }
+      try { await db.collection("siteConfig").doc("home").set({ slides, updatedAt:ts(), updatedBy:me.email }, { merge:true }); msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); loadConfig(); } catch(e){ alert(e.message); }
     };
   }
 
