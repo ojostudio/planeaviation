@@ -462,8 +462,18 @@
   }
 
   function updateCarouselUI(){
-    const grid = document.getElementById("invGrid"); const visible = getVisibleCount(); const step = 100 / visible;
-    grid.style.transform = `translateX(-${carouselIndex * step}%)`; const max = carouselMaxIndex();
+    const grid = document.getElementById("invGrid"); 
+    const visible = getVisibleCount(); 
+    const max = carouselMaxIndex();
+    
+    // O ajuste fino: calculamos a porcentagem + a proporção exata do gap (margin)
+    const gapRem = visible >= 4 ? 1.25 : 1; 
+    const pct = carouselIndex * (100 / visible);
+    const rem = carouselIndex * (gapRem / visible);
+    
+    // Agora o transform empurra o card + o gap perfeitamente
+    grid.style.transform = `translateX(calc(-${pct}% - ${rem}rem))`; 
+    
     document.getElementById("invPrev").disabled = carouselIndex <= 0;
     document.getElementById("invNext").disabled = carouselIndex >= max;
     renderCarouselDots();
