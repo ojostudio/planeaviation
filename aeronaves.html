@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="js/i18n.js" defer></script>
 <script src="js/site.js" defer></script>
-<!-- Reserva espaço do header antes do JS rodar -->
 <style>
   #site-header { display: block; height: 4rem; }
   body { min-height: 100vh; }
@@ -129,7 +128,6 @@ body {
   background: rgba(255,255,255,0.04);
   border-radius: 16px;
   overflow: hidden;
-  /* Bevel/emboss light effect */
   border: 1px solid rgba(255,255,255,0.12);
   box-shadow:
     0 1px 0 rgba(255,255,255,0.08) inset,
@@ -326,7 +324,6 @@ body {
 
   <section style="padding-bottom:5rem">
     <div class="container">
-      <!-- Filtros -->
       <div class="ac-filters-bar" id="filtersBar" style="display:none">
         <div class="ac-filters-label">
           <svg style="width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
@@ -347,13 +344,11 @@ body {
         <span class="ac-count" id="count"></span>
       </div>
 
-      <!-- Grid -->
       <div class="ac-grid" id="grid"></div>
     </div>
   </section>
 </main>
 <div id="site-footer"></div>
-
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -403,7 +398,6 @@ function cardHTML(item){
     ? `<img src="${item.images[0]}" alt="${item.model}" loading="lazy">`
     : `<div class="ph-dark">[Foto]</div>`;
   // Title: bold italic + lighter italic for variant part
-  // e.g. "VISION JET G3+" → bold+italic "VISION JET" + lighter "G3+"
   const titleParts = item.model.match(/^(.*?)(\s[A-Z0-9+]+)?$/);
   const titleMain = titleParts ? titleParts[1] : item.model;
   const titleSub  = titleParts && titleParts[2] ? titleParts[2] : "";
@@ -435,10 +429,33 @@ function sellBandHTML(){
 function buildFilters(){
   if(!allListings.length){ filtersBar.style.display = "none"; return; }
   filtersBar.style.display = "";
+  
   const all = t("ac_all");
-  fill(elModelo, [all, ...[...new Set(allListings.map(l=>l.model).filter(Boolean))].sort()]);
-  fill(elCond,   [all, ...[...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort()]);
-  fill(elAno,    [all, ...[...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a)]);
+  
+  // Extrai modelos base únicos de cada fabricante
+  const cirrusModels = [...new Set(allListings.filter(l => l.fabricante === "Cirrus" || !l.fabricante).map(l => l.modeloBase || l.model.split(' ')[0]))].sort();
+  const outrosModels = [...new Set(allListings.filter(l => l.fabricante === "Outros").map(l => l.modeloBase || l.model))].sort();
+
+  // Monta o HTML do Dropdown usando grupos nativos (<optgroup>)
+  let modeloOptions = `<option value="${all}">${all}</option>`;
+  
+  if(cirrusModels.length) {
+    modeloOptions += `<optgroup label="Cirrus Aircraft">`;
+    cirrusModels.forEach(m => { modeloOptions += `<option value="${m}">${m}</option>`; });
+    modeloOptions += `</optgroup>`;
+  }
+  
+  if(outrosModels.length) {
+    modeloOptions += `<optgroup label="Outros Fabricantes">`;
+    outrosModels.forEach(m => { modeloOptions += `<option value="${m}">${m}</option>`; });
+    modeloOptions += `</optgroup>`;
+  }
+  
+  elModelo.innerHTML = modeloOptions;
+
+  // Preenche Condição e Ano normalmente
+  fill(elCond, [all, ...[...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort()]);
+  fill(elAno,  [all, ...[...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a)]);
 }
 
 function render(){
@@ -449,16 +466,22 @@ function render(){
     return;
   }
   const fm = elModelo.value, fc = elCond.value, fy = elAno.value;
+  
   const filtered = allListings.filter(l => {
-    return (fm===all || l.model===fm)
+    // Agora aceita tanto o modeloBase exato quanto o nome que "comece" com o valor (fallback)
+    const matchesModel = (fm === all || l.modeloBase === fm || l.model.startsWith(fm));
+    
+    return matchesModel
         && (fc===all || l.condition===fc)
         && (fy===all || String(l.year)===fy);
   });
+  
   let html = "";
   filtered.forEach((item, idx) => {
     if(idx === 4) html += sellBandHTML();
     html += cardHTML(item);
   });
+  
   if(!filtered.length) html = `<div class="ac-empty">${t("ac_noresult")}</div>`;
   elGrid.innerHTML = html;
   const noun = t("ac_count_noun") || "aeronaves disponíveis";
@@ -479,11 +502,21 @@ async function init(){
       });
       allListings = docs.map(d => {
         const a = d.data();
-        return { id:d.id, tag:a.tag||"", model:a.model||"", year:a.year||"",
+        return { 
+          id:d.id, 
+          tag:a.tag||"", 
+          model:a.model||"", 
+          year:a.year||"",
+          fabricante: a.fabricante || "Cirrus", // Garante que registros velhos funcionem
+          modeloBase: a.modeloBase || "", // A propriedade nova do banco de dados
           hoursNum:a.hoursNum!=null?a.hoursNum:null,
-          condition:a.condition||"", currency:a.currency||"USD",
-          priceNum:a.priceNum||null, sobConsulta:!!a.sobConsulta,
-          images:a.images||[], translations:a.translations||{} };
+          condition:a.condition||"", 
+          currency:a.currency||"USD",
+          priceNum:a.priceNum||null, 
+          sobConsulta:!!a.sobConsulta,
+          images:a.images||[], 
+          translations:a.translations||{} 
+        };
       });
     } catch(e){ allListings = []; }
   }

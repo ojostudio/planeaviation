@@ -339,8 +339,28 @@
       </div>
 
       <div class="grid2">
-        <div class="fld"><label>Modelo *</label><input id="acModel" placeholder="SR22T"></div>
+        <div class="fld">
+          <label>Fabricante *</label>
+          <select id="acFabricante">
+            <option value="Cirrus">Cirrus Aircraft</option>
+            <option value="Outros">Outro Fabricante</option>
+          </select>
+        </div>
         <div class="fld"><label>Ano *</label><input id="acYear" type="number" placeholder="2022"></div>
+      </div>
+
+      <div class="grid2">
+        <div class="fld">
+          <label>Modelo Base (Para o Filtro) *</label>
+          <select id="acModeloBase">
+            <option value="SR20">SR20</option>
+            <option value="SR22">SR22</option>
+            <option value="SR22T">SR22T</option>
+            <option value="Vision Jet">Vision Jet</option>
+          </select>
+          <input id="acModeloBaseOutros" placeholder="Ex: Maule M-7, Cessna 172" style="display:none; margin-top:0.5rem;">
+        </div>
+        <div class="fld"><label>Versão / Sufixo Comercial</label><input id="acVersao" placeholder="Ex: G7+, G3, Rocket"></div>
       </div>
       <div class="grid2">
         <div class="fld"><label>Horas totais (célula)</label><input id="acHours" type="number" min="0" placeholder="320"></div>
