@@ -44,9 +44,7 @@
     left: 0;
     width: 100%; 
     height: 100%; 
-    /* O cover faz o enquadramento perfeito sem achatar */
     object-fit: cover; 
-    /* O center garante que o corte priorize o meio da foto */
     object-position: center; 
     display: block; 
     margin: 0;
@@ -60,18 +58,16 @@
   .art .ex { font-size: 0.875rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 1.5rem; flex: 1; }
   .art .read { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; display: inline-flex; align-items: center; gap: 0.5rem; }
 
-  /* --- Grid de Podcasts --- */
+  /* --- Grid de Podcasts e Vídeos --- */
   .ep { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; transition: border-color 0.3s ease; }
   .ep:hover { border-color: rgba(255,255,255,0.3); }
   @media(min-width: 640px) { .ep { flex-direction: row; align-items: center; padding: 2rem; gap: 2.5rem; } }
   
-  /* O segredo da proporção perfeita para a Thumbnail do YouTube (16:9 cravado) */
   .ep .player { flex-shrink: 0; width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
   @media(min-width: 640px) { .ep .player { width: 20rem; } }
-  /* O object-fit:cover vai comer automaticamente as bordas pretas que vierem do YouTube */
   .ep .player img { width: 100%; height: 100%; object-fit: cover; display: block; }
   
-  .ep .info { flex: 1; display: flex; flex-direction: column; }
+  .ep .info { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
   .ep .epnum { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; display: block; }
   .ep h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.4; letter-spacing: -0.02em; }
   .ep p { font-size: 0.875rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 1.5rem; }
@@ -98,7 +94,6 @@
 <div id="site-header"></div>
 <main>
 
-  <!-- HERO -->
   <section class="page-hero">
     <div class="container">
       <span class="eyebrow" data-i18n="news_eyebrow">Conteúdo &amp; Mídia</span>
@@ -107,33 +102,41 @@
     </div>
   </section>
 
-  <!-- ARTIGOS -->
   <section class="news-section">
     <div class="container">
       <div class="sec-head2">
         <h2 data-i18n="news_art_title">Artigos e Análises Técnicas</h2>
       </div>
       <div class="grid g1 md-g3" id="artGrid" style="gap:1.5rem">
-        <p style="color:rgba(255,255,255,0.4);">Carregando artigos...</p>
+        <p style="color:rgba(255,255,255,0.4); grid-column:1/-1;">Carregando artigos...</p>
       </div>
     </div>
   </section>
 
-  <!-- PODCAST -->
   <section class="news-section alt">
     <div class="container">
       <div class="sec-head2">
         <h2 data-i18n="news_pod_title">Plane Aviation Podcast</h2>
-        <!-- Descrição inserida abaixo do título, conforme solicitado 
-        <p class="desc">Junte-se aos nossos especialistas para discussões aprofundadas sobre operação, manutenção, tendências de mercado e as inovações que moldam o futuro da aviação geral.</p>-->
-      </div>
+        </div>
       <div id="epList" style="display:flex;flex-direction:column;gap:1.5rem">
         <p style="color:rgba(255,255,255,0.4);">Carregando episódios...</p>
       </div>
     </div>
   </section>
 
-  <!-- NEWSLETTER CTA -->
+  <section class="news-section alt">
+    <div class="container">
+      <div class="sec-head2">
+        <span class="eyebrow">Plane no YouTube</span>
+        <h2>Vídeos Técnicos & Demonstrações</h2>
+        <p class="desc">Acompanhe reviews completos de aeronaves, tours de cabine, voos de traslado e detalhes de engenharia da frota Cirrus.</p>
+      </div>
+      <div id="vidList" style="display:flex;flex-direction:column;gap:1.5rem">
+        <p style="color:rgba(255,255,255,0.4);">Carregando vídeos técnicos...</p>
+      </div>
+    </div>
+  </section>
+
   <section>
     <div class="container">
       <div class="news-cta">
@@ -158,18 +161,61 @@
 <script src="js/firebase-config.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  async function loadNewsData() {
-  if (!window.PA || !PA.configured) return;
+// Helpers de formatação e YouTube
+const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
-  const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
-  
-  // Função interna para formatar a string YYYY-MM-DD para "DD de Mês de YYYY"
-  function humanDate(str) {
-    if(!str) return "";
-    const p = str.split('-'); if(p.length !== 3) return str;
-    return new Date(p[0], p[1]-1, p[2]).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+function getYouTubeId(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function humanDate(str) {
+  if(!str) return "";
+  const p = str.split('-'); if(p.length !== 3) return str;
+  return new Date(p[0], p[1]-1, p[2]).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadNewsData();
+
+  // Lógica da Newsletter
+  const btnNews = document.getElementById("pageNewsBtn");
+  if(btnNews) {
+    btnNews.addEventListener("click", async function() {
+      if (!window.PA || !PA.configured) return alert("Erro de conexão.");
+      
+      const emailInput = document.getElementById("pageNewsEmail");
+      const email = emailInput.value.trim();
+      
+      if (!email || !email.includes("@")) return alert("Por favor, insira um e-mail válido.");
+      
+      const btn = this;
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = "AGUARDE...";
+      btn.disabled = true;
+      
+      try {
+        await PA.db.collection("newsletter").add({
+          email: email,
+          source: "news_page",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Inscrição realizada com sucesso! Bem-vindo(a) à nossa newsletter.");
+        emailInput.value = "";
+      } catch(err) {
+        alert("Erro ao se inscrever: " + err.message);
+      } finally {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+      }
+    });
   }
+});
+
+async function loadNewsData() {
+  if (!window.PA || !PA.configured) return;
 
   // 1. CARREGAR ARTIGOS
   const artGrid = document.getElementById("artGrid");
@@ -198,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = doc.data();
         const videoId = getYouTubeId(p.youtubeUrl);
         const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
-        return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(p.videoDate)} · ${p.duration || '0 min'}</span><h3>${p.title}</h3><p>${p.desc || ''}</p></div><a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR NO PODCAST <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
+        return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(p.videoDate)} · ${p.duration || '0 min'}</span><h3>${p.title}</h3><p>${p.desc || ''}</p></div><a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR NO YOUTUBE <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
       }).join("");
     }
   } catch(e) {}
@@ -218,143 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }).join("");
     }
   } catch(e) {}
-}
-  // Lógica da Newsletter da página News
-document.getElementById("pageNewsBtn").addEventListener("click", async function() {
-  if (!window.PA || !PA.configured) return alert("Erro de conexão.");
-  
-  const emailInput = document.getElementById("pageNewsEmail");
-  const email = emailInput.value.trim();
-  
-  if (!email || !email.includes("@")) return alert("Por favor, insira um e-mail válido.");
-  
-  const btn = this;
-  const originalHTML = btn.innerHTML;
-  btn.innerHTML = "AGUARDE...";
-  btn.disabled = true;
-  
-  try {
-    await PA.db.collection("newsletter").add({
-      email: email,
-      source: "news_page",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    alert("Inscrição realizada com sucesso! Bem-vindo(a) à nossa newsletter.");
-    emailInput.value = "";
-  } catch(err) {
-    alert("Erro ao se inscrever: " + err.message);
-  } finally {
-    btn.innerHTML = originalHTML;
-    btn.disabled = false;
-  }
-});
-});
-
-// Função auxiliar para extrair o ID do vídeo de qualquer formato de link do YouTube
-function getYouTubeId(url) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-}
-
-async function loadNewsData() {
-  if (!window.PA || !PA.configured) return;
-
-  const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
-
-  // 1. CARREGAR ARTIGOS
-  const artGrid = document.getElementById("artGrid");
-  try {
-    const artSnap = await PA.db.collection("articles").orderBy("createdAt", "desc").get();
-    if(artSnap.empty) {
-      artGrid.innerHTML = "<p style='color:rgba(255,255,255,0.4); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
-    } else {
-      artGrid.innerHTML = artSnap.docs.map(doc => {
-        const a = doc.data();
-        const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
-        const imgHtml = a.imageUrl 
-          ? `<img src="${a.imageUrl}" alt="${a.title}">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:0.75rem;letter-spacing:0.1em;">SEM IMAGEM</div>`;
-          
-        return `
-        <a href="artigo.html?id=${doc.id}" class="art">
-          <div class="imgph">${imgHtml}</div>
-          <div class="body">
-            <div class="row">
-              <span class="date">${dateStr}</span>
-              <span class="cat">${a.category || 'Geral'}</span>
-            </div>
-            <h3>${a.title}</h3>
-            <p class="ex">${(a.excerpt || '').substring(0, 120)}...</p>
-            <span class="read">Ler Artigo Completo ${ARROW}</span>
-          </div>
-        </a>`;
-      }).join("");
-    }
-  } catch(e) { console.error(e); }
-
-  // 2. CARREGAR PODCASTS
-  const epList = document.getElementById("epList");
-  try {
-    const podSnap = await PA.db.collection("podcasts").orderBy("createdAt", "desc").get();
-    if(podSnap.empty) {
-      epList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum episódio publicado ainda.</p>";
-    } else {
-      epList.innerHTML = podSnap.docs.map(doc => {
-        const p = doc.data();
-        const dateStr = p.createdAt ? new Date(p.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'}) : "";
-        
-        const videoId = getYouTubeId(p.youtubeUrl);
-        let thumbHtml = "";
-        
-        if (videoId) {
-          // Utiliza maxresdefault (resolução HD). O object-fit: cover do CSS corta as bordas pretas se existirem
-          const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-          thumbHtml = `
-            <div class="player">
-              <img src="${thumbUrl}" alt="Capa do Episódio" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">
-            </div>
-          `;
-        } else {
-          thumbHtml = `
-            <div class="player" style="display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.1em;font-size:0.75rem;">
-              Podcast
-            </div>
-          `;
-        }
-        
-        return `
-        <div class="ep">
-          ${thumbHtml}
-          <div class="info">
-            <div>
-              <span class="epnum">${dateStr}</span>
-              <h3>${p.title}</h3>
-              <p>${p.desc || ''}</p>
-            </div>
-            <a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">
-              ASSISTIR NO YOUTUBE
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            </a>
-          </div>
-        </div>`;
-      }).join("");
-    }
-  } catch(e) { console.error(e); }
-
-  <section class="news-section alt">
-    <div class="container">
-      <div class="sec-head2">
-        <span class="eyebrow">Plane no YouTube</span>
-        <h2>Vídeos Técnicos & Demonstrações</h2>
-        <p class="desc">Acompanhe reviews completos de aeronaves, tours de cabine, voos de traslado e detalhes de engenharia da frota Cirrus.</p>
-      </div>
-      <div id="vidList" style="display:flex;flex-direction:column;gap:1.5rem">
-        <p style="color:rgba(255,255,255,0.4);">Carregando vídeos técnicos...</p>
-      </div>
-    </div>
-  </section>
 }
 </script>
 </body>
