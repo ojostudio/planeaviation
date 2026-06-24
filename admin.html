@@ -989,7 +989,11 @@
     trData["pt"] = { condition, location, description, specs: specs.map(s=>({label:s.label,value:s.value})), features: features.map(f=>({icon:f.icon,title:f.title,desc:f.desc})) };
   }
   function fillTranslateModal(){
-    $("trModel").textContent = $("acModel").value.trim();
+    const fabricante = $("acFabricante").value;
+    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
+    const versao = $("acVersao").value.trim();
+    $("trModel").textContent = `${modeloBase} ${versao}`.trim();
+    
     $("tr-pt-condition").value    = trData.pt?.condition || "";
     $("tr-pt-location").value     = trData.pt?.location  || "";
     $("tr-pt-description").value  = trData.pt?.description || "";
@@ -1034,8 +1038,11 @@
     }
   }
   async function openTranslateModal(){
-    const model = $("acModel").value.trim();
-    if (!model) return alert("Informe o modelo antes de revisar as traduções.");
+    const fabricante = $("acFabricante").value;
+    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
+    const model = `${modeloBase} ${$("acVersao").value.trim()}`.trim();
+    
+    if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
     msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
     $("ovTranslate").classList.add("open");
     await translateAll();
@@ -1114,7 +1121,25 @@
     $("acTitle").textContent = id ? "Editar aeronave" : "Nova aeronave";
     $("acId").value = id || "";
     $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
-    $("acModel").value=a.model||""; $("acYear").value=a.year||"";
+    
+    // --- Lógica Nova do Modelo Separado ---
+    $("acFabricante").value = a.fabricante || "Cirrus";
+    $("acVersao").value = a.versao || "";
+    
+    const isCirrus = ($("acFabricante").value === "Cirrus");
+    if(isCirrus) {
+      $("acModeloBase").value = a.modeloBase || "SR22T";
+      $("acModeloBase").style.display = "block";
+      $("acModeloBaseOutros").style.display = "none";
+      $("acModeloBaseOutros").value = "";
+    } else {
+      $("acModeloBaseOutros").value = a.modeloBase || "";
+      $("acModeloBase").style.display = "none";
+      $("acModeloBaseOutros").style.display = "block";
+    }
+    // --------------------------------------
+
+    $("acYear").value=a.year||"";
     $("acHours").value=a.hoursNum!=null?a.hoursNum:(a.hours?String(a.hours).replace(/\D/g,""):"");
     $("acMotor").value=a.motorHours!=null?a.motorHours:""; $("acHelice").value=a.heliceHours!=null?a.heliceHours:"";
     $("acCondition").value=a.condition||"Seminovo"; $("acLocation").value=a.location||"";
@@ -1133,11 +1158,20 @@
   }
 
   async function saveAircraft(withTranslations=false){
-    const model=$("acModel").value.trim(); if(!model) return alert("Informe o modelo.");
+    const fabricante = $("acFabricante").value;
+    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
+    const versao = $("acVersao").value.trim();
+    
+    // Monta o nome completo automaticamente (Ex: "SR22T G7+")
+    const model = `${modeloBase} ${versao}`.trim();
+    
+    if(!model) return alert("Informe o modelo.");
     const codigoInterno = $("acCodigo").value.trim(); if(!codigoInterno) return alert("Informe o código interno.");
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
-    const data={ model, year:Number($("acYear").value)||null, codigoInterno, hoursNum:$("acHours").value?Number($("acHours").value):null, motorHours:$("acMotor").value?Number($("acMotor").value):null, heliceHours:$("acHelice").value?Number($("acHelice").value):null, condition:$("acCondition").value, location:$("acLocation").value.trim(), currency:$("acCurrency").value||"USD", priceNum:$("acPrice").value?Number($("acPrice").value):null, sobConsulta:!!$("acSobConsulta").checked, tag:$("acTag").value.trim(), tagSolid:true, description:$("acDesc").value.trim(), translations:withTranslations?trData:(editTranslations||{}), images:editImages, specs, features, prefixo:$("acPrefixo").value.trim(), proprietarioNome:$("acProprietarioNome").value.trim(), proprietarioTelefone:$("acProprietarioTel").value.trim(), notasInternas:$("acNotasInternas").value.trim(), updatedAt:ts(), updatedBy:me.email };
+    
+    const data={ model, fabricante, modeloBase, versao, year:Number($("acYear").value)||null, codigoInterno, hoursNum:$("acHours").value?Number($("acHours").value):null, motorHours:$("acMotor").value?Number($("acMotor").value):null, heliceHours:$("acHelice").value?Number($("acHelice").value):null, condition:$("acCondition").value, location:$("acLocation").value.trim(), currency:$("acCurrency").value||"USD", priceNum:$("acPrice").value?Number($("acPrice").value):null, sobConsulta:!!$("acSobConsulta").checked, tag:$("acTag").value.trim(), tagSolid:true, description:$("acDesc").value.trim(), translations:withTranslations?trData:(editTranslations||{}), images:editImages, specs, features, prefixo:$("acPrefixo").value.trim(), proprietarioNome:$("acProprietarioNome").value.trim(), proprietarioTelefone:$("acProprietarioTel").value.trim(), notasInternas:$("acNotasInternas").value.trim(), updatedAt:ts(), updatedBy:me.email };
+    
     const id=$("acId").value;
     if (PA.IMAGE_MODE === "inline" && inlineBytes(editImages) > 750 * 1024) return alert(`Limite de imagens excedido para modo sem Storage.`);
     try{
