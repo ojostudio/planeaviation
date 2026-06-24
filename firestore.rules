@@ -24,7 +24,7 @@ service cloud.firestore {
       return hasRoleDoc() && (userDoc().role == 'admin' || userDoc().role == 'editor');
     }
 
-    // Aeronaves à venda (público lê; editor/admin escreve)
+    // Aeronaves à venda
     match /aircraft/{id} {
       allow read: if true;
       allow write: if isEditor();
@@ -35,17 +35,46 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isEditor();
     }
-
-    // Configurações do site (hero, vídeos) — público lê; editor/admin escreve
-    match /siteConfig/{id} {
+    
+    // Rede de Parceiros
+    match /partners/{id} {
       allow read: if true;
       allow write: if isEditor();
     }
 
-    // Usuários / papéis (admin gerencia; cada um lê o próprio)
+    // Configurações do site
+    match /siteConfig/{id} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+    
+    // Inscrições da Newsletter
+    match /newsletter/{id} {
+      allow create: if true;
+      allow read, update, delete: if isEditor();
+    }
+
+		// Artigos e Podcasts (News & Insights)
+    match /articles/{id} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+    match /podcasts/{id} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    // Usuários / papéis
     match /users/{uid} {
       allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
       allow write: if isAdmin();
+    }
+
+    // NOVO: Leads (Mensagens do Contato)
+    // Público pode criar. Apenas equipe interna pode ler, editar ou excluir.
+    match /leads/{id} {
+      allow create: if true;
+      allow read, update, delete: if isEditor();
     }
 
     // Bloqueia qualquer outra coleção

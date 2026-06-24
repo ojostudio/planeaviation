@@ -140,8 +140,8 @@
         <h2 data-i18n="news_nl_title">Fique por dentro do mercado.</h2>
         <p class="muted">Assine nossa newsletter e receba análises do mercado e novos episódios diretamente no seu e-mail.</p>
         <div class="nl-row">
-          <input type="email" placeholder="Seu e-mail corporativo">
-          <button class="btn btn-solid" data-i18n="news_nl_btn">
+          <input type="email" id="pageNewsEmail" placeholder="Seu e-mail corporativo">
+          <button class="btn btn-solid" id="pageNewsBtn" data-i18n="news_nl_btn">
             ASSINAR
             <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
           </button>
@@ -160,6 +160,35 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   loadNewsData();
+  // Lógica da Newsletter da página News
+document.getElementById("pageNewsBtn").addEventListener("click", async function() {
+  if (!window.PA || !PA.configured) return alert("Erro de conexão.");
+  
+  const emailInput = document.getElementById("pageNewsEmail");
+  const email = emailInput.value.trim();
+  
+  if (!email || !email.includes("@")) return alert("Por favor, insira um e-mail válido.");
+  
+  const btn = this;
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = "AGUARDE...";
+  btn.disabled = true;
+  
+  try {
+    await PA.db.collection("newsletter").add({
+      email: email,
+      source: "news_page",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    alert("Inscrição realizada com sucesso! Bem-vindo(a) à nossa newsletter.");
+    emailInput.value = "";
+  } catch(err) {
+    alert("Erro ao se inscrever: " + err.message);
+  } finally {
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+  }
+});
 });
 
 // Função auxiliar para extrair o ID do vídeo de qualquer formato de link do YouTube

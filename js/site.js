@@ -127,8 +127,8 @@
         <h4 data-i18n="f_newsletter">${t("f_newsletter")}</h4>
         <p data-i18n="f_newsletter_p">${t("f_newsletter_p")}</p>
         <div class="f-news-row">
-          <input type="email" data-i18n="f_newsletter_ph" placeholder="${t("f_newsletter_ph")}">
-          <button data-i18n="f_newsletter_btn">${t("f_newsletter_btn")}</button>
+          <input type="email" id="footerNewsEmail" data-i18n="f_newsletter_ph" placeholder="${t("f_newsletter_ph")}">
+          <button id="footerNewsBtn" data-i18n="f_newsletter_btn">${t("f_newsletter_btn")}</button>
         </div>
       </div>
     </div>
@@ -196,5 +196,37 @@
   document.addEventListener("pa:langchange", () => {
     if (window.PA_I18N) PA_I18N.applyLang();
   });
+
+  /* ---- Lógica da Newsletter do Footer ---- */
+  document.addEventListener("click", async (e) => {
+    if (e.target.id === "footerNewsBtn") {
+      if (!window.PA || !PA.configured) return alert("Erro de conexão com o banco de dados.");
+      
+      const emailInput = document.getElementById("footerNewsEmail");
+      const email = emailInput.value.trim();
+      if (!email || !email.includes("@")) return alert("Por favor, insira um e-mail válido.");
+      
+      const btn = e.target;
+      const originalText = btn.textContent;
+      btn.textContent = "Aguarde...";
+      btn.disabled = true;
+      
+      try {
+        await PA.db.collection("newsletter").add({
+          email: email,
+          source: "footer",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Inscrição realizada com sucesso! Bem-vindo(a) à nossa newsletter.");
+        emailInput.value = "";
+      } catch (err) {
+        alert("Ops! Houve um erro ao se inscrever: " + err.message);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+  });
+
 
 })();
