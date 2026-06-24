@@ -273,13 +273,13 @@
     <!-- PAINEL NEWS & INSIGHTS -->
     <div class="panel" id="panel-news">
       <div class="row-head">
-        <div><h2>News & Insights</h2><p class="sub">Gerencie artigos do blog e os episódios do podcast.</p></div>
+        <div><h2>News & Insights</h2><p class="sub">Gerencie artigos do blog, episódios do podcast e vídeos técnicos do YouTube.</p></div>
       </div>
       
-      <!-- Sub-abas -->
       <div class="tabs" style="margin-bottom:1.5rem; border-bottom:none">
         <button class="tab sub-tab active" data-sub="artigos" style="border-bottom: 2px solid hsl(var(--foreground)); color:hsl(var(--foreground))">Artigos</button>
         <button class="tab sub-tab" data-sub="podcasts" style="border-bottom: 2px solid transparent;">Podcasts</button>
+        <button class="tab sub-tab" data-sub="videos" style="border-bottom: 2px solid transparent;">Vídeos & Mídia</button>
       </div>
 
       <div id="sub-artigos">
@@ -290,6 +290,11 @@
       <div id="sub-podcasts" style="display:none">
         <div style="margin-bottom:1rem; text-align:right;"><button class="btn btn-solid btn-sm" id="addPodcast">+ Novo Podcast</button></div>
         <table class="tbl"><tbody id="podcastRows"></tbody></table>
+      </div>
+
+      <div id="sub-videos" style="display:none">
+        <div style="margin-bottom:1rem; text-align:right;"><button class="btn btn-solid btn-sm" id="addVideo">+ Novo Vídeo Técnico</button></div>
+        <table class="tbl"><tbody id="videoRows"></tbody></table>
       </div>
     </div>
 
@@ -601,14 +606,37 @@
     <div class="modal-head"><h3 id="podModalTitle">Novo Podcast</h3><button class="x-btn" data-close>✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="podId">
-      <div class="fld"><label>Título do Episódio *</label><input id="podTitle" placeholder="Ex: Tendências e o futuro..."></div>
-      <div class="fld"><label>Duração</label><input id="podDur" placeholder="Ex: 48 min"></div>
+      <div class="fld"><label>Título do Episódio *</label><input id="podTitle" placeholder="Ex: Custos de Operação do Vision Jet..."></div>
+      <div class="grid2">
+        <div class="fld"><label>Data de Lançamento no YouTube *</label><input id="podVideoDate" type="date"></div>
+        <div class="fld"><label>Duração</label><input id="podDur" placeholder="Ex: 52 min"></div>
+      </div>
       <div class="fld"><label>Descrição Breve</label><textarea id="podDesc" rows="3" style="resize:vertical"></textarea></div>
       <div class="fld"><label>Link do YouTube *</label><input id="podLink" placeholder="https://youtube.com/watch?v=..."></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-solid btn-sm" id="podSave">Salvar Podcast</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovVideo">
+  <div class="modal" style="max-width:32rem">
+    <div class="modal-head"><h3 id="vidModalTitle">Novo Vídeo Técnico</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="vidId">
+      <div class="fld"><label>Título do Vídeo *</label><input id="vidTitle" placeholder="Ex: Tour Completo pela Cabine do SR22 G7..."></div>
+      <div class="grid2">
+        <div class="fld"><label>Data de Lançamento no YouTube *</label><input id="vidVideoDate" type="date"></div>
+        <div class="fld"><label>Duração</label><input id="vidDur" placeholder="Ex: 14 min"></div>
+      </div>
+      <div class="fld"><label>Descrição Breve</label><textarea id="vidDesc" rows="3" style="resize:vertical"></textarea></div>
+      <div class="fld"><label>Link do YouTube *</label><input id="vidLink" placeholder="https://youtube.com/watch?v=..."></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-solid btn-sm" id="vidSave">Salvar Vídeo</button>
     </div>
   </div>
 </div>
@@ -1360,7 +1388,10 @@
       t.style.borderColor="hsl(var(--foreground))"; t.style.color="hsl(var(--foreground))";
       $("sub-artigos").style.display = t.dataset.sub==="artigos" ? "block" : "none";
       $("sub-podcasts").style.display = t.dataset.sub==="podcasts" ? "block" : "none";
+      $("sub-videos").style.display = t.dataset.sub==="videos" ? "block" : "none";
     });
+    $("addVideo").onclick = () => openVideo(null, {});
+    $("vidSave").onclick = saveVideo;
 
     $("addArticle").onclick = () => openArticle(null, {});
     $("addPodcast").onclick = () => openPodcast(null, {});
@@ -1423,12 +1454,13 @@
   async function loadPodcasts() {
     const rows = $("podcastRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando podcasts...</td></tr>`;
     try {
-      const snap = await db.collection("podcasts").orderBy("createdAt", "desc").get();
+      // Ordenação automática pela data real do vídeo no YouTube
+      const snap = await db.collection("podcasts").orderBy("videoDate", "desc").get();
       if(snap.empty) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum episódio cadastrado.</td></tr>`; return; }
       rows.innerHTML = snap.docs.map(doc => {
         const p = doc.data();
         return `<tr>
-          <td><b>${esc(p.title)}</b></td>
+          <td><b>${esc(p.title)}</b><br><span style="font-size:11px;color:hsl(var(--muted-foreground))">YouTube: ${p.videoDate || '—'}</span></td>
           <td style="text-align:right"><div class="act"><button class="icon-btn edit-pod" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-pod" data-id="${doc.id}">Excluir</button></div></td>
         </tr>`;
       }).join("");
@@ -1436,27 +1468,22 @@
       rows.querySelectorAll(".del-pod").forEach(b => b.onclick = () => delDoc("podcasts", b.dataset.id, "Podcast", loadPodcasts));
     } catch(e) {}
   }
-
   function openPodcast(id, p) {
     $("podModalTitle").textContent = id ? "Editar Podcast" : "Novo Podcast";
-    $("podId").value = id || "";
-    $("podTitle").value = p.title || "";
-    $("podDur").value = p.duration || "";
-    $("podDesc").value = p.desc || "";
-    $("podLink").value = p.youtubeUrl || "";
+    $("podId").value = id || ""; $("podTitle").value = p.title || "";
+    $("podVideoDate").value = p.videoDate || ""; $("podDur").value = p.duration || "";
+    $("podDesc").value = p.desc || ""; $("podLink").value = p.youtubeUrl || "";
     $("ovPodcast").classList.add("open");
   }
-
   async function savePodcast() {
-    if(!$("podTitle").value.trim() || !$("podLink").value.trim()) return alert("Título e Link do YouTube são obrigatórios.");
-    
-    const data = { 
-      title: $("podTitle").value.trim(), 
-      duration: $("podDur").value.trim(), 
-      desc: $("podDesc").value.trim(), 
-      youtubeUrl: $("podLink").value.trim(), 
-      updatedAt: ts() 
-    };
+    if(!$("podTitle").value.trim() || !$("podLink").value.trim() || !$("podVideoDate").value) return alert("Título, Link e Data do YouTube são obrigatórios.");
+    const data = { title: $("podTitle").value.trim(), videoDate: $("podVideoDate").value, duration: $("podDur").value.trim(), desc: $("podDesc").value.trim(), youtubeUrl: $("podLink").value.trim(), updatedAt: ts() };
+    try {
+      if($("podId").value) await db.collection("podcasts").doc($("podId").value).update(data);
+      else await db.collection("podcasts").add({ ...data, createdAt: ts(), createdBy: me.email });
+      $("ovPodcast").classList.remove("open"); loadPodcasts();
+    } catch(e) { alert(e.message); }
+  }
     
     try {
       if($("podId").value) await db.collection("podcasts").doc($("podId").value).update(data);
@@ -1535,6 +1562,40 @@
     link.click();
     document.body.removeChild(link);
   };
+
+  // --- CRUD Vídeos Técnicos ---
+  async function loadVideos() {
+    const rows = $("videoRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando vídeos...</td></tr>`;
+    try {
+      const snap = await db.collection("videos").orderBy("videoDate", "desc").get();
+      if(snap.empty) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum vídeo cadastrado.</td></tr>`; return; }
+      rows.innerHTML = snap.docs.map(doc => {
+        const v = doc.data();
+        return `<tr>
+          <td><b>${esc(v.title)}</b><br><span style="font-size:11px;color:hsl(var(--muted-foreground))">YouTube: ${v.videoDate || '—'}</span></td>
+          <td style="text-align:right"><div class="act"><button class="icon-btn edit-vid" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-vid" data-id="${doc.id}">Excluir</button></div></td>
+        </tr>`;
+      }).join("");
+      rows.querySelectorAll(".edit-vid").forEach(b => b.onclick = async () => openVideo(b.dataset.id, (await db.collection("videos").doc(b.dataset.id).get()).data()));
+      rows.querySelectorAll(".del-vid").forEach(b => b.onclick = () => delDoc("videos", b.dataset.id, "Vídeo", loadVideos));
+    } catch(e) {}
+  }
+  function openVideo(id, v) {
+    $("vidModalTitle").textContent = id ? "Editar Vídeo Técnico" : "Novo Vídeo Técnico";
+    $("vidId").value = id || ""; $("vidTitle").value = v.title || "";
+    $("vidVideoDate").value = v.videoDate || ""; $("vidDur").value = v.duration || "";
+    $("vidDesc").value = v.desc || ""; $("vidLink").value = v.youtubeUrl || "";
+    $("ovVideo").classList.add("open");
+  }
+  async function saveVideo() {
+    if(!$("vidTitle").value.trim() || !$("vidLink").value.trim() || !$("vidVideoDate").value) return alert("Título, Link e Data do YouTube são obrigatórios.");
+    const data = { title: $("vidTitle").value.trim(), videoDate: $("vidVideoDate").value, duration: $("vidDur").value.trim(), desc: $("vidDesc").value.trim(), youtubeUrl: $("vidLink").value.trim(), updatedAt: ts() };
+    try {
+      if($("vidId").value) await db.collection("videos").doc($("vidId").value).update(data);
+      else await db.collection("videos").add({ ...data, createdAt: ts(), createdBy: me.email });
+      $("ovVideo").classList.remove("open"); loadVideos();
+    } catch(e) { alert(e.message); }
+  }
 
 })();
 </script>

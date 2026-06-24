@@ -159,7 +159,66 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  loadNewsData();
+  async function loadNewsData() {
+  if (!window.PA || !PA.configured) return;
+
+  const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
+  
+  // Função interna para formatar a string YYYY-MM-DD para "DD de Mês de YYYY"
+  function humanDate(str) {
+    if(!str) return "";
+    const p = str.split('-'); if(p.length !== 3) return str;
+    return new Date(p[0], p[1]-1, p[2]).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+  }
+
+  // 1. CARREGAR ARTIGOS
+  const artGrid = document.getElementById("artGrid");
+  try {
+    const artSnap = await PA.db.collection("articles").orderBy("createdAt", "desc").get();
+    if(artSnap.empty) {
+      artGrid.innerHTML = "<p style='color:rgba(255,255,255,0.4); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
+    } else {
+      artGrid.innerHTML = artSnap.docs.map(doc => {
+        const a = doc.data();
+        const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
+        const imgHtml = a.imageUrl ? `<img src="${a.imageUrl}" alt="${a.title}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:0.75rem;letter-spacing:0.1em;">SEM IMAGEM</div>`;
+        return `<a href="artigo.html?id=${doc.id}" class="art"><div class="imgph">${imgHtml}</div><div class="body"><div class="row"><span class="date">${dateStr}</span><span class="cat">${a.category || 'Geral'}</span></div><h3>${a.title}</h3><p class="ex">${(a.excerpt || '').substring(0, 120)}...</p><span class="read">Ler Artigo Completo ${ARROW}</span></div></a>`;
+      }).join("");
+    }
+  } catch(e) {}
+
+  // 2. CARREGAR PODCASTS (Ordenado por Data do YouTube)
+  const epList = document.getElementById("epList");
+  try {
+    const podSnap = await PA.db.collection("podcasts").orderBy("videoDate", "desc").get();
+    if(podSnap.empty) {
+      epList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum episódio publicado ainda.</p>";
+    } else {
+      epList.innerHTML = podSnap.docs.map(doc => {
+        const p = doc.data();
+        const videoId = getYouTubeId(p.youtubeUrl);
+        const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
+        return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(p.videoDate)} · ${p.duration || '0 min'}</span><h3>${p.title}</h3><p>${p.desc || ''}</p></div><a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR NO PODCAST <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
+      }).join("");
+    }
+  } catch(e) {}
+
+  // 3. CARREGAR VÍDEOS TÉCNICOS & MÍDIA
+  const vidList = document.getElementById("vidList");
+  try {
+    const vidSnap = await PA.db.collection("videos").orderBy("videoDate", "desc").get();
+    if(vidSnap.empty) {
+      vidList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum vídeo técnico cadastrado ainda.</p>";
+    } else {
+      vidList.innerHTML = vidSnap.docs.map(doc => {
+        const v = doc.data();
+        const videoId = getYouTubeId(v.youtubeUrl);
+        const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
+        return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(v.videoDate)} · ${v.duration || '0 min'}</span><h3>${v.title}</h3><p>${v.desc || ''}</p></div><a href="${v.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR CONTEÚDO <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
+      }).join("");
+    }
+  } catch(e) {}
+}
   // Lógica da Newsletter da página News
 document.getElementById("pageNewsBtn").addEventListener("click", async function() {
   if (!window.PA || !PA.configured) return alert("Erro de conexão.");
@@ -283,6 +342,19 @@ async function loadNewsData() {
       }).join("");
     }
   } catch(e) { console.error(e); }
+
+  <section class="news-section alt">
+    <div class="container">
+      <div class="sec-head2">
+        <span class="eyebrow">Plane no YouTube</span>
+        <h2>Vídeos Técnicos & Demonstrações</h2>
+        <p class="desc">Acompanhe reviews completos de aeronaves, tours de cabine, voos de traslado e detalhes de engenharia da frota Cirrus.</p>
+      </div>
+      <div id="vidList" style="display:flex;flex-direction:column;gap:1.5rem">
+        <p style="color:rgba(255,255,255,0.4);">Carregando vídeos técnicos...</p>
+      </div>
+    </div>
+  </section>
 }
 </script>
 </body>

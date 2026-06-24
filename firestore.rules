@@ -64,6 +64,11 @@ service cloud.firestore {
       allow write: if isEditor();
     }
 
+    match /videos/{id} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
     // Usuários / papéis
     match /users/{uid} {
       allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);

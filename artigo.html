@@ -37,6 +37,17 @@
       <div class="art-cover" id="artCover"></div>
       <div class="art-content" id="artBody"></div>
     </div>
+    <div style="max-width: 1000px; margin: 4rem auto 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex; justify-content: space-between; gap: 2rem;" id="artNav">
+      <a href="#" id="btnPrevArt" class="btn-outline-dark" style="display:none; text-align:left; border-radius:8px; padding:1rem; min-width:12rem; text-decoration:none;">
+        <span style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:rgba(255,255,255,0.4); display:block; margin-bottom:0.25rem;">← ANTERIOR</span>
+        <span id="lblPrevTitle" style="font-size:14px; font-weight:700; color:#fff; text-transform:none;"></span>
+      </a>
+      <a href="#" id="btnNextArt" class="btn-outline-dark" style="display:none; text-align:right; margin-left:auto; border-radius:8px; padding:1rem; min-width:12rem; text-decoration:none;">
+        <span style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:rgba(255,255,255,0.4); display:block; margin-bottom:0.25rem;">PRÓXIMO →</span>
+        <span id="lblNextTitle" style="font-size:14px; font-weight:700; color:#fff; text-transform:none;"></span>
+      </a>
+    </div>
+    
   </article>
 
   <div id="artLoading" class="container" style="padding: 5rem 0; text-align: center; color: hsl(var(--muted-foreground));">Carregando artigo...</div>
@@ -73,6 +84,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Converte quebras de linha em parágrafos <p>
     const contentHtml = (art.content || "").split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
     document.getElementById("artBody").innerHTML = contentHtml;
+
+    // Buscar Artigo Próximo (Mais Recente que o atual)
+    const nextSnap = await PA.db.collection("articles").where("createdAt", ">", art.createdAt).orderBy("createdAt", "asc").limit(1).get();
+    if(!nextSnap.empty) {
+      const nextDoc = nextSnap.docs[0];
+      document.getElementById("btnNextArt").href = `artigo.html?id=${nextDoc.id}`;
+      document.getElementById("lblNextTitle").textContent = nextDoc.data().title;
+      document.getElementById("btnNextArt").style.display = "block";
+    }
+
+    // Buscar Artigo Anterior (Mais Antigo que o atual)
+    const prevSnap = await PA.db.collection("articles").where("createdAt", "<", art.createdAt).orderBy("createdAt", "desc").limit(1).get();
+    if(!prevSnap.empty) {
+      const prevDoc = prevSnap.docs[0];
+      document.getElementById("btnPrevArt").href = `artigo.html?id=${prevDoc.id}`;
+      document.getElementById("lblPrevTitle").textContent = prevDoc.data().title;
+      document.getElementById("btnPrevArt").style.display = "block";
+    }
     
     document.title = `${art.title} | Plane Aviation`;
     document.getElementById("artLoading").style.display = "none";
