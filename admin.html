@@ -265,38 +265,10 @@
     <div class="panel" id="panel-users">
       <div class="row-head">
         <div><h2>Usuários &amp; Permissões</h2><p class="sub">Gerencie quem tem acesso ao painel e com qual nível de permissão.</p></div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          <button class="btn btn-outline btn-sm" id="recoverUser">↩ Recuperar usuário</button>
-          <button class="btn btn-solid btn-sm" id="addUser">+ Criar usuário</button>
-        </div>
+        <button class="btn btn-solid btn-sm" id="addUser">+ Criar usuário</button>
       </div>
       <table class="tbl"><tbody id="userRows"></tbody></table>
 
-      <!-- Painel de recuperação de usuário órfão -->
-      <div id="recoverPanel" style="display:none;margin-top:1.5rem;padding:1.25rem;border:1px dashed hsl(var(--border));border-radius:var(--radius-sm);background:hsl(var(--muted))">
-        <p style="font-size:.8125rem;font-weight:600;margin-bottom:1rem;">↩ Recuperar usuário existente no Firebase Auth</p>
-        <p style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:1rem;">Use quando um usuário sumiu da lista mas o e-mail dele já estava cadastrado. Preencha o e-mail, o nome e a permissão desejada — o sistema vai recriar o vínculo sem alterar a senha dele.</p>
-        <div id="recoverMsg" class="msg"></div>
-        <div class="grid2">
-          <div class="fld"><label>E-mail do usuário *</label><input id="recEmail" type="email" placeholder="fred@ojo-studio.com"></div>
-          <div class="fld"><label>Nome para exibição *</label><input id="recName" placeholder="Nome completo"></div>
-        </div>
-        <div class="fld">
-          <label>UID do Firebase Auth *</label>
-          <input id="recUid" placeholder="Cole aqui o UID do usuário (Firebase Console → Authentication → Users)" style="font-family:monospace;font-size:.8125rem">
-          <p style="font-size:.6875rem;color:hsl(var(--muted-foreground));margin-top:.375rem">Acesse <b>console.firebase.google.com → Authentication → Users</b>, localize o e-mail e copie o User UID.</p>
-        </div>
-        <div class="fld"><label>Permissão *</label>
-          <select id="recRole">
-            <option value="editor">Editor — edita conteúdo</option>
-            <option value="admin">Admin — acesso total</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem">
-          <button class="btn btn-outline btn-sm" id="recoverCancel">Cancelar</button>
-          <button class="btn btn-solid btn-sm" id="recoverSave">Recuperar acesso</button>
-        </div>
-      </div>
     </div>
 
     <div class="panel" id="panel-config">
@@ -1334,50 +1306,6 @@
       try { await db.collection("users").doc(editUserId).update({ name, role, updatedAt:ts(), updatedBy:me.email }); $("ovEditUser").classList.remove("open"); loadUsers(); } catch(e){ msg($("editUserMsg"), e.message, "err"); }
     };
 
-    // Recuperar usuário órfão
-    $("recoverUser").onclick = () => {
-      const panel = $("recoverPanel");
-      const visible = panel.style.display !== "none";
-      panel.style.display = visible ? "none" : "block";
-      if(!visible){ clearMsg($("recoverMsg")); $("recEmail").value=""; $("recName").value=""; $("recRole").value="editor"; }
-    };
-    $("recoverCancel").onclick = () => { $("recoverPanel").style.display="none"; };
-    $("recoverSave").onclick = async () => {
-      const email = $("recEmail").value.trim().toLowerCase();
-      const name  = $("recName").value.trim();
-      const role  = $("recRole").value;
-      const uid   = $("recUid").value.trim();
-      if(!email||!name||!uid) return msg($("recoverMsg"),"Preencha todos os campos, incluindo o UID.","err");
-
-      $("recoverSave").disabled = true;
-      try {
-        // Verifica se já existe documento com este UID
-        const existDoc = await db.collection("users").doc(uid).get();
-        if(existDoc.exists) {
-          msg($("recoverMsg"),"Já existe um documento com este UID. O usuário já está ativo na lista.","err");
-          return;
-        }
-        // Verifica se já existe documento com este e-mail
-        const existEmail = await db.collection("users").where("email","==",email).get();
-        if(!existEmail.empty) {
-          msg($("recoverMsg"),"Já existe um usuário com este e-mail na lista.","err");
-          return;
-        }
-        // Recria o documento no Firestore com o UID correto do Auth
-        await db.collection("users").doc(uid).set({
-          name, email, role,
-          createdAt: ts(),
-          createdBy: me.email,
-          recovered: true
-        });
-        msg($("recoverMsg"),`Usuário "${name}" recuperado com sucesso!`,"ok");
-        setTimeout(() => { $("recoverPanel").style.display="none"; loadUsers(); }, 1500);
-      } catch(e) {
-        msg($("recoverMsg"), traduzirErroFirebase(e.code, e.message), "err");
-      } finally {
-        $("recoverSave").disabled = false;
-      }
-    };
   }
   async function createUser(){
     const name=$("uName").value.trim(), email=$("uEmail").value.trim().toLowerCase(), pass=$("uPass").value, role=$("uRole").value;
