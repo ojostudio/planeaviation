@@ -314,9 +314,18 @@
 
               <div class="form-group">
                 <label for="aircraftSelect">Aeronave de Interesse (Opcional)</label>
-                <select id="aircraftSelect">
-                  <option value="">Nenhuma / Outro assunto</option>
-                </select>
+                <select id="f-aeronave" name="aeronave">
+                <option value="" disabled selected>Selecione um modelo...</option>
+                  <optgroup label="Cirrus Aircraft">
+                  <option value="SR20">SR20</option>
+                  <option value="SR22">SR22</option>
+                  <option value="SR22T">SR22T</option>
+                  <option value="Vision Jet">Vision Jet</option>
+                </optgroup>
+                <optgroup label="Outros Fabricantes">
+                  <option value="Outros">Outro modelo / marca</option>
+                </optgroup>
+          </select>
               </div>
 
               <div class="form-group">
@@ -380,35 +389,7 @@
       if (selectSubject) selectSubject.value = motivo;
     }
     
-    setTimeout(loadAircraftsForForm, 500); 
   });
-
-  // Puxa as aeronaves ativas do Firestore
-  async function loadAircraftsForForm() {
-    if (!window.PA || !PA.configured) {
-      console.warn("Firebase não configurado.");
-      return;
-    }
-    try {
-      const snap = await PA.db.collection("aircraft").get();
-      const activeAircrafts = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(a => !a.archived)
-        .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0)); 
-
-      const select = document.getElementById('aircraftSelect');
-      
-      activeAircrafts.forEach(a => {
-        const opt = document.createElement("option");
-        const cod = a.codigoInterno || "Sem Cód";
-        opt.value = `${a.model} [${cod}]`;
-        opt.textContent = `${a.model} (${a.year})`; // Cliente não vê o código
-        select.appendChild(opt);
-      });
-    } catch (e) {
-      console.error("Erro ao carregar aeronaves no formulário:", e);
-    }
-  }
 
   // Lógica de salvamento no Firebase (Lead Capture)
   document.getElementById('contactForm').addEventListener('submit', async (e) => {
