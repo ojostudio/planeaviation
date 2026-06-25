@@ -121,40 +121,61 @@
   .spinner{ min-height:100vh; display:flex; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)); font-size:.875rem; }
   .badge-count { background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px; display:inline-block; }
 
-  /* Divisor de Datas nas Tabelas */
+  /* ── Divisor de datas ── */
   .date-divider td {
-    background: rgba(255, 255, 255, 0.04);
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: rgba(255, 255, 255, 0.5);
+    background: hsl(var(--muted));
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+    color: hsl(var(--muted-foreground));
     padding: .5rem 1rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
   }
 
-  /* Seletor de Status das Mensagens (Corrigido) */
+  /* ── Status select ── */
   .status-select {
-    background: transparent;
-    border: 1px solid rgba(128,128,128,0.4);
-    color: inherit; /* Herda a cor preta/branca do texto ao redor */
-    border-radius: 4px;
-    padding: 0.25rem 0.5rem;
-    font-size: 11px;
-    font-weight: 700;
-    outline: none;
-    cursor: pointer;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    border-radius: var(--radius-sm);
+    padding: .25rem .5rem;
+    font-size: 11px; font-weight: 700;
+    outline: none; cursor: pointer;
   }
-  .status-select option {
-    background: #ffffff; /* Fundo branco forçado nas opções */
-    color: #000000;      /* Texto preto forçado nas opções */
-  }
-  
-  /* Badge Exportado */
+  .status-select.s-novo    { border-color:#b42318; color:#b42318; background:#fdecea; }
+  .status-select.s-contatado { border-color:#1a7f47; color:#1a7f47; background:#eafaf0; }
+  .status-select.s-nao_responder { border-color:#888; color:#888; }
+  .status-select option { background:#fff; color:#000; }
+
+  /* ── Badge exportado ── */
   .badge-exported {
-    font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    background: rgba(26, 127, 71, 0.2); color: #4ade80; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.5rem;
+    display:inline-flex; align-items:center; gap:.25rem;
+    font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    background: #eafaf0; color: #1a7f47; border:1px solid #bfe6cd;
+    padding: .2rem .5rem; border-radius: 999px;
   }
+  .badge-exported::before { content:"✓ "; }
+
+  /* ── Lead card row ── */
+  .lead-row:hover td { background: hsl(var(--muted)/.5); }
+  .lead-row.is-novo td:first-child { border-left: 3px solid #b42318; }
+  .lead-row td { cursor:pointer; }
+
+  /* ── Newsletter stat bar ── */
+  .news-stat-bar {
+    display:flex; gap:1.5rem; align-items:center;
+    background:hsl(var(--muted)); border:1px solid hsl(var(--border));
+    border-radius:var(--radius-sm); padding:.875rem 1.25rem;
+    margin-bottom:1.5rem; flex-wrap:wrap;
+  }
+  .news-stat-bar .stat { display:flex; flex-direction:column; gap:.125rem; }
+  .news-stat-bar .stat b { font-size:1.25rem; font-weight:700; letter-spacing:-.025em; }
+  .news-stat-bar .stat span { font-size:.6875rem; text-transform:uppercase; letter-spacing:.06em; color:hsl(var(--muted-foreground)); }
+  .news-stat-bar .stat.green b { color:#1a7f47; }
+  .news-stat-bar .stat.red b   { color:#b42318; }
+  .news-stat-bar .divider { width:1px; height:2rem; background:hsl(var(--border)); }
+
+  /* ── Export button group ── */
+  .export-btn-group { display:flex; gap:.5rem; flex-wrap:wrap; }
 </style>
 </head>
 <body>
@@ -212,11 +233,11 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
-      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Conteúdo</button>
       <button class="tab" data-tab="partners">Parceiros</button>
       <button class="tab" data-tab="news">News & Insights</button>
+      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab" data-tab="newsletter">Newsletter</button>
     </div>
 
@@ -349,11 +370,18 @@
 
     <div class="panel" id="panel-newsletter">
       <div class="row-head">
-        <div><h2>Inscritos na Newsletter</h2><p class="sub">E-mails capturados pelo rodapé e pela página de News.</p></div>
-        <div style="display:flex; gap:0.5rem;">
-          <button class="btn btn-outline btn-sm" id="exportNewsAllBtn">Exportar Todos</button>
-          <button class="btn btn-solid btn-sm" id="exportNewsNewBtn" style="background:#1a7f47; border-color:#1a7f47;">Exportar Novos (CSV)</button>
+        <div><h2>Inscritos na Newsletter</h2><p class="sub">E-mails capturados pelo rodapé e pela página de News. Agrupados por data de inscrição.</p></div>
+        <div class="export-btn-group">
+          <button class="btn btn-outline btn-sm" id="exportNewsNewBtn">↓ Exportar Novos</button>
+          <button class="btn btn-solid btn-sm" id="exportNewsAllBtn" style="background:hsl(var(--foreground));border-color:hsl(var(--foreground));">↓ Exportar Todos</button>
         </div>
+      </div>
+      <div class="news-stat-bar">
+        <div class="stat"><b id="statTotal">—</b><span>Total</span></div>
+        <div class="divider"></div>
+        <div class="stat green"><b id="statNew">—</b><span>Novos</span></div>
+        <div class="divider"></div>
+        <div class="stat red"><b id="statExported">—</b><span>Exportados</span></div>
       </div>
       <table class="tbl"><tbody id="newsListRows"></tbody></table>
     </div>
@@ -807,7 +835,7 @@
         let currentDate = null;
 
         docs.forEach(l => {
-          const dateStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
+          const dateStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'}) : "Sem data";
           const hourStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
           
           if (dateStr !== currentDate) {
@@ -819,11 +847,12 @@
           const phone = l.phone ? `<br><span style="font-size:11px;color:#888">Tel: ${esc(l.phone)}</span>` : "";
           const email = l.email ? `<br><span style="font-size:11px;color:#888">${esc(l.email)}</span>` : "";
           
+          const sClass = l.status==='contatado' ? 's-contatado' : (l.status==='nao_responder' ? 's-nao_responder' : 's-novo');
           const statusSelect = `
-            <select class="status-select" data-id="${l.id}" ${isArchived ? 'disabled' : ''}>
-              <option value="novo" ${!l.status || l.status==='novo' ? 'selected' : ''}>Novo</option>
-              <option value="contatado" ${l.status==='contatado' ? 'selected' : ''}>Contatado</option>
-              <option value="nao_responder" ${l.status==='nao_responder' ? 'selected' : ''}>Não Responder</option>
+            <select class="status-select ${sClass}" data-id="${l.id}" ${isArchived ? 'disabled' : ''}>
+              <option value="novo" ${!l.status || l.status==='novo' ? 'selected' : ''}>🔴 Novo</option>
+              <option value="contatado" ${l.status==='contatado' ? 'selected' : ''}>🟢 Contatado</option>
+              <option value="nao_responder" ${l.status==='nao_responder' ? 'selected' : ''}>⚫ Não Responder</option>
             </select>
           `;
 
@@ -832,7 +861,8 @@
                <button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button>`
             : `<button class="icon-btn archive-lead" data-id="${l.id}">Arquivar</button>`;
 
-          html += `<tr>
+          const isNovo = !l.status || l.status==='novo';
+          html += `<tr class="lead-row${isNovo && !isArchived ? ' is-novo' : ''}">
             <td>
               <b style="font-size:13px">${esc(l.name)}</b> <span style="font-size:10px; color:#888; margin-left:8px;">${hourStr}</span>
               ${phone} ${email}
@@ -857,8 +887,13 @@
       // Re-liga todos os botões e selects das duas tabelas
       document.querySelectorAll(".status-select:not([disabled])").forEach(sel => {
         sel.onchange = async () => {
-          try { await db.collection("leads").doc(sel.dataset.id).update({ status: sel.value }); } 
-          catch(e) { alert("Erro ao atualizar status."); }
+          try {
+            await db.collection("leads").doc(sel.dataset.id).update({ status: sel.value });
+            sel.className = "status-select s-" + sel.value;
+            // Update row highlight
+            const row = sel.closest("tr");
+            if(row) { row.classList.toggle("is-novo", sel.value === "novo"); }
+          } catch(e) { alert("Erro ao atualizar status."); }
         };
       });
 
@@ -1566,31 +1601,50 @@
       const snap = await db.collection("newsletter").orderBy("createdAt", "desc").get();
       if(snap.empty) {
         rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum e-mail cadastrado ainda.</td></tr>`;
-        newsletterCache = []; return;
+        newsletterCache = [];
+        if($("statTotal")) { $("statTotal").textContent="0"; $("statNew").textContent="0"; $("statExported").textContent="0"; }
+        return;
       }
 
       newsletterCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // Atualiza barra de estatísticas
+      const totalCount    = newsletterCache.length;
+      const exportedCount = newsletterCache.filter(n => n.exported).length;
+      const newCount      = totalCount - exportedCount;
+      if($("statTotal"))    $("statTotal").textContent    = totalCount;
+      if($("statNew"))      $("statNew").textContent      = newCount;
+      if($("statExported")) $("statExported").textContent = exportedCount;
+
       let html = "";
       let currentDate = null;
 
       newsletterCache.forEach(n => {
-        const dateStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
-        const hourStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
-        
-        if (dateStr !== currentDate) {
-          html += `<tr class="date-divider"><td colspan="3">${dateStr}</td></tr>`;
-          currentDate = dateStr;
+        const dt = n.createdAt ? new Date(n.createdAt.seconds * 1000) : null;
+        const dateKey = dt ? dt.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'}) : "Sem data";
+        const hourStr = dt ? dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
+
+        if (dateKey !== currentDate) {
+          // Capitaliza primeira letra
+          const label = dateKey.charAt(0).toUpperCase() + dateKey.slice(1);
+          html += `<tr class="date-divider"><td colspan="3">${label}</td></tr>`;
+          currentDate = dateKey;
         }
 
-        const origin = n.source === "footer" ? "Rodapé do site" : (n.source === "news_page" ? "Página News" : "Desconhecido");
-        const badge = n.exported ? `<span class="badge-exported">Exportado</span>` : "";
+        const origin = n.source === "footer" ? "Rodapé" : (n.source === "news_page" ? "Página News" : (n.source || "—"));
+        const badge  = n.exported ? `<span class="badge-exported">Exportado</span>` : `<span style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fdecea;color:#b42318;border:1px solid #f3c6c0;padding:.2rem .5rem;border-radius:999px;">Novo</span>`;
 
         html += `<tr>
-          <td><b style="font-size:13px">${esc(n.email)}</b> ${badge}</td>
-          <td style="color:hsl(var(--muted-foreground)); font-size:11px;">Origem: ${esc(origin)}</td>
-          <td style="text-align:right">
-            <div style="font-size:11px; color:#888;">${hourStr}</div>
-            <div class="act" style="margin-top:.5rem; justify-content:flex-end;"><button class="icon-btn danger del-news" data-id="${n.id}">Excluir</button></div>
+          <td style="width:100%">
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+              <b style="font-size:.875rem">${esc(n.email)}</b>
+              ${badge}
+            </div>
+            <div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.2rem;">Origem: ${esc(origin)}</div>
+          </td>
+          <td style="text-align:right;white-space:nowrap;vertical-align:middle;">
+            <div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-bottom:.375rem;">${hourStr}</div>
+            <button class="icon-btn danger del-news" data-id="${n.id}" style="font-size:.6875rem;">Excluir</button>
           </td>
         </tr>`;
       });
@@ -1599,7 +1653,7 @@
       rows.querySelectorAll(".del-news").forEach(b => {
         b.onclick = () => delDoc("newsletter", b.dataset.id, "Inscrito", loadNewsletter);
       });
-    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar inscritos.</td></tr>`; }
+    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar inscritos: ${e.message}</td></tr>`; }
   }
 
   // Função Central de Exportação
@@ -1628,50 +1682,21 @@
     link.href = url; link.download = `PlaneAviation_Newsletter_${new Date().toISOString().slice(0,10)}.csv`;
     link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
 
-    // Marca todos os exportados no banco de dados
-    if (confirm("Download iniciado! Deseja marcar estes e-mails como 'Exportados' no sistema para não baixá-los repetidos na próxima vez?")) {
-      const batch = db.batch();
-      dataToExport.forEach(n => {
-        if (!n.exported) {
-          const ref = db.collection("newsletter").doc(n.id);
-          batch.update(ref, { exported: true });
-        }
-      });
-      await batch.commit();
-      loadNewsletter(); // Recarrega a tabela para mostrar os selos verdes
-    }
+    // Marca automaticamente como exportados (sem confirm desnecessário)
+    const batch = db.batch();
+    dataToExport.forEach(n => {
+      if (!n.exported) {
+        batch.update(db.collection("newsletter").doc(n.id), { exported: true, exportedAt: new Date().toISOString() });
+      }
+    });
+    await batch.commit();
+    loadNewsletter();
   }
 
   $("exportNewsNewBtn").onclick = () => exportCSV(true);  // Só novos
   $("exportNewsAllBtn").onclick = () => exportCSV(false); // Todos
 
-  // Mágica da exportação nativa para Excel (CSV)
-  $("exportNewsBtn").onclick = () => {
-    if (!newsletterCache.length) return alert("Não há dados para exportar no momento.");
-    
-    // 1. Monta o cabeçalho do arquivo
-    let csvContent = "Data de Inscrição,E-mail,Origem\n";
-    
-    // 2. Preenche com os dados, formatando para o Excel não quebrar as colunas
-    newsletterCache.forEach(n => {
-      const dateStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleString('pt-BR') : "";
-      const origin = n.source === "footer" ? "Rodapé do site" : (n.source === "news_page" ? "Página News" : (n.source || ""));
-      csvContent += `"${dateStr}","${n.email}","${origin}"\n`;
-    });
-
-    // 3. Cria um arquivo virtual na memória do navegador (O \uFEFF força o padrão UTF-8 no Excel)
-    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    // 4. Cria um link invisível e clica nele para forçar o download automático
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `PlaneAviation_Newsletter_${new Date().toISOString().slice(0,10)}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // Legacy exportNewsBtn removido — substituído por exportCSV()
 
   // --- CRUD Vídeos Técnicos ---
   async function loadVideos() {
