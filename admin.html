@@ -120,6 +120,39 @@
   .notice ol{ margin:.75rem 0 0 1.25rem; } .notice code{ background:hsl(var(--muted)); padding:.1rem .35rem; border-radius:3px; font-size:.8125rem; }
   .spinner{ min-height:100vh; display:flex; align-items:center; justify-content:center; color:hsl(var(--muted-foreground)); font-size:.875rem; }
   .badge-count { background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px; display:inline-block; }
+
+  /* Divisor de Datas nas Tabelas */
+  .date-divider td {
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgba(255, 255, 255, 0.5);
+    padding: .5rem 1rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Seletor de Status das Mensagens */
+  .status-select {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 11px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+  .status-select:focus { border-color: rgba(255,255,255,0.4); }
+  .status-select option { background: #1a1a1a; color: #fff; }
+  
+  /* Badge Exportado */
+  .badge-exported {
+    font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    background: rgba(26, 127, 71, 0.2); color: #4ade80; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.5rem;
+  }
 </style>
 </head>
 <body>
@@ -185,11 +218,14 @@
       <button class="tab" data-tab="newsletter">Newsletter</button>
     </div>
 
-    <div class="panel" id="panel-leads">
+    <div class="panel container" id="panel-leads" style="padding-top:0;padding-bottom:0">
       <div class="row-head">
-        <div><h2>Mensagens Recebidas</h2><p class="sub">Leads capturados através do formulário de contato do site.</p></div>
+        <div><h2>Mensagens Recebidas</h2><p class="sub">Contatos via formulário e interesse em aeronaves.</p></div>
+        <button class="btn btn-outline btn-sm" id="toggleArchivedLeadsBtn">Ver Arquivados</button>
       </div>
-      <table class="tbl"><tbody id="leadsRows"></tbody></table>
+      <table class="tbl">
+        <tbody id="leadsListRows"></tbody>
+      </table>
     </div>
     
     <div class="panel active" id="panel-aircraft">
@@ -301,7 +337,10 @@
     <div class="panel" id="panel-newsletter">
       <div class="row-head">
         <div><h2>Inscritos na Newsletter</h2><p class="sub">E-mails capturados pelo rodapé e pela página de News.</p></div>
-        <button class="btn btn-solid btn-sm" id="exportNewsBtn" style="background:#1a7f47; border-color:#000000;">Exportar para Excel (CSV)</button>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-outline btn-sm" id="exportNewsAllBtn">Exportar Todos</button>
+          <button class="btn btn-solid btn-sm" id="exportNewsNewBtn" style="background:#1a7f47; border-color:#1a7f47;">Exportar Novos (CSV)</button>
+        </div>
       </div>
       <table class="tbl"><tbody id="newsListRows"></tbody></table>
     </div>
@@ -728,69 +767,110 @@
   /* ============================================================
      LEADS / MENSAGENS
      ============================================================ */
+  /* ============================================================
+     MENSAGENS / LEADS (Com Divisão por Data e Arquivamento)
+     ============================================================ */
+  let showingArchivedLeads = false;
+
+  $("toggleArchivedLeadsBtn").onclick = () => {
+    showingArchivedLeads = !showingArchivedLeads;
+    $("toggleArchivedLeadsBtn").textContent = showingArchivedLeads ? "Ver Ativos" : "Ver Arquivados";
+    loadLeads();
+  };
+
   async function loadLeads() {
-    const rows = $("leadsRows");
-    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens…</td></tr>`;
+    const rows = $("leadsListRows");
+    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens...</td></tr>`;
     try {
       const snap = await db.collection("leads").orderBy("createdAt", "desc").get();
       if(snap.empty) {
-        rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma mensagem recebida ainda.</td></tr>`;
-        $("unreadBadge").style.display = "none";
+        rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhuma mensagem recebida ainda.</td></tr>`;
         return;
       }
-      
-      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const unreadCount = docs.filter(d => d.status === "novo").length;
-      
-      if(unreadCount > 0) {
-        $("unreadBadge").textContent = unreadCount;
-        $("unreadBadge").style.display = "inline-block";
-      } else {
-        $("unreadBadge").style.display = "none";
+
+      // Filtra ativos ou arquivados na memória
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                            .filter(l => showingArchivedLeads ? l.archived : !l.archived);
+
+      if(!docs.length) {
+        rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhuma mensagem nesta visualização.</td></tr>`;
+        return;
       }
 
-      rows.innerHTML = "";
+      let html = "";
+      let currentDate = null;
+
       docs.forEach(l => {
-        const dateObj = l.createdAt ? new Date(l.createdAt.seconds * 1000) : new Date();
-        const dateStr = dateObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
-        const isNew = l.status === "novo";
+        // Formata a data para agrupar (ex: "24 de junho")
+        const dateStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
+        const hourStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
         
-        const tr = document.createElement("tr");
-        tr.style.cursor = "pointer";
-        tr.style.backgroundColor = isNew ? "rgba(180, 35, 24, 0.05)" : "transparent"; 
+        // Insere o divisor de data se mudou o dia
+        if (dateStr !== currentDate) {
+          html += `<tr class="date-divider"><td colspan="3">${dateStr}</td></tr>`;
+          currentDate = dateStr;
+        }
+
+        const info = l.aircraft ? `Ref: <b>${esc(l.aircraft)}</b>` : `Assunto: <b>${esc(l.subject)}</b>`;
+        const phone = l.phone ? `<br><span style="font-size:11px;color:hsl(var(--muted-foreground))">Tel: ${esc(l.phone)}</span>` : "";
+        const email = l.email ? `<br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(l.email)}</span>` : "";
         
-        tr.innerHTML = `
-          <td>
-            <div style="display:flex;align-items:center;gap:.5rem">
-              <b>${esc(l.name)}</b>
-              ${isNew ? '<span class="pill novo">NOVO</span>' : ''}
-            </div>
-            <div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.25rem">${esc(l.subject)}</div>
-          </td>
-          <td style="color:hsl(var(--muted-foreground))">${esc(l.email)}<br><span style="font-size:.75rem">${esc(l.phone)}</span></td>
-          <td>
-            <div style="font-size:.8125rem">${dateStr}</div>
-            <div class="act" style="margin-top:.5rem"><button class="icon-btn danger del-lead">Excluir</button></div>
-          </td>
+        // Seletor de Status Dinâmico
+        const statusSelect = `
+          <select class="status-select" data-id="${l.id}" ${showingArchivedLeads ? 'disabled' : ''}>
+            <option value="novo" ${!l.status || l.status==='novo' ? 'selected' : ''}>Novo</option>
+            <option value="contatado" ${l.status==='contatado' ? 'selected' : ''}>Contatado</option>
+            <option value="nao_responder" ${l.status==='nao_responder' ? 'selected' : ''}>Não Responder</option>
+          </select>
         `;
 
-        tr.addEventListener("click", (e) => { 
-          if(!e.target.closest("button")) openLeadModal(l.id, l, dateStr); 
-        });
-        
-        tr.querySelector(".del-lead").onclick = async (e) => {
-          e.stopPropagation();
-          if(!confirm(`Excluir permanentemente a mensagem de ${l.name}?`)) return;
-          await db.collection("leads").doc(l.id).delete();
-          loadLeads();
-        };
+        // Botões (Se arquivado, mostra Restaurar e Excluir. Se ativo, mostra Arquivar)
+        const actBtns = showingArchivedLeads 
+          ? `<button class="icon-btn restore-lead" data-id="${l.id}">Restaurar</button>
+             <button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button>`
+          : `<button class="icon-btn archive-lead" data-id="${l.id}">Arquivar</button>`;
 
-        rows.appendChild(tr);
+        html += `<tr>
+          <td>
+            <b style="font-size:13px">${esc(l.name)}</b> <span style="font-size:10px; color:#888; margin-left:8px;">${hourStr}</span>
+            ${phone} ${email}
+          </td>
+          <td>
+            <div style="font-size:12px; margin-bottom:4px;">${info}</div>
+            <div style="font-size:11px; color:hsl(var(--muted-foreground)); max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(l.message)}">"${esc(l.message)}"</div>
+          </td>
+          <td style="text-align:right">
+            <div style="margin-bottom:8px;">${statusSelect}</div>
+            <div class="act" style="justify-content:flex-end;">${actBtns}</div>
+          </td>
+        </tr>`;
       });
-    } catch(err) {
-      console.error(err);
-      rows.innerHTML=`<tr><td class="empty-row" colspan="3">Erro ao carregar mensagens.</td></tr>`;
-    }
+
+      rows.innerHTML = html;
+
+      // Eventos de Ação
+      rows.querySelectorAll(".status-select").forEach(sel => {
+        sel.onchange = async () => {
+          try { await db.collection("leads").doc(sel.dataset.id).update({ status: sel.value }); } 
+          catch(e) { alert("Erro ao atualizar status."); }
+        };
+      });
+
+      rows.querySelectorAll(".archive-lead").forEach(b => b.onclick = async () => {
+        if(confirm("Mover mensagem para arquivados?")) {
+          await db.collection("leads").doc(b.dataset.id).update({ archived: true }); loadLeads();
+        }
+      });
+
+      rows.querySelectorAll(".restore-lead").forEach(b => b.onclick = async () => {
+        await db.collection("leads").doc(b.dataset.id).update({ archived: false }); loadLeads();
+      });
+
+      rows.querySelectorAll(".del-lead").forEach(b => {
+        b.onclick = () => delDoc("leads", b.dataset.id, "Mensagem", loadLeads);
+      });
+
+    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar mensagens.</td></tr>`; }
   }
 
   async function openLeadModal(id, lead, dateStr) {
@@ -1467,7 +1547,7 @@
   }
     
   /* ============================================================
-     NEWSLETTER (Listagem e Exportação)
+     NEWSLETTER (Com Datas, Status de Exportação e Filtros)
      ============================================================ */
   let newsletterCache = [];
 
@@ -1478,32 +1558,84 @@
       const snap = await db.collection("newsletter").orderBy("createdAt", "desc").get();
       if(snap.empty) {
         rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum e-mail cadastrado ainda.</td></tr>`;
-        newsletterCache = [];
-        return;
+        newsletterCache = []; return;
       }
 
       newsletterCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      let html = "";
+      let currentDate = null;
 
-      rows.innerHTML = newsletterCache.map(n => {
-        const dateStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleString('pt-BR') : "—";
+      newsletterCache.forEach(n => {
+        const dateStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
+        const hourStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
+        
+        if (dateStr !== currentDate) {
+          html += `<tr class="date-divider"><td colspan="3">${dateStr}</td></tr>`;
+          currentDate = dateStr;
+        }
+
         const origin = n.source === "footer" ? "Rodapé do site" : (n.source === "news_page" ? "Página News" : "Desconhecido");
-        return `<tr>
-          <td><b>${esc(n.email)}</b></td>
+        const badge = n.exported ? `<span class="badge-exported">Exportado</span>` : "";
+
+        html += `<tr>
+          <td><b style="font-size:13px">${esc(n.email)}</b> ${badge}</td>
           <td style="color:hsl(var(--muted-foreground)); font-size:11px;">Origem: ${esc(origin)}</td>
           <td style="text-align:right">
-            <div style="font-size:.8125rem">${dateStr}</div>
-            <div class="act" style="margin-top:.5rem"><button class="icon-btn danger del-news" data-id="${n.id}">Excluir</button></div>
+            <div style="font-size:11px; color:#888;">${hourStr}</div>
+            <div class="act" style="margin-top:.5rem; justify-content:flex-end;"><button class="icon-btn danger del-news" data-id="${n.id}">Excluir</button></div>
           </td>
         </tr>`;
-      }).join("");
+      });
 
+      rows.innerHTML = html;
       rows.querySelectorAll(".del-news").forEach(b => {
         b.onclick = () => delDoc("newsletter", b.dataset.id, "Inscrito", loadNewsletter);
       });
-    } catch(e) {
-      rows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar inscritos.</td></tr>`;
+    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar inscritos.</td></tr>`; }
+  }
+
+  // Função Central de Exportação
+  async function exportCSV(onlyNew) {
+    if (!newsletterCache.length) return alert("Não há dados para exportar.");
+    
+    // Filtra: Exportar todos ou apenas os que ainda não foram exportados
+    const dataToExport = onlyNew ? newsletterCache.filter(n => !n.exported) : newsletterCache;
+    
+    if(!dataToExport.length) return alert("Não há novas inscrições para exportar desde a última vez.");
+
+    let csvContent = "Data,Hora,E-mail,Origem,Status\n";
+    
+    dataToExport.forEach(n => {
+      const d = n.createdAt ? new Date(n.createdAt.seconds * 1000) : null;
+      const dateStr = d ? d.toLocaleDateString('pt-BR') : "";
+      const timeStr = d ? d.toLocaleTimeString('pt-BR') : "";
+      const origin = n.source === "footer" ? "Rodapé do site" : (n.source === "news_page" ? "Página News" : (n.source || ""));
+      csvContent += `"${dateStr}","${timeStr}","${n.email}","${origin}","Exportado"\n`;
+    });
+
+    // Download do Arquivo
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url; link.download = `PlaneAviation_Newsletter_${new Date().toISOString().slice(0,10)}.csv`;
+    link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+
+    // Marca todos os exportados no banco de dados
+    if (confirm("Download iniciado! Deseja marcar estes e-mails como 'Exportados' no sistema para não baixá-los repetidos na próxima vez?")) {
+      const batch = db.batch();
+      dataToExport.forEach(n => {
+        if (!n.exported) {
+          const ref = db.collection("newsletter").doc(n.id);
+          batch.update(ref, { exported: true });
+        }
+      });
+      await batch.commit();
+      loadNewsletter(); // Recarrega a tabela para mostrar os selos verdes
     }
   }
+
+  $("exportNewsNewBtn").onclick = () => exportCSV(true);  // Só novos
+  $("exportNewsAllBtn").onclick = () => exportCSV(false); // Todos
 
   // Mágica da exportação nativa para Excel (CSV)
   $("exportNewsBtn").onclick = () => {
