@@ -231,39 +231,52 @@ async function loadNewsData() {
         return `<a href="artigo.html?id=${doc.id}" class="art"><div class="imgph">${imgHtml}</div><div class="body"><div class="row"><span class="date">${dateStr}</span><span class="cat">${a.category || 'Geral'}</span></div><h3>${a.title}</h3><p class="ex">${(a.excerpt || '').substring(0, 120)}...</p><span class="read">Ler Artigo Completo ${ARROW}</span></div></a>`;
       }).join("");
     }
-  } catch(e) {}
+  } catch(e) { artGrid.innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
 
-  // 2. CARREGAR PODCASTS (Ordenado por Data do YouTube)
+  // 2. CARREGAR PODCASTS (Com ordenação inteligente via JavaScript)
   const epList = document.getElementById("epList");
   try {
-    const podSnap = await PA.db.collection("podcasts").orderBy("videoDate", "desc").get();
+    const podSnap = await PA.db.collection("podcasts").get();
     if(podSnap.empty) {
       epList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum episódio publicado ainda.</p>";
     } else {
-      epList.innerHTML = podSnap.docs.map(doc => {
-        const p = doc.data();
+      let docs = podSnap.docs.map(d => d.data());
+      // Ordena misturando a data nova do YouTube com a data de criação antiga
+      docs.sort((a,b) => {
+        const tA = a.videoDate ? new Date(a.videoDate).getTime() : (a.createdAt ? a.createdAt.seconds*1000 : 0);
+        const tB = b.videoDate ? new Date(b.videoDate).getTime() : (b.createdAt ? b.createdAt.seconds*1000 : 0);
+        return tB - tA;
+      });
+      
+      epList.innerHTML = docs.map(p => {
         const videoId = getYouTubeId(p.youtubeUrl);
         const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
         return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(p.videoDate)} · ${p.duration || '0 min'}</span><h3>${p.title}</h3><p>${p.desc || ''}</p></div><a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR NO YOUTUBE <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
       }).join("");
     }
-  } catch(e) {}
+  } catch(e) { epList.innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
 
   // 3. CARREGAR VÍDEOS TÉCNICOS & MÍDIA
   const vidList = document.getElementById("vidList");
   try {
-    const vidSnap = await PA.db.collection("videos").orderBy("videoDate", "desc").get();
+    const vidSnap = await PA.db.collection("videos").get();
     if(vidSnap.empty) {
       vidList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum vídeo técnico cadastrado ainda.</p>";
     } else {
-      vidList.innerHTML = vidSnap.docs.map(doc => {
-        const v = doc.data();
+      let docs = vidSnap.docs.map(d => d.data());
+      docs.sort((a,b) => {
+        const tA = a.videoDate ? new Date(a.videoDate).getTime() : (a.createdAt ? a.createdAt.seconds*1000 : 0);
+        const tB = b.videoDate ? new Date(b.videoDate).getTime() : (b.createdAt ? b.createdAt.seconds*1000 : 0);
+        return tB - tA;
+      });
+      
+      vidList.innerHTML = docs.map(v => {
         const videoId = getYouTubeId(v.youtubeUrl);
         const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
         return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(v.videoDate)} · ${v.duration || '0 min'}</span><h3>${v.title}</h3><p>${v.desc || ''}</p></div><a href="${v.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR CONTEÚDO <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
       }).join("");
     }
-  } catch(e) {}
+  } catch(e) { vidList.innerHTML = `<p style="color:#ff6b6b">Erro de Permissão (Verifique o Firestore Rules): ${e.message}</p>`; }
 }
 </script>
 </body>
