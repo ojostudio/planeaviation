@@ -2,41 +2,40 @@ rules_version = '2';
 
 // ============================================================
 // Storage Security Rules — Plane Aviation
-// Leitura pública das imagens (o site mostra). Upload só editor/admin,
-// apenas imagens e com limite de tamanho. Publicar em:
-// Firebase Console → Storage → Regras.
 // ============================================================
 service firebase.storage {
   match /b/{bucket}/o {
 
+    // 1. Checa o nível de permissão do usuário no Firestore
     function role() {
       return firestore.get(
         /databases/(default)/documents/users/$(request.auth.uid)
       ).data.role;
     }
+    
+    // 2. Garante que está logado e é admin ou editor
     function isEditor() {
       return request.auth != null
         && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
         && (role() == 'admin' || role() == 'editor');
     }
+    
+    // 3. Garante que é uma imagem de no máximo 8MB
     function validImage() {
-      return request.resource.size < 8 * 1024 * 1024            // até 8 MB
-        && request.resource.contentType.matches('image/.*');    // só imagem
+      return request.resource.size < 8 * 1024 * 1024 
+        && request.resource.contentType.matches('image/.*'); 
     }
 
-    match /aircraft/{allPaths=**} {
-      allow read: if true;
-      allow write: if isEditor() && validImage();
-    }
-
-    match /cirrus/{allPaths=**} {
-      allow read: if true;
-      allow write: if isEditor() && validImage();
-    }
-
-    // Bloqueia o resto
+    // Aplica a regra para TODAS as pastas (Aeronaves, Artigos, Parceiros, etc)
     match /{allPaths=**} {
-      allow read, write: if false;
+      // Leitura pública (o site mostra as fotos para todos)
+      allow read: if true;
+      
+      // Criar e Atualizar: Exige ser admin e que o arquivo seja uma imagem válida
+      allow create, update: if isEditor() && validImage();
+      
+      // Deletar: Exige apenas ser admin (não checa o tamanho, senão trava)
+      allow delete: if isEditor();
     }
   }
 }
