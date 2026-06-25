@@ -74,7 +74,11 @@
   
   /* Botão Padrão Outline Dark */
   .btn-outline-dark { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; padding: 0.75rem 1.25rem; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s, border-color 0.2s; max-width: max-content; }
-  .btn-outline-dark:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+  .btn-outline-dark:hover { 
+      background: rgba(255,255,255,0.1); 
+      border-color: rgba(255,255,255,0.4); 
+      color: #ffffff !important; /* Isso impede que o texto fique preto */
+    }
 
   /* --- Newsletter CTA --- */
   .news-cta { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 4rem 2rem; text-align: center; margin: 4rem 0; }
