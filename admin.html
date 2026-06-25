@@ -1598,7 +1598,7 @@
   async function exportCSV(onlyNew) {
     if (!newsletterCache.length) return alert("Não há dados para exportar.");
     
-    // Filtra: Exportar todos ou apenas os que ainda não foram exportados
+    // Filtra: Exportar todos ou apenas os que ainda não foram exportados.
     const dataToExport = onlyNew ? newsletterCache.filter(n => !n.exported) : newsletterCache;
     
     if(!dataToExport.length) return alert("Não há novas inscrições para exportar desde a última vez.");
