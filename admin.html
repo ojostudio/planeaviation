@@ -1432,19 +1432,22 @@
   async function loadPodcasts() {
     const rows = $("podcastRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando podcasts...</td></tr>`;
     try {
-      // Ordenação automática pela data real do vídeo no YouTube
-      const snap = await db.collection("podcasts").orderBy("videoDate", "desc").get();
+      // Busca sem orderBy para compatibilidade com docs antigos sem campo videoDate indexado
+      const snap = await db.collection("podcasts").get();
       if(snap.empty) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum episódio cadastrado.</td></tr>`; return; }
-      rows.innerHTML = snap.docs.map(doc => {
-        const p = doc.data();
-        return `<tr>
+      // Ordena no cliente: prioriza videoDate, senão createdAt, senão vazio
+      const docs = snap.docs.map(d => ({ _id: d.id, ...d.data() })).sort((a, b) => {
+        const da = a.videoDate || (a.createdAt ? new Date(a.createdAt.seconds*1000).toISOString().slice(0,10) : "");
+        const db2 = b.videoDate || (b.createdAt ? new Date(b.createdAt.seconds*1000).toISOString().slice(0,10) : "");
+        return db2 > da ? 1 : -1;
+      });
+      rows.innerHTML = docs.map(p => `<tr>
           <td><b>${esc(p.title)}</b><br><span style="font-size:11px;color:hsl(var(--muted-foreground))">YouTube: ${p.videoDate || '—'}</span></td>
-          <td style="text-align:right"><div class="act"><button class="icon-btn edit-pod" data-id="${doc.id}">Editar</button><button class="icon-btn danger del-pod" data-id="${doc.id}">Excluir</button></div></td>
-        </tr>`;
-      }).join("");
+          <td style="text-align:right"><div class="act"><button class="icon-btn edit-pod" data-id="${p._id}">Editar</button><button class="icon-btn danger del-pod" data-id="${p._id}">Excluir</button></div></td>
+        </tr>`).join("");
       rows.querySelectorAll(".edit-pod").forEach(b => b.onclick = async () => openPodcast(b.dataset.id, (await db.collection("podcasts").doc(b.dataset.id).get()).data()));
       rows.querySelectorAll(".del-pod").forEach(b => b.onclick = () => delDoc("podcasts", b.dataset.id, "Podcast", loadPodcasts));
-    } catch(e) {}
+    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Erro: ${e.message}</td></tr>`; }
   }
   function openPodcast(id, p) {
     $("podModalTitle").textContent = id ? "Editar Podcast" : "Novo Podcast";
@@ -1534,7 +1537,7 @@
   async function loadVideos() {
     const rows = $("videoRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando vídeos...</td></tr>`;
     try {
-      const snap = await db.collection("videos").orderBy("videoDate", "desc").get();
+      const snap = await db.collection("videos").get();
       if(snap.empty) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum vídeo cadastrado.</td></tr>`; return; }
       rows.innerHTML = snap.docs.map(doc => {
         const v = doc.data();
@@ -1545,7 +1548,7 @@
       }).join("");
       rows.querySelectorAll(".edit-vid").forEach(b => b.onclick = async () => openVideo(b.dataset.id, (await db.collection("videos").doc(b.dataset.id).get()).data()));
       rows.querySelectorAll(".del-vid").forEach(b => b.onclick = () => delDoc("videos", b.dataset.id, "Vídeo", loadVideos));
-    } catch(e) {}
+    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Erro: ${e.message}</td></tr>`; }
   }
   function openVideo(id, v) {
     $("vidModalTitle").textContent = id ? "Editar Vídeo Técnico" : "Novo Vídeo Técnico";
