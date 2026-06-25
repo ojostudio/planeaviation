@@ -873,28 +873,6 @@
     });
   }
 
-  async function loadLeads() {
-    const rows = $("leadsRows"); rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens…</td></tr>`;
-    try {
-      const snap = await db.collection("leads").orderBy("createdAt", "desc").get();
-      if(snap.empty) { rows.innerHTML=`<tr><td class="empty-row" colspan="3">Nenhuma mensagem.</td></tr>`; $("unreadBadge").style.display = "none"; return; }
-      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const unreadCount = docs.filter(d => d.status === "novo").length;
-      if(unreadCount > 0) { $("unreadBadge").textContent = unreadCount; $("unreadBadge").style.display = "inline-block"; } else { $("unreadBadge").style.display = "none"; }
-      rows.innerHTML = docs.map(l => `<tr style="cursor:pointer; ${l.status==='novo'?'background:rgba(180,35,24,0.05)':''}"><td><b>${esc(l.name)}</b>${l.status==='novo'?' <span class="pill novo">NOVO</span>':''}<br><span style="font-size:.75rem">${esc(l.subject)}</span></td><td>${esc(l.email)}<br><span style="font-size:.75rem">${esc(l.phone)}</span></td><td><button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button></td></tr>`).join("");
-      rows.querySelectorAll("tr").forEach((tr, i) => tr.onclick = (e) => { if(!e.target.classList.contains("del-lead")) openLeadModal(docs[i].id, docs[i]); });
-      rows.querySelectorAll(".del-lead").forEach(b => b.onclick = async (e) => { e.stopPropagation(); if(confirm("Excluir lead?")) { await db.collection("leads").doc(b.dataset.id).delete(); loadLeads(); } });
-    } catch(err) {}
-  }
-
-  async function openLeadModal(id, lead) {
-    const dateStr = lead.createdAt ? new Date(lead.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "";
-    $("ldName").textContent = lead.name; $("ldEmail").textContent = lead.email; $("ldPhone").textContent = lead.phone; $("ldDate").textContent = dateStr; $("ldSubject").textContent = lead.subject; $("ldAircraft").textContent = lead.aircraft || "Nenhuma"; $("ldMessage").textContent = lead.message;
-    $("ldWhatsApp").href = `https://wa.me/55${(lead.phone || "").replace(/\D/g, '')}`; $("ldMailTo").href = `mailto:${lead.email}`;
-    $("ovLead").classList.add("open");
-    if(lead.status === "novo") { await db.collection("leads").doc(id).update({ status: "lido" }); loadLeads(); }
-  }
-
   async function loadAircraft(){
     const rows = $("aircraftRows");
     rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando…</td></tr>`;
@@ -1485,17 +1463,6 @@
     } catch(e) { alert(e.message); }
   }
     
-    try {
-      if($("podId").value) await db.collection("podcasts").doc($("podId").value).update(data);
-      else await db.collection("podcasts").add({ ...data, createdAt: ts(), createdBy: me.email });
-      
-      $("ovPodcast").classList.remove("open"); 
-      loadPodcasts();
-    } catch(e) { 
-      alert(e.message); 
-    }
-  }
-
   /* ============================================================
      NEWSLETTER (Listagem e Exportação)
      ============================================================ */
