@@ -37,8 +37,37 @@
   .partner-card:hover { border-color: rgba(255,255,255,0.3); }
   .partner-title { font-size: 1.125rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
   .partner-desc { font-size: 0.875rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 1.5rem; flex: 1; }
-  .partner-btn { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ffffff; text-decoration: none; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.625rem 1.25rem; border-radius: 6px; transition: all 0.2s; align-self: flex-start; }
-  .partner-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); }
+  /* --- Ajuste Fino dos Botões de Parceiros e Serviços --- */
+  .partner-btn { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+    gap: 0.5rem; 
+    font-size: 10px; 
+    font-weight: 700; 
+    letter-spacing: 0.1em; 
+    text-transform: uppercase; 
+    color: #ffffff; 
+    text-decoration: none; 
+    background: rgba(255, 255, 255, 0.08); 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    padding: 0.625rem 1.25rem; 
+    border-radius: 6px; 
+    transition: all 0.2s; 
+    align-self: flex-start; 
+    width: max-content; /* Trava a largura exata do texto, impedindo de esticar */
+    line-height: 1; /* Retira o espaçamento invisível do texto */
+  }
+  
+  .partner-btn:hover { 
+    background: rgba(255, 255, 255, 0.15); 
+    border-color: rgba(255, 255, 255, 0.3); 
+  }
+  
+  .partner-btn svg {
+    flex-shrink: 0;
+    transform: translateY(-1px); /* Puxa a seta levemente para baixo para o centro ótico perfeito */
+  }
 
   .grid-pt { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
   @media(min-width: 640px) { .grid-pt { grid-template-columns: repeat(2, 1fr); } }
