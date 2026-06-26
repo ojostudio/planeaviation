@@ -230,3 +230,9 @@
 
 
 })();
+/* ---- Proteção básica de imagens (Desativa clique direito) ---- */
+  document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'IMG' || e.target.classList.contains('hero-bg')) {
+      e.preventDefault();
+    }
+  });

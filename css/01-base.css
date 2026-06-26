@@ -45,7 +45,7 @@
   /* 1. Tamanhos Gigantes (Hero e Banners) */
   --text-hero:    clamp(2.5rem, 5vw, 4.125rem); /* Banners do topo da página */
   
-  /* 2. Headlines / Títulos de Seção (Reduzido em 25% conforme solicitado) */
+  /* 2. Headlines / Títulos de Seção (Reduzido em 25%) */
   --text-display: clamp(1.875rem, 3.5vw, 2.625rem); /* Ex: "OPORTUNIDADES EM DESTAQUE" */
   
   /* 3. Títulos Internos e Cards */
@@ -100,7 +100,28 @@ body  {
 }
 main  { flex: 1; }
 a     { color: inherit; text-decoration: none; }
-img   { display: block; max-width: 100%; }
+
+/* --- TAG IMG PROTEGIDA CONTRA CÓPIA (BARREIRA DE CONVENIÊNCIA) --- */
+img { 
+  display: block; 
+  max-width: 100%; 
+  
+  /* Desativa a capacidade de clicar e arrastar a foto para fora do navegador */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  
+  /* Desativa a seleção da imagem pelo cursor */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  
+  /* Faz o ponteiro ignorar a imagem. O clique atravessa a foto e ativa o link pai */
+  pointer-events: none; 
+}
+
 button, select, input, textarea { font-family: inherit; }
 
 /* Ícones SVG inline */
