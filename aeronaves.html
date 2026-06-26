@@ -5,320 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aeronaves Disponíveis | Plane Aviation</title>
 <link rel="stylesheet" href="styles.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="js/i18n.js" defer></script>
 <script src="js/site.js" defer></script>
-<style>
-  #site-header { display: block; height: 4rem; }
-  body { min-height: 100vh; }
-</style>
-<style>
-/* ============================================================
-   AERONAVES — Dark Theme
-   ============================================================ */
-body {
-  background: #202020;
-  color: #fff;
-}
-
-/* Header: mantém padrão branco do site */
-
-/* ---- PAGE HERO ---- */
-.ac-hero {
-  padding: 4rem 0 3rem;
-}
-.ac-eyebrow {
-  font-size: 10px;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
-  font-weight: 500;
-  margin-bottom: .875rem;
-}
-.ac-title {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: var(--font-size-h2, clamp(1.5rem, 3vw, 2.25rem));
-  font-weight: 800;
-  font-style: italic;
-  text-transform: uppercase;
-  letter-spacing: -.01em;
-  line-height: .95;
-  color: #fff;
-  margin-bottom: 1.25rem;
-}
-.ac-sub {
-  font-size: .9375rem;
-  font-style: italic;
-  color: rgba(255,255,255,0.5);
-  font-weight: 400;
-}
-
-/* ---- FILTERS ---- */
-.ac-filters-bar {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: .875rem 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  margin-bottom: 2.5rem;
-}
-.ac-filters-label {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #fff;
-}
-.ac-fgroup {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-.ac-fgroup > span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-}
-.ac-fgroup select {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 6px;
-  color: #fff;
-  font-size: .8125rem;
-  font-weight: 500;
-  padding: .375rem .75rem;
-  cursor: pointer;
-  appearance: none;
-  outline: none;
-  min-width: 9rem;
-}
-.ac-fgroup select:focus { border-color: rgba(255,255,255,0.4); }
-.ac-fgroup select option { background: #1a1a1a; color: #fff; }
-.ac-count {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  white-space: nowrap;
-}
-
-/* ---- CARD GRID ---- */
-.ac-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
-}
-@media(min-width:640px)  { .ac-grid { grid-template-columns: repeat(2,1fr); gap:1.5rem; } }
-@media(min-width:1024px) { .ac-grid { grid-template-columns: repeat(4,1fr); } }
-
-/* ---- CARD ---- */
-.ac-card {
-  display: block;
-  background: rgba(255,255,255,0.04);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.08) inset,
-    0 -1px 0 rgba(0,0,0,0.4) inset,
-    0 24px 48px rgba(0,0,0,0.5);
-  transition: transform .2s, box-shadow .2s, border-color .2s;
-  text-decoration: none;
-  color: inherit;
-  padding: .625rem;
-  cursor: pointer;
-}
-.ac-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,255,255,0.22);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.12) inset,
-    0 -1px 0 rgba(0,0,0,0.5) inset,
-    0 32px 64px rgba(0,0,0,0.6);
-}
-.ac-card-img {
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  aspect-ratio: 4/3;
-  background: rgba(255,255,255,0.06);
-  margin-bottom: .875rem;
-}
-.ac-card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.ac-card-img .ph-dark {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255,255,255,0.15);
-  font-size: .7rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.ac-card-tag {
-  position: absolute;
-  top: .625rem;
-  left: .625rem;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  background: rgba(0, 0, 0, 0.65); /* Efeito Fumê */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Borda sutil */
-  border-radius: 4px;
-  color: #fff;
-  padding: .25rem .5rem;
-  white-space: nowrap;
-}
-.ac-card-body {
-  padding: .25rem .375rem .5rem;
-}
-.ac-card-cond {
-  font-size: 9px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: .25rem;
-}
-.ac-card-title {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-  font-size: 1.1875rem;
-  font-weight: 800;
-  font-style: italic;
-  text-transform: uppercase;
-  letter-spacing: .01em;
-  line-height: 1.1;
-  color: #fff;
-  margin-bottom: .25rem;
-}
-.ac-card-title span {
-  font-weight: 400; /* variante lighter para parte do nome */
-  font-style: italic;
-}
-.ac-card-meta {
-  font-size: .75rem;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: .625rem;
-}
-.ac-card-price {
-  font-size: .9375rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: .875rem;
-  letter-spacing: -.01em;
-}
-.ac-card-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 6px;
-  padding: .5rem .875rem;
-  transition: background .15s, border-color .15s;
-  white-space: nowrap;
-}
-.ac-card:hover .ac-card-btn {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.3);
-}
-.ac-card-btn svg { flex-shrink: 0; }
-
-/* ---- SELL BAND ---- */
-.ac-sell-band {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 1.5rem 1.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin: 0 0 1.5rem;
-  grid-column: 1 / -1;
-}
-.ac-sell-band p:first-child {
-  font-size: .9375rem;
-  font-style: italic;
-  font-weight: 700;
-  color: rgba(255,255,255,0.7);
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  margin-bottom: .25rem;
-}
-.ac-sell-band p:first-child b {
-  color: #fff;
-  font-weight: 800;
-}
-.ac-sell-band p:last-of-type {
-  font-size: .8125rem;
-  font-style: italic;
-  color: rgba(255,255,255,0.4);
-}
-.ac-sell-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #fff;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 6px;
-  padding: .625rem 1.125rem;
-  transition: background .15s, border-color .15s;
-  white-space: nowrap;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.ac-sell-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
-
-/* ---- EMPTY ---- */
-.ac-empty {
-  grid-column: 1/-1;
-  padding: 5rem 0;
-  text-align: center;
-  color: rgba(255,255,255,0.3);
-  font-size: .875rem;
-  font-style: italic;
-}
-</style>
 </head>
-<body>
+<body class="page-gradient">
 <div id="site-header"></div>
 <main>
   <section class="ac-hero">
     <div class="container">
-      <p class="ac-eyebrow" data-i18n="ac_eyebrow">Estoque</p>
-      <h1 class="ac-title" data-i18n="ac_title">Aeronaves Disponíveis</h1>
-      <p class="ac-sub" data-i18n="ac_sub">Unidades certificadas, inspecionadas e prontas para entrega.</p>
+      <span class="eyebrow dark" data-i18n="ac_eyebrow">Estoque</span>
+      <h1 class="h-display" style="color: #fff; margin-bottom: 1.25rem;" data-i18n="ac_title">Aeronaves Disponíveis</h1>
+      <p class="text-body" style="font-style: italic; color: rgba(255,255,255,0.5);" data-i18n="ac_sub">Unidades certificadas, inspecionadas e prontas para entrega.</p>
     </div>
   </section>
 
@@ -354,7 +51,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
-const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
+const DIAGONAL_ARROW = '<svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
 let allListings = [];
 const elModelo  = document.getElementById("fModelo");
@@ -393,25 +90,30 @@ function cardHTML(item){
   const cond = getLocalizedCondition(item);
   const price = formatPrice(item);
   const hours = hoursLabel(item);
-  const meta = [item.year, hours].filter(Boolean).join(" • ");
+  const meta = [item.year, hours].filter(Boolean).join(" · ");
   const media = (item.images && item.images[0])
     ? `<img src="${item.images[0]}" alt="${item.model}" loading="lazy">`
     : `<div class="ph-dark">[Foto]</div>`;
-  // Title: bold italic + lighter italic for variant part
+    
   const titleParts = item.model.match(/^(.*?)(\s[A-Z0-9+]+)?$/);
   const titleMain = titleParts ? titleParts[1] : item.model;
   const titleSub  = titleParts && titleParts[2] ? titleParts[2] : "";
+  const tagClass = (item.tag && item.tag.toLowerCase().includes('importa')) ? 'white' : '';
+
   return `<a href="aeronave.html?id=${item.id}" class="ac-card">
     <div class="ac-card-img">
       ${media}
-      ${item.tag ? `<span class="ac-card-tag">${item.tag}</span>` : ""}
+      ${item.tag ? `<div class="ac-card-badge-tab nano-tag ${tagClass}">${item.tag}</div>` : ""}
     </div>
     <div class="ac-card-body">
-      <div class="ac-card-cond">${cond}</div>
-      <div class="ac-card-title">${titleMain}<span>${titleSub}</span></div>
-      ${meta ? `<div class="ac-card-meta">${meta}</div>` : ""}
-      <div class="ac-card-price">${price}</div>
-      <span class="ac-card-btn">${t("ac_details")} ${ARROW}</span>
+      <div class="ac-card-cond eyebrow dark" style="margin-bottom: 0.25rem;">${cond||"Seminovo"}</div>
+      <div class="h3 ac-card-title" style="color: #fff; margin-bottom: 0.25rem;">${titleMain}<span class="light">${titleSub}</span></div>
+      ${meta ? `<div class="fine-print ac-card-meta">${meta}</div>` : ""}
+      <div class="ac-card-price" style="font-size: 1.125rem; font-weight: 700; color: #fff; margin-top: 1rem; margin-bottom: 1rem;">${price}</div>
+      <button class="ac-card-btn">
+        ${t("ac_details")}
+        ${DIAGONAL_ARROW}
+      </button>
     </div>
   </a>`;
 }
@@ -422,7 +124,7 @@ function sellBandHTML(){
       <p><b>PENSANDO EM</b> VENDER?</p>
       <p>${t("ac_sell_desc")}</p>
     </div>
-    <a href="contato.html?motivo=vender" class="ac-sell-btn">${t("ac_sell_btn")} ${ARROW}</a>
+    <a href="contato.html?motivo=vender" class="ac-sell-btn">${t("ac_sell_btn")} ${DIAGONAL_ARROW}</a>
   </div>`;
 }
 
@@ -431,12 +133,9 @@ function buildFilters(){
   filtersBar.style.display = "";
   
   const all = t("ac_all");
-  
-  // Extrai modelos base únicos de cada fabricante
   const cirrusModels = [...new Set(allListings.filter(l => l.fabricante === "Cirrus" || !l.fabricante).map(l => l.modeloBase || l.model.split(' ')[0]))].sort();
   const outrosModels = [...new Set(allListings.filter(l => l.fabricante === "Outros").map(l => l.modeloBase || l.model))].sort();
 
-  // Monta o HTML do Dropdown usando grupos nativos (<optgroup>)
   let modeloOptions = `<option value="${all}">${all}</option>`;
   
   if(cirrusModels.length) {
@@ -452,8 +151,6 @@ function buildFilters(){
   }
   
   elModelo.innerHTML = modeloOptions;
-
-  // Preenche Condição e Ano normalmente
   fill(elCond, [all, ...[...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort()]);
   fill(elAno,  [all, ...[...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a)]);
 }
@@ -468,12 +165,8 @@ function render(){
   const fm = elModelo.value, fc = elCond.value, fy = elAno.value;
   
   const filtered = allListings.filter(l => {
-    // Agora aceita tanto o modeloBase exato quanto o nome que "comece" com o valor (fallback)
     const matchesModel = (fm === all || l.modeloBase === fm || l.model.startsWith(fm));
-    
-    return matchesModel
-        && (fc===all || l.condition===fc)
-        && (fy===all || String(l.year)===fy);
+    return matchesModel && (fc===all || l.condition===fc) && (fy===all || String(l.year)===fy);
   });
   
   let html = "";
@@ -497,25 +190,17 @@ async function init(){
       const snap = await PA.db.collection("aircraft").get();
       const docs = snap.docs.filter(d => !d.data().archived).slice().sort((a,b) => {
         const ay = Number(a.data().year)||0, by = Number(b.data().year)||0;
-        if(ay !== by) return by - ay; // mais novo primeiro
+        if(ay !== by) return by - ay;
         return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0);
       });
       allListings = docs.map(d => {
         const a = d.data();
         return { 
-          id:d.id, 
-          tag:a.tag||"", 
-          model:a.model||"", 
-          year:a.year||"",
-          fabricante: a.fabricante || "Cirrus", // Garante que registros velhos funcionem
-          modeloBase: a.modeloBase || "", // A propriedade nova do banco de dados
-          hoursNum:a.hoursNum!=null?a.hoursNum:null,
-          condition:a.condition||"", 
-          currency:a.currency||"USD",
-          priceNum:a.priceNum||null, 
-          sobConsulta:!!a.sobConsulta,
-          images:a.images||[], 
-          translations:a.translations||{} 
+          id:d.id, tag:a.tag||"", model:a.model||"", year:a.year||"",
+          fabricante: a.fabricante || "Cirrus", modeloBase: a.modeloBase || "",
+          hoursNum:a.hoursNum!=null?a.hoursNum:null, condition:a.condition||"", 
+          currency:a.currency||"USD", priceNum:a.priceNum||null, sobConsulta:!!a.sobConsulta,
+          images:a.images||[], translations:a.translations||{} 
         };
       });
     } catch(e){ allListings = []; }
