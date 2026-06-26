@@ -212,15 +212,15 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
-      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Conteúdo</button>
       <button class="tab" data-tab="partners">Parceiros</button>
       <button class="tab" data-tab="news">News & Insights</button>
+      <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab" data-tab="newsletter">Newsletter</button>
     </div>
 
-    <div class="panel container" id="panel-leads" style="padding-top:0;padding-bottom:0">
+    <div class="panel" id="panel-leads">
       <div class="row-head">
         <div><h2>Mensagens Recebidas</h2><p class="sub">Contatos via formulário e interesse em aeronaves.</p></div>
       </div>
@@ -356,7 +356,7 @@
           <button class="btn btn-solid btn-sm" id="exportNewsNewBtn" style="background:#1a7f47; border-color:#1a7f47;">Exportar Novos (CSV)</button>
         </div>
       </div>
-      <table class="tbl"><tbody id="newsListRows"></tbody></table>
+      <table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:auto"><col style="width:4rem"></colgroup><tbody id="newsListRows"></tbody></table>
     </div>
   </div>
 </div>
