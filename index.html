@@ -43,8 +43,8 @@
     background-position: center;
     background-repeat: no-repeat;
     background-color: #050505;
-    padding: 8rem 0; /* Altura da seção aumentada */
-    min-height: 85vh; /* Preenche mais a tela */
+    padding: 8rem 0; 
+    min-height: 85vh; 
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -62,13 +62,26 @@
     font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
     color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: .5rem;
   }
+  
+  /* Título Gigante e com proporções da referência */
   .inv-dark-title {
     font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-    font-size: clamp(2.5rem, 4vw, 3.5rem);
-    font-style: italic;
-    text-transform: uppercase; letter-spacing: -.01em;
-    line-height: 1; color: #fff; margin: 0;
+    font-size: clamp(3rem, 5vw, 4.5rem); /* Aumentado para dar o impacto da ref */
+    text-transform: uppercase; 
+    letter-spacing: -.01em;
+    line-height: 0.95; /* Deixa as duas linhas mais próximas */
+    color: #fff; 
+    margin: 0;
   }
+  .inv-dark-title .light {
+    font-weight: 400; /* Regular/Light da fonte Grift */
+    font-style: italic;
+  }
+  .inv-dark-title .bold {
+    font-weight: 800; /* Bold/Heavy */
+    font-style: italic;
+  }
+
   .inv-dark-see-all {
     display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
     font-size: 10px; font-weight: 700; letter-spacing: .05em;
@@ -321,8 +334,8 @@
       <div class="inv-dark-head">
         <div>
           <p class="inv-dark-eyebrow" data-i18n="home_inv_eyebrow">Estoque disponível</p>
-          <h2 class="inv-dark-title" data-i18n="home_inv_title">
-            <span style="font-weight: 300;">OPORTUNIDADES</span><br>EM DESTAQUE
+          <h2 class="inv-dark-title" id="dynamicInvTitle">
+            <span class="light">OPORTUNIDADES</span><br><span class="bold">EM DESTAQUE</span>
           </h2>
         </div>
         <a href="aeronaves.html" class="inv-dark-see-all" data-i18n="home_inv_all">
@@ -483,8 +496,22 @@
 <script>
   function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
 
+  /* Mágica para não quebrar a formatação Light/Bold no idioma pt/en/es */
+  function formatDynamicTitle() {
+    const el = document.getElementById("dynamicInvTitle");
+    if(!el) return;
+    const lang = window.PA_I18N ? PA_I18N.getLang() : "pt";
+    if(lang === 'en') {
+      el.innerHTML = '<span class="light">FEATURED</span><br><span class="bold">OPPORTUNITIES</span>';
+    } else if(lang === 'es') {
+      el.innerHTML = '<span class="light">OPORTUNIDADES</span><br><span class="bold">DESTACADAS</span>';
+    } else {
+      el.innerHTML = '<span class="light">OPORTUNIDADES</span><br><span class="bold">EM DESTAQUE</span>';
+    }
+  }
+
   /* Seta diagonal padronizada */
-  const DIAGONAL_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;"><path d="M7 17L17 7M7 7h10v10"/></svg>';
+  const DIAGONAL_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
   function cardHTML(a){
     const id = a.id || a._id;
@@ -701,9 +728,17 @@
     } catch(e){}
   }
 
+  // Hook unificado para atualizar a tradução dinâmica sem destruir a formatação
+  document.addEventListener("pa:langchange", () => { 
+    formatDynamicTitle();
+    loadHighlights(); 
+    loadSiteMedia(); 
+  });
+
+  // Init
+  formatDynamicTitle();
   loadHighlights();
   loadSiteMedia();
-  document.addEventListener("pa:langchange", () => { loadHighlights(); loadSiteMedia(); });
 </script>
 </body>
 </html>
