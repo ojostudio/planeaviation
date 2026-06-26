@@ -1,40 +1,109 @@
 /* ================================================================
-   4. COMPONENTES (BOTÕES, FILTROS, CARDS E UTILS)
+   4. COMPONENTES GLOBAIS (BOTÕES, CARDS, FILTROS E UTILIÁRIOS)
    ================================================================ */
 
-/* --- BOTÕES GLOBAIS --- */
+/* ----------------------------------------------------------------
+   [BOTÕES] - Estilo unificado para todo o ecossistema do site
+   ---------------------------------------------------------------- */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  font-family: var(--font-main); font-weight: var(--btn-weight); font-size: var(--btn-font-size);
-  letter-spacing: var(--btn-tracking); text-transform: uppercase; border-radius: var(--radius);
-  cursor: pointer; white-space: nowrap; transition: opacity .15s, background .15s, color .15s, gap .2s;
-  border: none; padding: var(--btn-padding);
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: .5rem;
+  font-family: var(--font-main); 
+  font-weight: var(--btn-weight); 
+  font-size: var(--btn-font-size);
+  letter-spacing: var(--btn-tracking); 
+  text-transform: uppercase; 
+  border-radius: var(--radius); /* Cantos suavizados em ~8px (30%) */
+  cursor: pointer; 
+  white-space: nowrap; 
+  transition: opacity .15s, background .15s, color .15s, gap .2s;
+  border: none; 
+  padding: var(--btn-padding);
 }
-.btn-solid   { background: var(--btn-bg); color: var(--btn-fg); }
-.btn-solid:hover   { opacity: .88; }
+
+/* Botão Sólido Escuro (Padrão) */
+.btn-solid { background: var(--btn-bg); color: var(--btn-fg); }
+.btn-solid:hover { opacity: .88; }
+
+/* Botão Outline Escuro (Fundo Claro) */
 .btn-outline { background: transparent; border: 2px solid hsl(var(--foreground)); color: hsl(var(--foreground)); }
 .btn-outline:hover { background: hsl(var(--foreground)); color: hsl(var(--background)); }
-.btn-invert  { background: hsl(var(--background)); color: hsl(var(--foreground)); }
-.btn-invert:hover  { opacity: .9; }
+
+/* Botão Sólido Claro (Para seções com fundos escuros) */
+.btn-invert { background: hsl(var(--background)); color: hsl(var(--foreground)); }
+.btn-invert:hover { opacity: .9; }
+
+/* Botão Outline Claro (Para seções com fundos escuros) */
 .btn-outline-dark { background: transparent; border: 2px solid hsl(var(--background)); color: hsl(var(--background)); }
 .btn-outline-dark:hover { background: hsl(var(--background)); color: hsl(var(--foreground)); }
 
-.btn-xs  { font-size: 11px; padding: .5rem 1.1rem; }
-.btn-sm  { font-size: .75rem; padding: .625rem 1.25rem; }
-.btn-md  { font-size: .875rem; padding: .875rem 2rem; }
-.btn-lg  { font-size: .875rem; padding: 1rem 2.25rem; }
-.btn-wide{ font-size: .75rem; padding: .875rem 2rem; letter-spacing: .1em; }
+/* Variações de Tamanho dos Botões */
+.btn-xs   { font-size: 11px;    padding: .5rem 1.1rem; }
+.btn-sm   { font-size: .75rem;  padding: .625rem 1.25rem; }
+.btn-md   { font-size: .875rem; padding: .875rem 2rem; }
+.btn-lg   { font-size: .875rem; padding: 1rem 2.25rem; }
+.btn-wide { font-size: .75rem;  padding: .875rem 2rem; letter-spacing: .1em; }
 
-.arrow-link { display: inline-flex; align-items: center; gap: .5rem; font-size: var(--text-xs); font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: hsl(var(--foreground)); transition: gap .2s; }
+/* Links de texto com seta expansível no hover */
+.arrow-link { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: .5rem; 
+  font-size: var(--text-xs); 
+  font-weight: 600; 
+  letter-spacing: .03em; 
+  text-transform: uppercase; 
+  color: hsl(var(--foreground)); 
+  transition: gap .2s; 
+}
 .arrow-link:hover { gap: .75rem; }
 
-/* --- SISTEMA DE PAGINAÇÃO GLOBAL (DOTS / PÍLULA) --- */
-.slider-dots { display: flex; justify-content: center; align-items: center; gap: 0.5rem; width: 100%; margin-top: 1.75rem; }
-.slider-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: none; cursor: pointer; padding: 0; transition: background 0.3s ease, width 0.3s ease, border-radius 0.3s ease; }
-.slider-dot.active { background: #ffffff; width: 1.5rem; border-radius: 9999px; }
 
-/* --- FILTROS DA LISTAGEM --- */
-.ac-filters-bar { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+/* ----------------------------------------------------------------
+   [PAGINAÇÃO / DOTS] - Contador em formato pílula unificado
+   ---------------------------------------------------------------- */
+.slider-dots { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 0.5rem; 
+  width: 100%; 
+  margin-top: 1.75rem; 
+}
+.slider-dot { 
+  width: 0.5rem; 
+  height: 0.5rem; 
+  border-radius: 50%; 
+  background: rgba(255, 255, 255, 0.2); 
+  border: none; 
+  cursor: pointer; 
+  padding: 0; 
+  transition: background 0.3s ease, width 0.3s ease, border-radius 0.3s ease; 
+}
+/* Estado ativo: vira pílula esticada macia */
+.slider-dot.active { 
+  background: #ffffff; 
+  width: 1.5rem; 
+  border-radius: 9999px; 
+}
+
+
+/* ----------------------------------------------------------------
+   [FILTROS] - Layout da barra de filtragem de produtos
+   ---------------------------------------------------------------- */
+.ac-filters-bar { 
+  background: rgba(255, 255, 255, 0.04); 
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  border-radius: 12px; 
+  padding: 0.875rem 1.25rem; 
+  display: flex; 
+  align-items: center; 
+  gap: 1.25rem; 
+  flex-wrap: wrap; 
+  margin-bottom: 2.5rem; 
+}
 .ac-filters-label { display: flex; align-items: center; gap: 0.5rem; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
 .ac-fgroup { display: flex; align-items: center; gap: 0.5rem; }
 .ac-fgroup > span { font-size: var(--text-micro); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
@@ -43,38 +112,64 @@
 .ac-fgroup select option { background: #1a1a1a; color: #fff; }
 .ac-count { margin-left: auto; font-size: var(--text-micro); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); white-space: nowrap; }
 
-/* ================================================================
-   CARD PREMIUM DE AERONAVE (GLASSMORPHISM) - AGORA É GLOBAL
-   ================================================================ */
+
+/* ----------------------------------------------------------------
+   [CARD DE AERONAVE] - Layout Glassmorphism com margem interna
+   ---------------------------------------------------------------- */
 .ac-card {
-  display: flex; flex-direction: column; background: rgba(18, 18, 18, 0.5);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.375rem; transition: transform .2s, border-color .2s;
-  text-decoration: none; color: inherit; cursor: pointer; overflow: visible; 
+  display: flex; 
+  flex-direction: column; 
+  background: rgba(18, 18, 18, 0.5);
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 12px; 
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.375rem; /* Margem interna sutil para a foto flutuar */
+  transition: transform .2s, border-color .2s;
+  text-decoration: none; 
+  color: inherit; 
+  cursor: pointer; 
+  overflow: visible; 
 }
 .ac-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.25); }
 
+/* Container da foto interna */
 .ac-card-img { position: relative; border-radius: 8px; overflow: visible; aspect-ratio: 1 / 1; }
 .ac-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
 .ac-card-img .ph-dark { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.15); border-radius: 8px; background: rgba(255,255,255,0.06); }
 
+/* Selo/Badge que morde a foto de baixo pra cima */
 .ac-card-badge-tab { position: absolute; bottom: 0; left: 0; transform: translateY(50%); background-color: #F5A623; color: #000; padding: 0.375rem 0.75rem; border-radius: 0 4px 4px 0; z-index: 10; }
 .ac-card-badge-tab.white { background-color: #FFFFFF; }
 
+/* Textos internos do card */
 .ac-card-body { padding: 1.25rem 0.625rem 0.625rem 0.625rem; display: flex; flex-direction: column; flex: 1; }
 .ac-card-title { line-height: 1.1; margin-bottom: 0.25rem; }
 
-/* O Botão flexível do Card */
+/* Botão retangular interno com cantos ~30% e flexbox para setas */
 .ac-card-btn {
-  display: flex; justify-content: space-between; align-items: center;
-  background: #FFFFFF; color: #000000; border-radius: 6px; padding: 0.625rem 1rem; 
-  font-size: var(--text-micro); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-  border: none; width: 100%; transition: opacity 0.2s, transform 0.2s; cursor: pointer;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  background: #FFFFFF; 
+  color: #000000; 
+  border-radius: 6px; 
+  padding: 0.625rem 1rem; 
+  font-size: var(--text-micro); 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 0.05em;
+  border: none; 
+  width: 100%; 
+  transition: opacity 0.2s, transform 0.2s; 
+  cursor: pointer;
 }
 .ac-card:hover .ac-card-btn { opacity: 0.9; transform: translateY(-2px); }
 
-/* Banner "Pensando em Vender?" */
+
+/* ----------------------------------------------------------------
+   [BANNERS INTERNOS] - Seções horizontais e fallbacks
+   ---------------------------------------------------------------- */
 .ac-sell-band { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin: 0 0 1.5rem; grid-column: 1 / -1; }
 .ac-sell-band p:first-child { font-size: 1rem; font-style: italic; font-weight: 400; color: rgba(255, 255, 255, 0.7); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.25rem; }
 .ac-sell-band p:first-child b { color: #fff; font-weight: 800; }
@@ -82,16 +177,21 @@
 .ac-sell-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.5); }
 .ac-empty { grid-column: 1/-1; padding: 5rem 0; text-align: center; color: rgba(255, 255, 255, 0.3); font-size: var(--text-sm); font-style: italic; }
 
-/* --- UTILITÁRIOS DIVERSOS --- */
-.band-dark   { background: hsl(var(--foreground)); color: hsl(var(--background)/.8); }
-.page-hero      { padding: 4rem 0; background: hsl(var(--muted)); }
-.page-hero.tall { padding: 5rem 0; }
-.page-hero.center { text-align: center; }
-.page-hero h1   { margin-top: .75rem; }
-.page-hero p    { font-size: var(--text-sm); color: hsl(var(--muted-foreground)); margin-top: .75rem; }
-.page-hero.center p { margin-left: auto; margin-right: auto; }
 .ph { background: hsl(var(--muted)); border: 2px dashed hsl(var(--border)); display: flex; flex-direction: column; align-items: center; justify-content: center; color: hsl(var(--muted-foreground)); }
 .ph .ico { width: 2rem; height: 2rem; margin-bottom: .5rem; opacity: .4; }
 .ph .lbl { font-size: var(--text-xs); font-weight: 500; letter-spacing: .025em; text-transform: uppercase; opacity: .6; text-align: center; padding: 0 1rem; }
 .rounded { border-radius: var(--radius-sm); }
-@media(max-width:639px) { .hide-mobile { display: none !important; } }
+
+
+/* ----------------------------------------------------------------
+   [UTILITÁRIOS GLOBAIS DE REUTILIZAÇÃO]
+   ---------------------------------------------------------------- */
+
+/* bg-radial-dark: Fundo dinâmico com gradiente de alta fidelidade.
+   Pode ser aplicado na tag <body> de qualquer página interna do site.
+*/
+.bg-radial-dark {
+  background: radial-gradient(circle at top center, #1c1c1c 0%, #030303 100%) !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+}
