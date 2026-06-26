@@ -5,12 +5,10 @@
 /* --- PARALAXE CIRRUS (HOMEPAGE) --- */
 .cp-section {
   position: relative;
-  z-index: 20; /* Fica por cima da seção branca quando cruzar */
-  /* ... resto do seu código ... */
+  z-index: 20;
   background-color: #000000;
   color: white;
   overflow: hidden;
-
 }
 .cp-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
 .cp-camada { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; pointer-events: none; }
@@ -56,16 +54,14 @@
   .cp-model-title { font-size: 3rem; }
 }
 
-/* Nota: O código de "AERONAVES" escuro foi mantido direto na tag <style> 
-   do arquivo aeronaves.html para evitar que o tema dark vaze para o resto do site. *
 
-   /* ================================================================
+/* ================================================================
    NOVAS SEÇÕES DA HOME (Configurador, Vender, Insights)
    ================================================================ */
 
 /* Banner Configurador */
 .home-config-banner {
-  background-color: #050505; /* Preto absoluto/profundo */
+  background-color: #050505;
   border-radius: 24px;
   display: flex;
   align-items: center;
@@ -77,7 +73,6 @@
 
 .home-config-banner .config-img {
   flex: 1.2;
-  /* Margens negativas para a imagem colar na esquerda do banner igual no layout */
   margin: -3rem 0 -3rem -3rem; 
   display: flex;
   align-items: center;
@@ -180,7 +175,7 @@
 
 .casa-cirrus-card {
   position: relative;
-  background-color: #151515; /* Fundo bem escuro, quase preto */
+  background-color: #151515; 
   border-radius: 24px;
   padding: 4rem 3rem;
   max-width: 460px;
@@ -191,20 +186,18 @@
   z-index: 1;
 }
 
-/* Marca d'água de fundo com opacidade baixa */
 .casa-cirrus-card .cirrus-watermark {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 140%; /* Tamanho para vazar pelas bordas do card */
+  width: 140%; 
   height: auto;
   opacity: 0.04;
   z-index: -1;
   pointer-events: none;
 }
 
-/* Selo Superior (Cirrus Authorized) */
 .casa-cirrus-card .cirrus-badge {
   display: inline-flex;
   margin-bottom: 2.5rem;
@@ -214,7 +207,6 @@
   width: auto;
 }
 
-/* Textos */
 .casa-cirrus-card .eyebrow {
   display: block;
   color: #fff;
@@ -239,12 +231,8 @@
 }
 
 @media (max-width: 640px) {
-  .casa-cirrus-card {
-    padding: 3rem 2rem;
-  }
-  .home-casa-cirrus {
-    padding: 5rem 1rem;
-  }
+  .casa-cirrus-card { padding: 3rem 2rem; }
+  .home-casa-cirrus { padding: 5rem 1rem; }
 }
 
 /* ================================================================
@@ -253,47 +241,40 @@
 .hero-glass-section {
   position: relative;
   width: 100vw;
-  height: 85vh; /* Altura do banner */
+  height: 85vh;
   min-height: 600px;
   overflow: hidden;
   display: flex;
   align-items: center;
 }
 
-/* Camada 1: A foto de fundo */
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: 1;
 }
-/* Garante que tanto a imagem quanto o vídeo injetados pelo admin preencham a tela cheia */
+
 .hero-bg img, .hero-bg video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* Camada 2: O vidro (recortado pelo seu SVG) */
 .hero-glass-mask {
   position: absolute;
   inset: 0;
   z-index: 2;
-  /* Cor e desfoque do vidro */
   background: rgba(20, 20, 20, 0.15); 
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  
-  /* A Mágica: Máscara com o seu SVG inline */
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1401.24 1080' preserveAspectRatio='none'%3E%3Cpath d='M1401.24,1080C399.65,1080,658.63,0,75.71,0H0v1080h1401.24Z' fill='%23fff'/%3E%3C/svg%3E");
   -webkit-mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
-  
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1401.24 1080' preserveAspectRatio='none'%3E%3Cpath d='M1401.24,1080C399.65,1080,658.63,0,75.71,0H0v1080h1401.24Z' fill='%23fff'/%3E%3C/svg%3E");
   mask-size: 100% 100%;
   mask-repeat: no-repeat;
 }
 
-/* Camada 3: O conteúdo (Textos e botões) */
 .hero-content-wrapper {
   position: relative;
   z-index: 3;
@@ -318,10 +299,7 @@
   text-transform: uppercase;
 }
 
-/* O G3+ mais fino */
-.hero-title-glass span {
-  font-weight: 300; 
-}
+.hero-title-glass span { font-weight: 300; }
 
 .hero-subtitle-glass {
   font-size: clamp(1.25rem, 2vw, 1.75rem);
@@ -331,7 +309,6 @@
   line-height: 1.2;
 }
 
-/* Selo do canto inferior direito */
 .hero-badge-glass {
   position: absolute;
   bottom: 2.5rem;
@@ -347,7 +324,7 @@
 }
 
 .hero-badge-glass img {
-  height: 54px; /* Ajuste o tamanho do selo da Cirrus aqui */
+  height: 54px;
   margin-bottom: 0.5rem;
 }
 
@@ -362,8 +339,7 @@
    ================================================================ */
 .inst-scroll-section {
   position: relative;
-  z-index: 10; /* Proteção de camada */
-  /* ... resto do seu código ... */
+  z-index: 10; 
   width: 100vw;
   height: 100vh;
   background-color: #ffffff;
@@ -384,11 +360,11 @@
 .red-line-anim {
   position: absolute;
   top: 50%;
-  left: -50vw; /* Começa escondida na esquerda */
+  left: -50vw;
   transform: translateY(-50%);
-  height: 160vh; /* Muito alta para cobrir a tela fazendo a curva */
+  height: 160vh;
   width: auto;
-  max-width: none; /* Impede o CSS base de espremer a imagem */
+  max-width: none;
 }
 
 .scroll-texts-container {
@@ -410,10 +386,7 @@
   visibility: hidden;
 }
 
-.scroll-slide.active {
-  opacity: 1;
-  visibility: visible;
-}
+.scroll-slide.active { opacity: 1; visibility: visible; }
 
 .scroll-slide .eyebrow {
   color: #000;
@@ -431,4 +404,161 @@
   margin: 0 auto;
   color: #555;
   line-height: 1.6;
+}
+
+/* ================================================================
+   SEÇÃO: OPORTUNIDADES EM DESTAQUE (HOME)
+   ================================================================ */
+
+.home-destaque-section {
+  position: relative;
+  background-image: url('../images/bg_destaque.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #050505; 
+  padding: 6rem 0;
+  overflow: hidden;
+}
+
+/* Cabeçalho da Seção */
+.home-destaque-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+}
+.home-destaque-header .eyebrow { color: rgba(255, 255, 255, 0.6); }
+.home-destaque-header h2 {
+  color: #FFFFFF;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  line-height: 1.1;
+  margin-top: 0.5rem;
+}
+.home-destaque-header .btn-header {
+  background: #FFFFFF;
+  color: #000000;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+.home-destaque-header .btn-header:hover { opacity: 0.9; }
+@media (max-width: 768px) {
+  .home-destaque-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+}
+
+/* Base do Card */
+.home-destaque-section .lcard {
+  background: rgba(15, 15, 15, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: visible; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Imagem da Aeronave */
+.home-destaque-section .lcard .img {
+  position: relative;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+.home-destaque-section .lcard .img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badge (A Aba Exclusiva) */
+.home-destaque-section .badge-tab {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translateY(50%); 
+  background-color: #F5A623; 
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 1rem;
+  border-radius: 0 8px 8px 0; 
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.home-destaque-section .badge-tab.white {
+  background-color: #FFFFFF;
+}
+
+/* Corpo de Texto do Card */
+.home-destaque-section .lcard .body {
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem; 
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.home-destaque-section .lcard .cond {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  font-size: 9px;
+  margin-bottom: 0.25rem;
+}
+.home-destaque-section .lcard h3 {
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.home-destaque-section .lcard .meta {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  margin-bottom: auto; 
+}
+.home-destaque-section .lcard .price {
+  color: #FFFFFF;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Botão Estilo Pílula */
+.home-destaque-section .lcard .btn-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  color: #000000;
+  border-radius: 999px;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: opacity 0.2s, transform 0.2s;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+.home-destaque-section .lcard .btn-pill:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+.home-destaque-section .lcard .btn-pill svg {
+  width: 16px;
+  height: 16px;
 }
