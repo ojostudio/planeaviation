@@ -7,179 +7,14 @@
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <script src="js/i18n.js" defer></script>
 <script src="js/site.js" defer></script>
-<style>
-  #site-header { display: block; height: 4rem; }
-  body { min-height: 100vh; }
-</style>
-<style>
-/* ============================================================
-   AERONAVE DETALHE — Dark Theme
-   ============================================================ */
-body { background: #0a0a0a; color: #fff; }
-
-/* Breadcrumb */
-.crumb { border-bottom: 1px solid rgba(255,255,255,0.08); padding: .625rem 0; }
-.crumb .container { display: flex; align-items: center; gap: .5rem; font-size: .75rem; color: rgba(255,255,255,0.35); }
-.crumb a { color: rgba(255,255,255,0.35); }
-.crumb a:hover { color: rgba(255,255,255,0.7); }
-.crumb .sep { opacity: .3; }
-.crumb .cur { color: rgba(255,255,255,0.6); font-weight: 500; }
-
-/* ---- MAIN LAYOUT ---- */
-.det-wrap { padding: 2.5rem 0 5rem; }
-.det-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
-@media(min-width:1024px) { .det-grid { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; } }
-
-/* ---- GALLERY ---- */
-.gal-main {
-  border-radius: 14px; overflow: hidden; position: relative; background: rgba(255,255,255,0.05); aspect-ratio: 4/3;
-  border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 -1px 0 rgba(0,0,0,0.4) inset, 0 32px 64px rgba(0,0,0,0.6);
-}
-.gal-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gal-main .ph-dark { width:100%;height:100%;display:flex;align-items:center;justify-content:center; color:rgba(255,255,255,0.15);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase; }
-.gal-nav {
-  position: absolute; top: 50%; transform: translateY(-50%); width: 2.25rem; height: 2.25rem;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: background .15s; z-index: 2;
-}
-.gal-nav:hover { background: rgba(0,0,0,0.75); }
-.gal-nav.prev { left: .75rem; }
-.gal-nav.next { right: .75rem; }
-.gal-tag {
-  position: absolute; top: .875rem; left: .875rem; 
-  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  background: rgba(0, 0, 0, 0.65); /* Efeito Fumê */
-  backdrop-filter: blur(8px); 
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Borda sutil */
-  border-radius: 4px; color: #fff; padding: .3rem .625rem;
-}
-.thumbs { display: grid; grid-template-columns: repeat(4,1fr); gap: .5rem; margin-top: .625rem; }
-.thumbs button { background: none; padding: 0; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden; transition: border-color .15s; }
-.thumbs button.active { border-color: rgba(255,255,255,0.5); }
-.thumbs button img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
-
-/* ---- INFO COLUMN ---- */
-.det-badge { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: .5rem; }
-.det-title {
-  font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-style: italic;
-  text-transform: uppercase; letter-spacing: -.01em; line-height: 1; color: #fff; margin-bottom: 1rem;
-}
-.det-title span { font-weight: 400; font-style: italic; }
-
-.det-metas { display: flex; flex-wrap: wrap; gap: .375rem; margin-bottom: 1.25rem; }
-.det-meta-pill {
-  display: inline-flex; align-items: center; gap: .375rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 6px; padding: .3rem .75rem; font-size: .75rem; font-weight: 500; color: rgba(255,255,255,0.8); white-space: nowrap;
-}
-.det-meta-pill .ml { color: rgba(255,255,255,0.4); font-weight: 400; margin-right: .125rem; }
-
-.det-price { font-size: 1.625rem; font-weight: 700; letter-spacing: -.02em; color: #fff; margin-bottom: 1.5rem; }
-.det-price.consult { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.4); font-style: italic; }
-
-/* CTAs */
-.det-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
-
-.det-btn-primary {
-  display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
-  background: #fff; color: #0a0a0a; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; padding: .875rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s; 
-  flex: 0 0 auto; 
-}
-.det-btn-primary:hover { opacity: .88; }
-
-.det-btn-pdf {
-  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px;
-  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: .875rem 1.5rem; cursor: pointer;
-  text-decoration: none; transition: background .15s, border-color .15s; 
-  flex: 0 0 auto; 
-}
-.det-btn-pdf:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
-
-.det-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; }
-.det-section-label { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: .875rem; }
-.det-desc-text { font-size: .875rem; line-height: 1.75; color: rgba(255,255,255,0.55); white-space: pre-wrap; }
-.det-specs { border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
-.det-spec-row { display: flex; justify-content: space-between; align-items: center; padding: .625rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: .8125rem; }
-.det-spec-row:last-child { border-bottom: none; }
-.det-spec-key { color: rgba(255,255,255,0.4); }
-.det-spec-val { font-weight: 600; color: #fff; }
-
-.det-tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-@media(min-width:640px) { .det-tech-grid { grid-template-columns: repeat(4,1fr); } }
-.det-tech-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem; }
-.det-tech-card svg { color: rgba(255,255,255,0.5); margin-bottom: .625rem; }
-.det-tech-card h3 { font-size: .8125rem; font-weight: 700; color: #fff; margin-bottom: .25rem; }
-.det-tech-card p { font-size: .75rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
-
-/* Outras Opções */
-.other-section { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4rem; padding-top: 3rem; }
-.other-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .75rem; }
-.other-section-head h2 { font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif; font-size: 1.25rem; font-weight: 800; font-style: italic; text-transform: uppercase; color: #fff; }
-.other-see-all { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.4); text-decoration: none; display: inline-flex; align-items: center; gap: .375rem; transition: color .15s; }
-.other-see-all:hover { color: #fff; }
-.other-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
-@media(min-width:640px)  { .other-grid { grid-template-columns: repeat(2,1fr); } }
-@media(min-width:1024px) { .other-grid { grid-template-columns: repeat(4,1fr); } }
-.ac-card { display: block; background: rgba(255,255,255,0.04); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 -1px 0 rgba(0,0,0,0.4) inset, 0 24px 48px rgba(0,0,0,0.5); transition: transform .2s, box-shadow .2s, border-color .2s; text-decoration: none; color: inherit; padding: .5rem; cursor: pointer; }
-.ac-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.22); }
-.ac-card-img { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 4/3; background: rgba(255,255,255,0.06); margin-bottom: .75rem; }
-.ac-card-img img { width:100%;height:100%;object-fit:cover;display:block; }
-.ac-card-img .ph-dark { width:100%;height:100%;display:flex;align-items:center;justify-content:center; color:rgba(255,255,255,0.15);font-size:.6rem; }
-.ac-card-tag { 
-  position: absolute; top: .5rem; left: .5rem; 
-  font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; 
-  background: rgba(0, 0, 0, 0.65); /* Efeito Fumê */
-  backdrop-filter: blur(8px); 
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Borda sutil */
-  border-radius: 4px; color: #fff; padding: .2rem .4rem; 
-}
-.ac-card-body { padding: .125rem .25rem .375rem; }
-.ac-card-cond { font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:.2rem; }
-.ac-card-title { font-family:'Grift','Bebas Neue','Inter',sans-serif; font-size:1rem;font-weight:800;font-style:italic; text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:.2rem; }
-.ac-card-title span { font-weight:400; }
-.ac-card-meta { font-size:.7rem;color:rgba(255,255,255,0.35);margin-bottom:.5rem; }
-.ac-card-price { font-size:.875rem;font-weight:700;color:#fff;margin-bottom:.625rem; }
-.ac-card-btn { display:inline-flex;align-items:center;gap:.375rem; font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase; color:#fff;background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);border-radius:5px; padding:.4rem .75rem;white-space:nowrap; }
-
-/* ============================================================
-   MODAL DE CONTATO (Pop-up Form)
-   ============================================================ */
-.overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; z-index:999; padding:2rem 1rem; overflow-y:auto; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
-.overlay.open { display:flex; }
-.modal { background:#0a0a0a; border:1px solid rgba(255,255,255,0.15); border-radius:16px; width:100%; max-width:32rem; margin:auto; color:#fff; box-shadow: 0 24px 64px rgba(0,0,0,0.8); }
-.modal-head { display:flex; align-items:center; justify-content:space-between; padding:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
-.modal-head h3 { font-size:1.25rem; font-weight:700; font-family:'Grift', sans-serif; font-style:italic; letter-spacing:0.02em; text-transform: uppercase; margin: 0; }
-.modal-wa-btn { display:inline-flex; align-items:center; gap:.375rem; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:.5rem .75rem; text-decoration:none; transition:background .15s, border-color .15s; }
-.modal-wa-btn:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.4); }
-.modal-body { padding:1.5rem; }
-.x-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:1.25rem; display: flex; align-items: center; justify-content: center; transition: color .15s;}
-.x-btn:hover { color:#fff; }
-
-.form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
-.form-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.875rem 1rem; font-family: var(--font); font-size: .875rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #fff; transition: border-color 0.2s, background-color 0.2s; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #fff; background: rgba(255, 255, 255, 0.1); }
-.form-group select { appearance: none; cursor: pointer; }
-.form-group select option { background: #1a1a1a; color: #fff; }
-
-.iti { width: 100%; }
-.iti__country-list { background-color: #151515 !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 8px; color: #ffffff; max-width: 300px; z-index: 1000; }
-.iti__country:hover, .iti__country.iti__highlight { background-color: rgba(255, 255, 255, 0.1) !important; }
-.iti__divider { border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; }
-.form-group input#modalPhone { padding-left: 3.5rem !important; }
-</style>
 </head>
-<body>
+<body class="bg-radial-dark">
 <div id="site-header"></div>
 <main>
+  
   <div class="crumb">
     <div class="container">
       <a href="aeronaves.html" data-i18n="det_crumb">Aeronaves Disponíveis</a>
@@ -191,36 +26,37 @@ body { background: #0a0a0a; color: #fff; }
   <div class="det-wrap" id="detWrap">
     <div class="container">
       <div class="det-grid">
+        
         <div>
           <div class="gal-main" id="galMain">
             <div class="ph-dark">[Imagem]</div>
             <button class="gal-nav prev" id="galPrev" aria-label="Anterior"><svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
             <button class="gal-nav next" id="galNext" aria-label="Próxima"><svg style="width:1rem;height:1rem;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-            <span class="gal-tag" id="galTag" style="display:none"></span>
+            <span class="gal-tag nano-tag" id="galTag" style="display:none"></span>
           </div>
           <div class="thumbs" id="thumbs"></div>
 
-          <div id="descBlock" style="display:none;margin-top:2rem">
-            <p class="det-section-label" id="descLabel" data-i18n="det_about">Sobre esta aeronave</p>
-            <p class="det-desc-text" id="descText"></p>
+          <div id="descBlock" class="det-desc-box" style="display:none;">
+            <p class="eyebrow dark" id="descLabel" data-i18n="det_about">Sobre esta aeronave</p>
+            <p class="det-desc-text text-sm" id="descText"></p>
           </div>
 
-          <div id="specsBlock" style="display:none;margin-top:2rem">
-            <p class="det-section-label" id="specsLabel" data-i18n="det_specs">Ficha Técnica</p>
+          <div id="specsBlock" class="det-desc-box" style="display:none;">
+            <p class="eyebrow dark" id="specsLabel" data-i18n="det_specs">Ficha Técnica</p>
             <div class="det-specs" id="specs"></div>
           </div>
         </div>
 
-        <div>
-          <p class="det-badge" id="condLoc"></p>
-          <h1 class="det-title" id="model"></h1>
+        <div class="det-commercial-info">
+          <p class="eyebrow dark" id="condLoc"></p>
+          <h1 class="hero-title det-title" id="model"></h1>
           <div class="det-metas" id="detMetas"></div>
           <div class="det-price" id="detPrice"></div>
           
           <div class="det-actions">
             <button id="btnOpenContactModal" class="det-btn-primary">
               TENHO INTERESSE
-              <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle;margin-left:.25rem"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+              <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
             </button>
             
             <button id="btnDownloadPDF" class="det-btn-pdf">
@@ -231,20 +67,21 @@ body { background: #0a0a0a; color: #fff; }
         </div>
       </div>
 
-      <div id="featsSection" style="display:none;margin-top:3rem">
-        <hr class="det-divider">
-        <p class="det-section-label" id="featsLabel" data-i18n="det_tech">Tecnologias a bordo</p>
-        <div class="det-tech-grid" id="feats"></div>
+      <div id="featsSection" style="display:none;">
+        <div class="det-desc-box" style="background: none; border: none; padding: 2rem 0 0 0;">
+          <p class="eyebrow dark" id="featsLabel" data-i18n="det_tech">Tecnologias a bordo</p>
+          <div class="det-tech-grid" id="feats"></div>
+        </div>
       </div>
 
       <div class="other-section" id="otherSection" style="display:none">
         <div class="other-section-head">
-          <h2>Outras opções</h2>
-          <a href="aeronaves.html" class="other-see-all">Ver todas
-            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.8em;height:.8em;fill:currentColor"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          <h2 class="h-display"><span class="light">OUTRAS</span> <span class="bold">OPÇÕES</span></h2>
+          <a href="aeronaves.html" class="other-see-all text-xs">Ver todas
+            <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
         </div>
-        <div class="other-grid" id="otherGrid"></div>
+        <div class="other-grid inv-dark-grid" id="otherGrid"></div>
       </div>
     </div>
   </div>
@@ -254,11 +91,11 @@ body { background: #0a0a0a; color: #fff; }
 <div class="overlay" id="contactModal">
   <div class="modal">
     <div class="modal-head">
-      <h3>FALE COM UM CONSULTOR</h3>
+      <h3 class="h-display" style="font-size: 1.25rem;">FALE COM UM CONSULTOR</h3>
       <div style="display: flex; align-items: center; gap: 1rem;">
         <a id="btnWhatsApp" href="#" target="_blank" class="modal-wa-btn">
           WHATSAPP
-          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1em;height:1em;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
         </a>
         <button class="x-btn" id="btnCloseModal">✕</button>
       </div>
@@ -266,32 +103,32 @@ body { background: #0a0a0a; color: #fff; }
     <div class="modal-body">
       <form id="contactFormModal">
         <div class="form-group">
-          <label for="modalName">Nome Completo</label>
+          <label for="modalName" class="label">Nome Completo</label>
           <input type="text" id="modalName" required placeholder="Ex: João Silva">
         </div>
         <div class="form-group">
-          <label for="modalEmail">E-mail Corporativo</label>
+          <label for="modalEmail" class="label">E-mail Corporativo</label>
           <input type="email" id="modalEmail" required placeholder="joao@empresa.com">
         </div>
         <div class="form-group">
-          <label for="modalPhone">Telefone / WhatsApp</label>
+          <label for="modalPhone" class="label">Telefone / WhatsApp</label>
           <input type="tel" id="modalPhone" required placeholder="(11) 99999-0000">
         </div>
         
         <input type="hidden" id="modalSubject" value="comprar">
         
         <div class="form-group">
-          <label for="modalAircraftSelect">Aeronave de Interesse</label>
+          <label for="modalAircraftSelect" class="label">Aeronave de Interesse</label>
           <select id="modalAircraftSelect" required></select>
         </div>
         
         <div class="form-group">
-          <label for="modalMessage">Sua Mensagem</label>
+          <label for="modalMessage" class="label">Sua Mensagem</label>
           <textarea id="modalMessage" rows="4" required placeholder="Gostaria de saber mais informações sobre esta aeronave..."></textarea>
         </div>
         <button type="submit" class="btn btn-solid btn-lg" style="width: 100%; margin-top: 0.5rem; background-color: #ffffff; color: #000000;">
           ENVIAR MENSAGEM
-          <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width: 1em; height: 1em; fill: currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+          <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
         </button>
       </form>
     </div>
@@ -303,7 +140,7 @@ body { background: #0a0a0a; color: #fff; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
-const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
+const ARROW = '<svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
 const ICONS = {
   Shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
@@ -325,7 +162,6 @@ let P = null, activeImg = 0;
 
 document.addEventListener("pa:langchange", () => { if(P) renderPage(P); });
 
-// Gallery
 const galMainEl = document.getElementById("galMain");
 const thumbsEl  = document.getElementById("thumbs");
 
@@ -398,22 +234,20 @@ function renderPage(p){
   if(specsHTML){ document.getElementById("specs").innerHTML = specsHTML; document.getElementById("specsLabel").textContent = t("det_specs"); specsBlock.style.display="block"; } else { specsBlock.style.display="none"; }
 
   const featsSection = document.getElementById("featsSection");
-  const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f => `<div class="det-tech-card"><svg class="icon i-5" style="stroke:rgba(255,255,255,0.5);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:1.5rem;height:1.5rem;display:block" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
+  const featsHTML = loc_feats.filter(f=>f[1]||f[2]).map(f => `<div class="det-tech-card"><svg class="icon i-5" viewBox="0 0 24 24">${ICONS[f[0]]||ICONS.Shield}</svg><h3>${f[1]||""}</h3><p>${f[2]||""}</p></div>`).join("");
   if(featsHTML){ document.getElementById("feats").innerHTML = featsHTML; document.getElementById("featsLabel").textContent = t("det_tech"); featsSection.style.display="block"; } else { featsSection.style.display="none"; }
 
-  // WhatsApp Dinâmico no Header do Modal
   const telefoneWhatsapp = "5511999990000"; 
   const codInterno = p.codigoInterno || "Sem Cód";
   const textoMensagem = encodeURIComponent(`Olá! Tenho interesse na aeronave ${main} ${sub} (${codInterno}).`);
   document.getElementById("btnWhatsApp").href = `https://wa.me/${telefoneWhatsapp}?text=${textoMensagem}`;
 
-  // Select do Modal
   const modalSelect = document.getElementById("modalAircraftSelect");
   modalSelect.innerHTML = `<option value="${p.model} [${codInterno}]" selected>${p.model} (${p.year})</option>`;
 }
 
 function notFound(){
-  document.getElementById("detWrap").innerHTML = `<div class="container" style="padding:5rem 0;text-align:center"><p style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem" data-i18n="ac_eyebrow">Estoque</p><h1 style="font-family:'Grift','Bebas Neue','Inter',sans-serif;font-size:2.5rem;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1><a href="aeronaves.html" style="display:inline-flex;align-items:center;gap:.5rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:.75rem 1.5rem;text-decoration:none" data-i18n="det_back">Ver Aeronaves Disponíveis</a></div>`;
+  document.getElementById("detWrap").innerHTML = `<div class="container" style="padding:5rem 0;text-align:center"><p class="eyebrow dark" data-i18n="ac_eyebrow">Estoque</p><h1 class="h-display" style="color:#fff;margin-bottom:1rem" data-i18n="det_notfound">Aeronave não encontrada</h1><a href="aeronaves.html" class="btn btn-solid" data-i18n="det_back">Ver Aeronaves Disponíveis</a></div>`;
   if(window.PA_I18N) PA_I18N.applyLang();
 }
 
@@ -424,9 +258,21 @@ function fromFirestore(a){
 function otherCardHTML(id, a){
   const parts = (a.model||"").match(/^(.*?)(\s[A-Z0-9+]+)?$/); const main = parts?.[1]||a.model||""; const sub  = parts?.[2]||"";
   const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult") : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
-  const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" • ");
+  const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" · ");
   const img = (a.images&&a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
-  return `<a href="aeronave.html?id=${id}" class="ac-card"><div class="ac-card-img">${img}${a.tag?`<span class="ac-card-tag">${a.tag}</span>`:""}</div><div class="ac-card-body"><div class="ac-card-cond">${a.condition||""}</div><div class="ac-card-title">${main}<span>${sub}</span></div>${meta?`<div class="ac-card-meta">${meta}</div>`:""}<div class="ac-card-price">${price}</div><span class="ac-card-btn">Ver ${ARROW}</span></div></a>`;
+  return `<a href="aeronave.html?id=${id}" class="ac-card">
+    <div class="ac-card-img">
+      ${img}
+      ${a.tag?`<div class="ac-card-badge-tab nano-tag">${a.tag}</div>`:""}
+    </div>
+    <div class="ac-card-body">
+      <div class="ac-card-cond eyebrow dark" style="margin-bottom:0.25rem;">${a.condition||""}</div>
+      <div class="h3 ac-card-title" style="color:#fff; margin-bottom:0.25rem;">${main}<span class="light">${sub}</span></div>
+      ${meta?`<div class="fine-print ac-card-meta">${meta}</div>`:""}
+      <div class="ac-card-price" style="font-size: 1.125rem; font-weight: 700; color: #fff; margin-top: 1rem; margin-bottom: 1rem;">${price}</div>
+      <span class="ac-card-btn">${t("ac_details")} ${ARROW}</span>
+    </div>
+  </a>`;
 }
 
 async function init(){
@@ -442,11 +288,7 @@ async function init(){
   } catch(e){ notFound(); }
 }
 
-// -------------------------------------------------------------------------
-// INICIALIZAÇÃO SEGURA E GERADOR DE PDF (ATUALIZADO FUNDO BRANCO)
-// -------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  
   const btnOpen = document.getElementById("btnOpenContactModal");
   const btnClose = document.getElementById("btnCloseModal");
   const modalOverlay = document.getElementById("contactModal");
@@ -517,12 +359,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn(error);
   }
 
-  // =========================================================
-  // GERAÇÃO DE PDF PROFISSIONAL (FUNDO BRANCO + TEXTOS PRETOS + GALERIA)
-  // =========================================================
-  // =========================================================
-  // GERAÇÃO DE PDF PROFISSIONAL (CORRIGIDO: SEM PÁGINAS EM BRANCO & DINÂMICO)
-  // =========================================================
   const btnPdf = document.getElementById("btnDownloadPDF");
   if(btnPdf) {
     btnPdf.addEventListener("click", async () => {
@@ -532,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
       btnPdf.innerHTML = "GERANDO PDF...";
       btnPdf.disabled = true;
 
-      // 1. Logo com letras pretas (#000000) e marca vermelha para papel branco
       const logoSvgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95" width="230" height="55"><g>
         <path fill="#000000" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/>
         <path fill="#000000" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/>
@@ -546,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <path fill="#000000" d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/>
         <path fill="#000000" d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/>
         <path fill="#000000" d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/>
-        <path fill="#000000" d="M1772.25,267.53 h18.33 l79.59,161.21 l32.36,-161.21 h17.47 l-37.51,188.41 h-18.32 l-79.6,-161.49 l-32.35,161.49 h-17.75 l37.79,-188.41 Z"/>
+        <path fill="#000000" d="M1772.25,267.53 h18.33 l79.59,161.21 l32.36,-161.21 h17.47 l-37.51,188.41 h-18.32 l-79.6,-161.49 l-32.35,161.49 h-17.75 l37.79,-188.41Z"/>
         </g>
         <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/>
       </svg>`;
@@ -554,11 +389,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const priceStr = fmtPrice(P) || "Sob Consulta";
       
-      // Filtra e renderiza as especificações da Fundo Claro
       const validSpecs = (P.specs || []).filter(s => s[0] || s[1]);
       let specsSectionHTML = '';
       
-      // SE existir ficha técnica preenchida, monta o bloco HTML. Caso contrário, fica vazio
       if (validSpecs.length > 0) {
         const specsRowsHTML = validSpecs.map(s => `
           <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e0e0e0; font-size:12px;">
@@ -577,7 +410,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
       }
 
-      // Sobre a aeronave dinâmico (Só aparece se houver texto)
       let descriptionSectionHTML = '';
       if (P.description && P.description.trim() !== '') {
         descriptionSectionHTML = `
@@ -588,12 +420,10 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
       }
 
-      // Reduzido o tamanho da imagem principal de 450px para 320px para economizar página
       const mainImg = P.images && P.images.length 
         ? `<div style="width:100%; height:320px; border-radius:12px; margin-bottom:20px; border: 1px solid #e0e0e0; background-image:url('${P.images[0]}'); background-size:cover; background-position:center; background-repeat:no-repeat;"></div>` 
         : '';
 
-      // Galeria Dinâmica (Apenas se tiver mais fotos cadastradas)
       let galleryHTML = '';
       if (P.images && P.images.length > 1) {
         const extraImages = P.images.slice(1).map(img => `
@@ -614,7 +444,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
       }
 
-      // Monta o esqueleto final da página 1 (reduzido padding de 40px para 30px)
       const pdfHTML = `
         <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family: 'Inter', sans-serif; width:800px; min-height:1040px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:between;">
           <div>
