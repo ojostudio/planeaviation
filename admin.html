@@ -1494,12 +1494,14 @@
   
   function wireNewsModals() {
     // Lógica das sub-abas
+    let videosLoaded = false;
     document.querySelectorAll(".sub-tab").forEach(t => t.onclick = () => {
       document.querySelectorAll(".sub-tab").forEach(x=>{ x.style.borderColor="transparent"; x.style.color="hsl(var(--muted-foreground))"; });
       t.style.borderColor="hsl(var(--foreground))"; t.style.color="hsl(var(--foreground))";
       $("sub-artigos").style.display = t.dataset.sub==="artigos" ? "block" : "none";
       $("sub-podcasts").style.display = t.dataset.sub==="podcasts" ? "block" : "none";
       $("sub-videos").style.display = t.dataset.sub==="videos" ? "block" : "none";
+      if(t.dataset.sub==="videos" && !videosLoaded) { loadVideos(); videosLoaded = true; }
     });
     $("addVideo").onclick = () => openVideo(null, {});
     $("vidSave").onclick = saveVideo;
