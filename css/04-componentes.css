@@ -191,7 +191,11 @@
    Pode ser aplicado na tag <body> de qualquer página interna do site.
 */
 .bg-radial-dark {
-  background: radial-gradient(circle at top center, #1c1c1c 0%, #030303 100%) !important;
-  color: #ffffff !important;
+  background: 
+    /* Camada 1: O Noise (Ruído) em SVG embutido */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
+    /* Camada 2: O seu gradiente radial */
+    radial-gradient(circle at center, #000000 0%, #575757 100%) !important;
+  color: #d4d4d4 !important;
   min-height: 100vh;
 }
