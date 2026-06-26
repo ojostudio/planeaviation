@@ -25,7 +25,7 @@
   .hero-content{ position:relative; z-index:10; width:100%; max-width:var(--maxw); margin:0 auto; padding:0 1.5rem; text-align:left; }
   .hero-content h1{ font-size:clamp(2rem,6vw,4.25rem); font-weight:700; letter-spacing:-.025em; line-height:1.05; margin-bottom:0; color:#fff; }
   .hero-cta{ display:flex; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
-  .hero-cta .btn{ background:#d9202a; color:#fff; border:none; border-radius:0; font-size:11px; letter-spacing:.1em; padding:.875rem 1.75rem; font-weight:700; text-transform:uppercase; width:auto; }
+  .hero-cta .btn{ background:#d9202a; color:#fff; border:none; border-radius:8px; font-size:11px; letter-spacing:.1em; padding:.875rem 1.75rem; font-weight:700; text-transform:uppercase; width:auto; }
   .hero-cta .btn:hover{ background:#b51820; opacity:1; }
 
   .sec{ padding:5rem 0; }
@@ -43,7 +43,11 @@
     background-position: center;
     background-repeat: no-repeat;
     background-color: #050505;
-    padding: 6rem 0;
+    padding: 8rem 0; /* Altura da seção aumentada */
+    min-height: 85vh; /* Preenche mais a tela */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     overflow: hidden;
   }
   
@@ -60,8 +64,8 @@
   }
   .inv-dark-title {
     font-family: 'Grift', 'Bebas Neue', 'Inter', sans-serif;
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 800; font-style: italic;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-style: italic;
     text-transform: uppercase; letter-spacing: -.01em;
     line-height: 1; color: #fff; margin: 0;
   }
@@ -69,7 +73,7 @@
     display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
     font-size: 10px; font-weight: 700; letter-spacing: .05em;
     text-transform: uppercase; color: #000; background: #fff;
-    padding: 0.75rem 1.5rem; border-radius: 999px;
+    padding: 0.75rem 1.5rem; border-radius: 8px; /* Padronizado 30% */
     text-decoration: none; white-space: nowrap;
     transition: opacity .15s;
   }
@@ -82,12 +86,12 @@
     background: rgba(15, 15, 15, 0.4) !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-radius: 20px;
+    border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     transition: transform .2s, border-color .2s;
     text-decoration: none; 
     color: inherit;
-    padding: 0; 
+    padding: 0.75rem; /* MARGEM INTERNA - Cria o respiro para a imagem não sangrar */
     cursor: pointer;
     overflow: visible; 
   }
@@ -98,20 +102,20 @@
 
   .inv-dark-grid .ac-card-img {
     position: relative; 
-    border-radius: 20px 20px 0 0; 
+    border-radius: 8px; /* Arredondamento acompanhando o respiro */
     overflow: visible; 
     aspect-ratio: 4/3; 
   }
   
   .inv-dark-grid .ac-card-img img { 
     width:100%; height:100%; object-fit:cover; display:block; 
-    border-radius: 20px 20px 0 0;
+    border-radius: 8px;
   }
   
   .inv-dark-grid .ac-card-img .ph-dark {
     width:100%;height:100%;display:flex;align-items:center;justify-content:center;
     color:rgba(255,255,255,0.15);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-    border-radius: 20px 20px 0 0;
+    border-radius: 8px;
     background: rgba(255,255,255,0.06);
   }
 
@@ -123,20 +127,20 @@
     transform: translateY(50%); 
     background-color: #F5A623; 
     color: #000;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 0.5rem 1rem;
-    border-radius: 0 8px 8px 0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
     z-index: 10;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
   .inv-dark-grid .ac-card-badge-tab.white { background-color: #FFFFFF; }
 
-  /* Corpo do Card */
+  /* Corpo do Card - Alinhamento consistente */
   .inv-dark-grid .ac-card-body { 
-    padding: 2.5rem 1.5rem 1.5rem 1.5rem; 
+    padding: 1.5rem 0.5rem 0.5rem 0.5rem; 
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -160,12 +164,12 @@
     margin-top: 1.5rem; margin-bottom: 1rem; 
   }
   
-  /* Botão Estilo Pílula */
+  /* Botão Estilo Pílula Ajustado (~30% arredondado) */
   .inv-dark-grid .ac-card-btn {
     display: flex; justify-content: space-between; align-items: center;
     background: #FFFFFF !important; color: #000000 !important;
-    border-radius: 999px !important;
-    padding: 0.75rem 1rem 0.75rem 1.25rem !important;
+    border-radius: 8px !important; /* Padronizado */
+    padding: 0.875rem 1.25rem !important;
     font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
     border: none !important; width: 100%;
     transition: opacity 0.2s, transform 0.2s;
@@ -187,8 +191,14 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: .75rem;
+    gap: 1.5rem;
   }
+  @media(min-width: 1024px) {
+    .inv-carousel {
+      gap: 2.5rem; /* Empurra as setas para fora dos cards */
+    }
+  }
+
   .inv-car-viewport {
     overflow: hidden;
     flex: 1;
@@ -292,7 +302,7 @@
         <div class="hero-cta" style="margin-top: 2rem;">
           <a href="#" class="btn btn-solid" id="heroBtn" style="background-color: #000; color: #fff; padding: 1rem 2rem;">
             <span id="heroBtnText"></span>
-            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
         </div>
       </div>
@@ -311,11 +321,13 @@
       <div class="inv-dark-head">
         <div>
           <p class="inv-dark-eyebrow" data-i18n="home_inv_eyebrow">Estoque disponível</p>
-          <h2 class="inv-dark-title" data-i18n="home_inv_title">Oportunidades em Destaque</h2>
+          <h2 class="inv-dark-title" data-i18n="home_inv_title">
+            <span style="font-weight: 300;">OPORTUNIDADES</span><br>EM DESTAQUE
+          </h2>
         </div>
         <a href="aeronaves.html" class="inv-dark-see-all" data-i18n="home_inv_all">
-          Ver todo estoque 
-          <svg viewBox="0 0 24 24" style="width:1.2em;height:1.2em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Ver todas as aeronaves 
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
         </a>
       </div>
 
@@ -395,11 +407,11 @@
               <div class="cp-buttons">
                  <a href="universo-cirrus.html" class="btn btn-invert">
                   CONHEÇA O SR22 G7
-                 <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
                 </a>
                  <a href="https://plane-configurator-kappa.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
                   CONFIGURADOR
-                <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
                  </a>
               </div>
             </div>
@@ -430,7 +442,7 @@
           <h2 class="config-title">CONFIGURADOR</h2>
           <a href="https://plane-configurator-kappa.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
             IR PARA CONFIGURADOR
-            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
         </div>
       </div>
@@ -444,7 +456,7 @@
         <div class="split-action">
           <a href="contato.html?motivo=vender" class="btn btn-solid">
             QUERO ANUNCIAR
-            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
         </div>
       </div>
@@ -458,7 +470,7 @@
         <div class="split-action">
           <a href="news.html" class="btn btn-solid">
             ACESSAR NEWS & PODCAST
-            <svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
         </div>
       </div>
@@ -471,9 +483,9 @@
 <script>
   function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
 
-  /* * A MÁGICA ACONTECE AQUI! 
-   * Renderização dinâmica do Card com o visual Glassmorphism e o Badge.
-   */
+  /* Seta diagonal padronizada */
+  const DIAGONAL_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;"><path d="M7 17L17 7M7 7h10v10"/></svg>';
+
   function cardHTML(a){
     const id = a.id || a._id;
     const media = (a.images && a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
@@ -484,7 +496,6 @@
     const meta  = [a.year, hours].filter(Boolean).join(" · ");
     const price = (a.sobConsulta || !a.priceNum) ? t("ac_consult") : (a.currency==="BRL" ? "R$"+Number(a.priceNum).toLocaleString("pt-BR") : "USD "+Number(a.priceNum).toLocaleString("en-US"));
     
-    // Define se a label será branca (Ex: Importação) ou Amarela padrão
     const tagClass = (a.tag && a.tag.toLowerCase().includes('importa')) ? 'white' : '';
 
     return `<a href="aeronave.html?id=${id}" class="ac-card">
@@ -499,7 +510,7 @@
         <div class="ac-card-price">${price}</div>
         <button class="ac-card-btn">
           ${t("ac_details")}
-          <svg viewBox="0 0 24 24" style="width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          ${DIAGONAL_ARROW}
         </button>
       </div>
     </a>`;
@@ -584,7 +595,7 @@
   let heroSlides = [];
   let activeHeroIndex = 0;
   let heroAutoplayTimer = null;
-  const HERO_ROTATION_SPEED = 6000; // 6 segundos por banner
+  const HERO_ROTATION_SPEED = 6000;
 
   function applyHeroSlide(index) {
     if (!heroSlides.length) return;
@@ -592,13 +603,11 @@
     const tBox = document.getElementById("heroTextBox");
     const hBg = document.getElementById("heroBg");
 
-    // Fade Out coordenado da tipografia e da mídia de fundo
     tBox.style.opacity = "0";
     tBox.style.transform = "translateY(10px)";
     hBg.style.opacity = "0";
 
     setTimeout(() => {
-      // Injeta textos e urls
       const badge = document.getElementById("heroBadge");
       if(slide.tag) { document.getElementById("heroTag").textContent = slide.tag; badge.style.display = "block"; } 
       else { badge.style.display = "none"; }
@@ -607,7 +616,6 @@
       document.getElementById("heroBtnText").textContent = slide.btnText || "Saber Mais";
       document.getElementById("heroBtn").href = slide.btnUrl || "contato.html";
 
-      // Injeta vídeo ou imagem de fundo
       if(slide.videoUrl) {
         hBg.innerHTML = `<video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="${slide.videoUrl}" type="video/mp4"></video>`;
       } else if(slide.imgUrl) {
@@ -617,12 +625,10 @@
         hBg.innerHTML = "";
       }
 
-      // Fade In unificado
       tBox.style.opacity = "1";
       tBox.style.transform = "translateY(0)";
       hBg.style.opacity = "1";
 
-      // Sincroniza indicadores lineares (dots)
       document.querySelectorAll(".hero-slider-dot").forEach((dot, idx) => {
         dot.classList.toggle("active", idx === index);
       });
@@ -665,7 +671,6 @@
       if(!doc.exists) return;
       const d = doc.data();
 
-      // Mapeia array de slides ou constrói fallback do legado anterior
       if (d.slides && d.slides.length) {
         heroSlides = d.slides;
       } else {
@@ -685,7 +690,6 @@
       wireHeroSliderControls();
       startHeroAutoplay();
 
-      // Mantém vídeo histórico de baixo rodando
       const vidBox = document.getElementById("vidBox");
       if(d.historiaVideoUrl && vidBox && !vidBox.querySelector("iframe, video")){
         const url = d.historiaVideoUrl;

@@ -5,7 +5,8 @@
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   font-family: var(--font); font-weight: var(--btn-weight); font-size: var(--btn-font-size);
   letter-spacing: var(--btn-tracking); text-transform: uppercase;
-  border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap;
+  border-radius: 8px; /* Arredondamento padronizado ~30% */
+  cursor: pointer; white-space: nowrap;
   transition: opacity .15s, background .15s, color .15s, gap .2s;
   border: none; padding: var(--btn-padding);
 }
@@ -44,7 +45,7 @@
 
 /* --- CARDS --- */
 .lcard {
-  display: block; border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm);
+  display: block; border: 1px solid hsl(var(--border)); border-radius: 12px;
   overflow: hidden; background: hsl(var(--card)); transition: border-color .15s, box-shadow .15s;
 }
 .lcard:hover { border-color: hsl(var(--foreground)/.25); box-shadow: 0 4px 16px rgba(0,0,0,.06); }
@@ -58,8 +59,8 @@
 .lcard .more { margin-top: .875rem; display: inline-flex; align-items: center; gap: .375rem; font-size: 10px; font-weight: 600; letter-spacing: .025em; text-transform: uppercase; color: hsl(var(--foreground)); transition: gap .2s; }
 .lcard:hover .more { gap: .625rem; }
 
-.icard { border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm); padding: 1.5rem; background: hsl(var(--card)); }
-.icard .iconbox { width: 2.5rem; height: 2.5rem; background: hsl(var(--muted)); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: hsl(var(--foreground)/.7); }
+.icard { border: 1px solid hsl(var(--border)); border-radius: 12px; padding: 1.5rem; background: hsl(var(--card)); }
+.icard .iconbox { width: 2.5rem; height: 2.5rem; background: hsl(var(--muted)); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: hsl(var(--foreground)/.7); }
 .icard h3 { font-size: var(--font-size-small); font-weight: 700; margin-bottom: .5rem; }
 .icard p  { font-size: var(--font-size-xs); color: hsl(var(--muted-foreground)); line-height: 1.6; }
 
@@ -77,7 +78,7 @@
 .ph .lbl { font-size: var(--font-size-xs); font-weight: 500; letter-spacing: .025em; text-transform: uppercase; opacity: .6; text-align: center; padding: 0 1rem; }
 .rounded { border-radius: var(--radius-sm); }
 
-.tag { position: absolute; top: .75rem; left: .75rem; font-size: 10px; font-weight: 700; letter-spacing: .025em; text-transform: uppercase; padding: .25rem .5rem; border-radius: var(--radius-sm); }
+.tag { position: absolute; top: .75rem; left: .75rem; font-size: 10px; font-weight: 700; letter-spacing: .025em; text-transform: uppercase; padding: .25rem .5rem; border-radius: 4px; }
 .tag.solid   { background: hsl(var(--foreground)); color: hsl(var(--background)); }
 .tag.outline { background: hsl(var(--card)); border: 1px solid hsl(var(--foreground)/.2); color: hsl(var(--foreground)); }
 .tag.soft    { background: hsl(var(--foreground)/.1); color: hsl(var(--foreground)); border: 1px solid hsl(var(--foreground)/.2); }
