@@ -123,14 +123,14 @@
 
   /* Divisor de Datas nas Tabelas */
   .date-divider td {
-    background: rgba(0, 0, 0, 0.1); /* Fundo cinza bem claro */
+    background: rgba(255, 255, 255, 0.04);
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .1em;
-    color: #000000; /* Texto em PRETO */
+    color: rgba(255, 255, 255, 0.5);
     padding: .5rem 1rem !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Linha sutil escura */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   /* Seletor de Status das Mensagens (Corrigido) */
@@ -223,11 +223,16 @@
     <div class="panel" id="panel-leads">
       <div class="row-head">
         <div><h2>Mensagens Recebidas</h2><p class="sub">Contatos via formulário e interesse em aeronaves.</p></div>
+        <button class="btn btn-outline btn-sm" id="exportLeadsBtn">↓ Exportar CSV</button>
       </div>
       
       <table class="tbl">
         <tbody id="leadsListRows"></tbody>
       </table>
+      <div id="leadsLoadMore" style="display:none;text-align:center;margin-top:1rem">
+        <button class="btn btn-outline btn-sm" id="leadsLoadMoreBtn">Carregar mais mensagens</button>
+        <p id="leadsCount" style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem"></p>
+      </div>
 
       <div style="margin-top: 2rem; border-top: 1px solid rgba(128,128,128,0.2); padding-top: 1rem; padding-bottom: 2rem;">
         <details>
@@ -237,6 +242,9 @@
           <table class="tbl" style="margin-top: 1rem;">
             <tbody id="archivedLeadsListRows"></tbody>
           </table>
+          <div id="archivedLoadMore" style="display:none;text-align:center;margin-top:1rem">
+            <button class="btn btn-outline btn-sm" id="archivedLoadMoreBtn">Carregar mais arquivadas</button>
+          </div>
         </details>
       </div>
     </div>
@@ -357,6 +365,10 @@
         </div>
       </div>
       <table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:auto"><col style="width:4rem"></colgroup><tbody id="newsListRows"></tbody></table>
+      <div id="newsLoadMore" style="display:none;text-align:center;margin-top:1rem">
+        <button class="btn btn-outline btn-sm" id="newsLoadMoreBtn">Carregar mais inscritos</button>
+        <p id="newsCount" style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem"></p>
+      </div>
     </div>
   </div>
 </div>
@@ -758,6 +770,7 @@
     loadAircraft(); 
     loadLeads();
     loadPartners();
+    $("exportLeadsBtn").onclick = exportLeadsCSV;
     loadArticles();
     loadPodcasts();
     wireNewsModals();
@@ -781,105 +794,154 @@
   /* ============================================================
      MENSAGENS / LEADS (Ativos e Arquivados Simultâneos)
      ============================================================ */
-  async function loadLeads() {
-    const activeRows = $("leadsListRows");
-    const archivedRows = $("archivedLeadsListRows");
+  // Cache e paginação de leads
+  let leadsCache = [];          // todos os ativos carregados (para exportação)
+  let leadsActivePage = 0;      // página atual de ativos exibida
+  let leadsArchivedPage = 0;    // página atual de arquivados exibida
+  let leadsActiveAll = [];      // todos os ativos em memória
+  let leadsArchivedAll = [];    // todos os arquivados em memória
+  const LEADS_PAGE = 50;        // registros por página
 
-    activeRows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando mensagens...</td></tr>`;
+  function buildLeadRow(l, isArchived) {
+    const dateStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
+    const hourStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
+    const info    = l.aircraft ? `Ref: <b>${esc(l.aircraft)}</b>` : `Assunto: <b>${esc(l.subject)}</b>`;
+    const phone   = l.phone ? `<br><span style="font-size:11px;color:#888">Tel: ${esc(l.phone)}</span>` : "";
+    const email   = l.email ? `<br><span style="font-size:11px;color:#888">${esc(l.email)}</span>` : "";
+    const statusSelect = `
+      <select class="status-select" data-id="${l.id}" ${isArchived ? 'disabled' : ''}>
+        <option value="novo" ${!l.status || l.status==='novo' ? 'selected' : ''}>Novo</option>
+        <option value="contatado" ${l.status==='contatado' ? 'selected' : ''}>Contatado</option>
+        <option value="nao_responder" ${l.status==='nao_responder' ? 'selected' : ''}>Não Responder</option>
+      </select>`;
+    const actBtns = isArchived
+      ? `<button class="icon-btn restore-lead" data-id="${l.id}">Restaurar</button>
+         <button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button>`
+      : `<button class="icon-btn archive-lead" data-id="${l.id}">Arquivar</button>`;
+    return { dateStr, row: `<tr>
+      <td><b style="font-size:13px">${esc(l.name)}</b> <span style="font-size:10px;color:#888;margin-left:8px">${hourStr}</span>${phone}${email}</td>
+      <td><div style="font-size:12px;margin-bottom:4px">${info}</div>
+          <div style="font-size:11px;color:#888;max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(l.message)}">"${esc(l.message)}"</div></td>
+      <td style="text-align:right"><div style="margin-bottom:8px">${statusSelect}</div>
+          <div class="act" style="justify-content:flex-end">${actBtns}</div></td>
+    </tr>` };
+  }
+
+  function renderLeadsTable(docs, isArchived, page) {
+    const slice = docs.slice(0, (page + 1) * LEADS_PAGE);
+    let html = "", currentDate = null;
+    if (!slice.length) return `<tr><td class="empty-row" colspan="3">Nenhum registro encontrado.</td></tr>`;
+    slice.forEach(l => {
+      const { dateStr, row } = buildLeadRow(l, isArchived);
+      if (dateStr !== currentDate) {
+        html += `<tr class="date-divider"><td colspan="3">${dateStr}</td></tr>`;
+        currentDate = dateStr;
+      }
+      html += row;
+    });
+    return html;
+  }
+
+  function wireLeadsButtons() {
+    document.querySelectorAll(".status-select:not([disabled])").forEach(sel => {
+      sel.onchange = async () => {
+        try { await db.collection("leads").doc(sel.dataset.id).update({ status: sel.value }); }
+        catch(e) { alert("Erro ao atualizar status."); }
+      };
+    });
+    document.querySelectorAll(".archive-lead").forEach(b => b.onclick = async () => {
+      if(confirm("Mover mensagem para arquivados?")) {
+        await db.collection("leads").doc(b.dataset.id).update({ archived: true }); loadLeads();
+      }
+    });
+    document.querySelectorAll(".restore-lead").forEach(b => b.onclick = async () => {
+      await db.collection("leads").doc(b.dataset.id).update({ archived: false }); loadLeads();
+    });
+    document.querySelectorAll(".del-lead").forEach(b => {
+      b.onclick = () => delDoc("leads", b.dataset.id, "Mensagem", loadLeads);
+    });
+  }
+
+  function updateLeadsLoadMore() {
+    const shown  = Math.min((leadsActivePage + 1) * LEADS_PAGE, leadsActiveAll.length);
+    const total  = leadsActiveAll.length;
+    const hasMore = shown < total;
+    $("leadsLoadMore").style.display = hasMore ? "block" : "none";
+    if (hasMore) $("leadsCount").textContent = `Exibindo ${shown} de ${total} mensagens`;
+  }
+
+  async function loadLeads() {
+    const activeRows   = $("leadsListRows");
+    const archivedRows = $("archivedLeadsListRows");
+    leadsActivePage    = 0;
+    leadsArchivedPage  = 0;
+
+    activeRows.innerHTML   = `<tr><td class="empty-row" colspan="3">Carregando mensagens...</td></tr>`;
     archivedRows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando...</td></tr>`;
 
     try {
       const snap = await db.collection("leads").orderBy("createdAt", "desc").get();
       if(snap.empty) {
-        activeRows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhuma mensagem recebida.</td></tr>`;
+        activeRows.innerHTML   = `<tr><td class="empty-row" colspan="3">Nenhuma mensagem recebida.</td></tr>`;
         archivedRows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhuma mensagem arquivada.</td></tr>`;
-        return;
+        leadsCache = []; return;
       }
 
       const allDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const activeDocs = allDocs.filter(l => !l.archived);
-      const archivedDocs = allDocs.filter(l => l.archived);
+      leadsActiveAll   = allDocs.filter(l => !l.archived);
+      leadsArchivedAll = allDocs.filter(l => l.archived);
+      leadsCache       = allDocs; // cache completo para exportação
 
-      // Função interna para montar o HTML da tabela para não repetir código
-      function buildHTML(docs, isArchived) {
-        if(!docs.length) return `<tr><td class="empty-row" colspan="3">Nenhum registro encontrado.</td></tr>`;
-        
-        let html = "";
-        let currentDate = null;
+      activeRows.innerHTML   = renderLeadsTable(leadsActiveAll,   false, leadsActivePage);
+      archivedRows.innerHTML = renderLeadsTable(leadsArchivedAll, true,  leadsArchivedPage);
 
-        docs.forEach(l => {
-          const dateStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
-          const hourStr = l.createdAt ? new Date(l.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
-          
-          if (dateStr !== currentDate) {
-            html += `<tr class="date-divider"><td colspan="3">${dateStr}</td></tr>`;
-            currentDate = dateStr;
-          }
+      updateLeadsLoadMore();
 
-          const info = l.aircraft ? `Ref: <b>${esc(l.aircraft)}</b>` : `Assunto: <b>${esc(l.subject)}</b>`;
-          const phone = l.phone ? `<br><span style="font-size:11px;color:#888">Tel: ${esc(l.phone)}</span>` : "";
-          const email = l.email ? `<br><span style="font-size:11px;color:#888">${esc(l.email)}</span>` : "";
-          
-          const statusSelect = `
-            <select class="status-select" data-id="${l.id}" ${isArchived ? 'disabled' : ''}>
-              <option value="novo" ${!l.status || l.status==='novo' ? 'selected' : ''}>Novo</option>
-              <option value="contatado" ${l.status==='contatado' ? 'selected' : ''}>Contatado</option>
-              <option value="nao_responder" ${l.status==='nao_responder' ? 'selected' : ''}>Não Responder</option>
-            </select>
-          `;
+      // Botão carregar mais — ativos
+      $("leadsLoadMoreBtn").onclick = () => {
+        leadsActivePage++;
+        activeRows.innerHTML = renderLeadsTable(leadsActiveAll, false, leadsActivePage);
+        wireLeadsButtons();
+        updateLeadsLoadMore();
+      };
 
-          const actBtns = isArchived 
-            ? `<button class="icon-btn restore-lead" data-id="${l.id}">Restaurar</button>
-               <button class="icon-btn danger del-lead" data-id="${l.id}">Excluir</button>`
-            : `<button class="icon-btn archive-lead" data-id="${l.id}">Arquivar</button>`;
+      // Botão carregar mais — arquivados
+      const archMore = leadsArchivedAll.length > LEADS_PAGE;
+      $("archivedLoadMore").style.display = archMore ? "block" : "none";
+      $("archivedLoadMoreBtn").onclick = () => {
+        leadsArchivedPage++;
+        archivedRows.innerHTML = renderLeadsTable(leadsArchivedAll, true, leadsArchivedPage);
+        const shown = Math.min((leadsArchivedPage + 1) * LEADS_PAGE, leadsArchivedAll.length);
+        $("archivedLoadMore").style.display = shown < leadsArchivedAll.length ? "block" : "none";
+        wireLeadsButtons();
+      };
 
-          html += `<tr>
-            <td>
-              <b style="font-size:13px">${esc(l.name)}</b> <span style="font-size:10px; color:#888; margin-left:8px;">${hourStr}</span>
-              ${phone} ${email}
-            </td>
-            <td>
-              <div style="font-size:12px; margin-bottom:4px;">${info}</div>
-              <div style="font-size:11px; color:#888; max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(l.message)}">"${esc(l.message)}"</div>
-            </td>
-            <td style="text-align:right">
-              <div style="margin-bottom:8px;">${statusSelect}</div>
-              <div class="act" style="justify-content:flex-end;">${actBtns}</div>
-            </td>
-          </tr>`;
-        });
-        return html;
-      }
+      wireLeadsButtons();
 
-      // Preenche as duas tabelas
-      activeRows.innerHTML = buildHTML(activeDocs, false);
-      archivedRows.innerHTML = buildHTML(archivedDocs, true);
-
-      // Re-liga todos os botões e selects das duas tabelas
-      document.querySelectorAll(".status-select:not([disabled])").forEach(sel => {
-        sel.onchange = async () => {
-          try { await db.collection("leads").doc(sel.dataset.id).update({ status: sel.value }); } 
-          catch(e) { alert("Erro ao atualizar status."); }
-        };
-      });
-
-      document.querySelectorAll(".archive-lead").forEach(b => b.onclick = async () => {
-        if(confirm("Mover mensagem para arquivados?")) {
-          await db.collection("leads").doc(b.dataset.id).update({ archived: true }); loadLeads();
-        }
-      });
-
-      document.querySelectorAll(".restore-lead").forEach(b => b.onclick = async () => {
-        await db.collection("leads").doc(b.dataset.id).update({ archived: false }); loadLeads();
-      });
-
-      document.querySelectorAll(".del-lead").forEach(b => {
-        b.onclick = () => delDoc("leads", b.dataset.id, "Mensagem", loadLeads);
-      });
-
-    } catch(e) { 
-      activeRows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar.</td></tr>`; 
+    } catch(e) {
+      activeRows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar: ${e.message}</td></tr>`;
     }
+  }
+
+  // Exportação de leads para CSV
+  function exportLeadsCSV() {
+    const data = leadsCache.filter(l => !l.archived);
+    if (!data.length) return alert("Nenhuma mensagem para exportar.");
+    let csv = "Data,Hora,Nome,E-mail,Telefone,Aeronave de Interesse,Assunto,Mensagem,Status\n";
+    data.forEach(l => {
+      const d       = l.createdAt ? new Date(l.createdAt.seconds * 1000) : null;
+      const dateStr = d ? d.toLocaleDateString('pt-BR') : "";
+      const timeStr = d ? d.toLocaleTimeString('pt-BR') : "";
+      const status  = l.status === "contatado" ? "Contatado" : (l.status === "nao_responder" ? "Não Responder" : "Novo");
+      const clean = (v) => (v || "").replace(/"/g, '""');
+      csv += `"${dateStr}","${timeStr}","${clean(l.name)}","${clean(l.email)}","${clean(l.phone)}","${clean(l.aircraft)}","${clean(l.subject)}","${clean(l.message)}","${status}"
+`;
+    });
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url; link.download = `PlaneAviation_Mensagens_${new Date().toISOString().slice(0,10)}.csv`;
+    link.style.visibility = "hidden"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
   }
 
   async function openLeadModal(id, lead, dateStr) {
@@ -1605,48 +1667,69 @@
      NEWSLETTER (Com Datas, Status de Exportação e Filtros)
      ============================================================ */
   let newsletterCache = [];
+  let newsPage = 0;
+  const NEWS_PAGE = 50;
+
+  function renderNewsRows(page) {
+    const slice = newsletterCache.slice(0, (page + 1) * NEWS_PAGE);
+    let html = "", currentDate = null;
+    slice.forEach(n => {
+      const dateStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
+      const hourStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
+      if (dateStr !== currentDate) {
+        html += `<tr class="date-divider"><td colspan="2">${dateStr}</td></tr>`;
+        currentDate = dateStr;
+      }
+      const origin = n.source === "footer" ? "Rodapé" : (n.source === "news_page" ? "Página News" : (n.source || "—"));
+      const badge  = n.exported ? `<span class="badge-exported">Exportado</span>` : `<span style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fdecea;color:#b42318;border:1px solid #f3c6c0;padding:.2rem .5rem;border-radius:999px">Novo</span>`;
+      html += `<tr>
+        <td><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+              <b style="font-size:.875rem">${esc(n.email)}</b>${badge}</div>
+            <div style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.2rem">Origem: ${esc(origin)} · ${hourStr}</div></td>
+        <td style="text-align:right;vertical-align:middle;white-space:nowrap">
+          <button class="icon-btn danger del-news" data-id="${n.id}" style="font-size:.6875rem">Excluir</button></td>
+      </tr>`;
+    });
+    return html || `<tr><td class="empty-row" colspan="2">Nenhum e-mail cadastrado ainda.</td></tr>`;
+  }
+
+  function wireNewsRows() {
+    $("newsListRows").querySelectorAll(".del-news").forEach(b => {
+      b.onclick = () => delDoc("newsletter", b.dataset.id, "Inscrito", loadNewsletter);
+    });
+  }
+
+  function updateNewsLoadMore() {
+    const shown  = Math.min((newsPage + 1) * NEWS_PAGE, newsletterCache.length);
+    const total  = newsletterCache.length;
+    const hasMore = shown < total;
+    $("newsLoadMore").style.display = hasMore ? "block" : "none";
+    if (hasMore) $("newsCount").textContent = `Exibindo ${shown} de ${total} inscritos`;
+  }
 
   async function loadNewsletter() {
     const rows = $("newsListRows");
-    rows.innerHTML = `<tr><td class="empty-row" colspan="3">Carregando inscritos...</td></tr>`;
+    newsPage = 0;
+    rows.innerHTML = `<tr><td class="empty-row" colspan="2">Carregando inscritos...</td></tr>`;
     try {
       const snap = await db.collection("newsletter").orderBy("createdAt", "desc").get();
       if(snap.empty) {
-        rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum e-mail cadastrado ainda.</td></tr>`;
-        newsletterCache = []; return;
+        rows.innerHTML = `<tr><td class="empty-row" colspan="2">Nenhum e-mail cadastrado ainda.</td></tr>`;
+        newsletterCache = [];
+        $("newsLoadMore").style.display = "none"; return;
       }
-
       newsletterCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      let html = "";
-      let currentDate = null;
+      rows.innerHTML = renderNewsRows(newsPage);
+      wireNewsRows();
+      updateNewsLoadMore();
 
-      newsletterCache.forEach(n => {
-        const dateStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'long'}) : "Sem data";
-        const hourStr = n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) : "";
-        
-        if (dateStr !== currentDate) {
-          html += `<tr class="date-divider"><td colspan="3">${dateStr}</td></tr>`;
-          currentDate = dateStr;
-        }
-
-        const origin = n.source === "footer" ? "Rodapé do site" : (n.source === "news_page" ? "Página News" : "Desconhecido");
-        const badge = n.exported ? `<span class="badge-exported">Exportado</span>` : "";
-
-        html += `<tr>
-          <td><b style="font-size:13px">${esc(n.email)}</b> ${badge}</td>
-          <td style="color:hsl(var(--muted-foreground)); font-size:11px;">Origem: ${esc(origin)}</td>
-          <td style="text-align:right">
-            <div style="font-size:11px; color:#888;">${hourStr}</div>
-            <div class="act" style="margin-top:.5rem; justify-content:flex-end;"><button class="icon-btn danger del-news" data-id="${n.id}">Excluir</button></div>
-          </td>
-        </tr>`;
-      });
-
-      rows.innerHTML = html;
-      rows.querySelectorAll(".del-news").forEach(b => {
-        b.onclick = () => delDoc("newsletter", b.dataset.id, "Inscrito", loadNewsletter);
-      });
-    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="3">Erro ao carregar inscritos.</td></tr>`; }
+      $("newsLoadMoreBtn").onclick = () => {
+        newsPage++;
+        $("newsListRows").innerHTML = renderNewsRows(newsPage);
+        wireNewsRows();
+        updateNewsLoadMore();
+      };
+    } catch(e) { rows.innerHTML = `<tr><td class="empty-row" colspan="2">Erro ao carregar inscritos: ${e.message}</td></tr>`; }
   }
 
   // Função Central de Exportação
