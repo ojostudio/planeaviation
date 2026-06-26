@@ -123,14 +123,14 @@
 
   /* Divisor de Datas nas Tabelas */
   .date-divider td {
-    background: rgba(0, 0, 0, 0.1); /* Fundo cinza bem claro */
+    background: rgba(255, 255, 255, 0.04);
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .1em;
-    color: #000000; /* Texto em PRETO */
+    color: rgba(255, 255, 255, 0.5);
     padding: .5rem 1rem !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Linha sutil escura */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   /* Seletor de Status das Mensagens (Corrigido) */
@@ -364,7 +364,7 @@
           <button class="btn btn-solid btn-sm" id="exportNewsNewBtn" style="background:#1a7f47; border-color:#1a7f47;">Exportar Novos (CSV)</button>
         </div>
       </div>
-      <table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:auto"><col style="width:4rem"></colgroup><tbody id="newsListRows"></tbody></table>
+      <table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:auto"><col style="width:6rem"></colgroup><tbody id="newsListRows"></tbody></table>
       <div id="newsLoadMore" style="display:none;text-align:center;margin-top:1rem">
         <button class="btn btn-outline btn-sm" id="newsLoadMoreBtn">Carregar mais inscritos</button>
         <p id="newsCount" style="font-size:.75rem;color:hsl(var(--muted-foreground));margin-top:.5rem"></p>
