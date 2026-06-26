@@ -41,7 +41,7 @@
         <span class="ac-count" id="count"></span>
       </div>
 
-      <div class="ac-grid inv-dark-grid" id="grid"></div>
+      <div class="ac-grid" id="grid"></div>
     </div>
   </section>
 </main>
@@ -86,7 +86,6 @@ function hoursLabel(item){
   return `${Number(item.hoursNum).toLocaleString("pt-BR")}h`;
 }
 
-/* O NOVO CARD IDÊNTICO AO DA HOME */
 function cardHTML(item){
   const cond = getLocalizedCondition(item);
   const price = formatPrice(item);
