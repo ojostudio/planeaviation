@@ -1,7 +1,7 @@
 /* ================================================================
    5. PÁGINAS ESPECÍFICAS E ESTRUTURA DA HOME
-   (Atenção: Proibido inserir regras de tipografia aqui. 
-   Tudo obedece ao 02-tipografia.css)
+   (Atenção: Proibido inserir regras de tipografia ou componentes
+   visuais aqui. Tudo obedece aos arquivos 02 e 04)
    ================================================================ */
 
 /* --- UTILITÁRIOS ESTRUTURAIS --- */
@@ -43,10 +43,15 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .hero-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; z-index: 10; font-size: 1.5rem; padding: 1rem; transition: color 0.2s ease, transform 0.2s ease; }
 .hero-nav-arrow:hover { color: #ffffff; transform: translateY(-50%) scale(1.1); }
 .arrow-left { left: 1rem; } .arrow-right { right: 1rem; }
-.hero-slider-dots { position: absolute; bottom: 2rem; left: 5rem; z-index: 10; display: flex; gap: 0.5rem; }
-@media(max-width:1023px) { .hero-slider-dots { left: 50%; transform: translateX(-50%); } }
-.hero-slider-dot { width: 1.5rem; height: 2px; background: rgba(255,255,255,0.25); border: none; cursor: pointer; transition: background 0.3s ease; }
-.hero-slider-dot.active { background: #ffffff; }
+
+/* Posicionamento do Contador Unificado (Dots) no Hero */
+.hero-slider-dots-wrapper { 
+  position: absolute; 
+  bottom: 2rem; 
+  left: 50%; 
+  transform: translateX(-50%); /* Centraliza perfeitamente o bloco */
+  z-index: 10; 
+}
 
 /* Badge Inferior Direito */
 .hero-badge-glass { position: absolute; bottom: 2.5rem; right: 1.5rem; display: flex; flex-direction: column; align-items: flex-end; text-align: right; color: #fff; }
@@ -66,8 +71,8 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 
 .inv-dark-see-all {
   display: inline-flex; align-items: center; justify-content: space-between; gap: 1rem;
-  color: #000; background: #fff; border-radius: 8px; text-decoration: none; white-space: nowrap; transition: opacity .15s;
-  padding: 0.75rem 1.25rem; /* Layout do botão apenas */
+  color: #000; background: #fff; border-radius: var(--radius); text-decoration: none; white-space: nowrap; transition: opacity .15s;
+  padding: 0.75rem 1.25rem;
 }
 .inv-dark-see-all:hover { opacity: 0.9; }
 
@@ -107,9 +112,10 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .inv-car-arrow:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
 .inv-car-arrow:disabled { opacity: .25; cursor: not-allowed; }
 .inv-car-arrow:disabled:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
-.inv-car-dots { display: flex; justify-content: center; gap: .5rem; margin-top: 1.75rem; }
-.inv-car-dot { width: .5rem; height: .5rem; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; cursor: pointer; padding: 0; transition: background .2s, width .2s; }
-.inv-car-dot.active { background: #fff; width: 1.5rem; border-radius: 9999px; }
+.inv-car-arrow svg { width: 1.1rem; height: 1.1rem; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Posicionamento do Contador Unificado (Dots) no Destaque */
+.inv-dots-wrapper { margin-top: 1.75rem; width: 100%; }
 
 /* ================================================================
    A CASA DO SEU CIRRUS
@@ -140,7 +146,6 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .cp-fundo { z-index: 1; } .cp-canvas-container { z-index: 2; } .cp-frente { z-index: 3; }
 .cp-camada canvas { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
 
-/* Estilos específicos da estrutura do Card de Info do Avião 3D */
 #cp-texto-aviao { font-size: 20vw; top: 15%; opacity: 0; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8); position: absolute; width: 100%; text-align: center; line-height: 1; }
 #cp-texto-modelo { font-size: 15vw; top: 40%; opacity: 0; scale: 1.1; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8); position: absolute; width: 100%; text-align: center; line-height: 1; }
 #cp-card-glass { position: absolute; bottom: 5%; width: 90%; max-width: 900px; padding: 2.5rem; border-radius: 24px; background: rgba(10, 10, 10, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid rgba(255, 255, 255, 0.25); border-left: 1px solid rgba(255, 255, 255, 0.15); border-right: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 10px 20px rgba(255, 255, 255, 0.02); color: white; pointer-events: auto; overflow: hidden; opacity: 0; transform: translateY(100px); }
