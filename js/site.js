@@ -119,10 +119,14 @@
       </div>
       <div class="f-col f-contact">
         <h4 data-i18n="f_contact">${t("f_contact")}</h4>
-        <p>Hangar Plane Aviation</p>
-        <p>Aeroporto de Jundiaí — SP</p>
-        <p>contato@planeaviation.com.br</p>
-        <p>+55 (11) 9999-0000</p>
+        <p style="margin-bottom: 0.15rem;">Hangar Plane Aviation</p>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=Plane+Aviation,+R.+Emílio+Antonon,+771+-+Chácara+Aeroporto,+Jundiaí+-+SP,+13212-010" target="_blank" rel="noopener noreferrer">
+          R. Emílio Antonon, 771<br>
+          Chácara Aeroporto, Jundiaí - SP<br>
+          13212-010
+        </a>
+        <a href="mailto:contato@planeaviation.com.br">contato@planeaviation.com.br</a>
+        <a href="https://wa.me/551145826144" target="_blank" rel="noopener noreferrer">+55 11 4582-6144</a>
       </div>
       <div class="f-col f-news">
         <h4 data-i18n="f_newsletter">${t("f_newsletter")}</h4>

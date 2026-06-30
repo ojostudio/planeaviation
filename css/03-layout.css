@@ -178,8 +178,27 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 .f-col nav a:hover { color: hsl(var(--background)); }
 .f-col nav a.last { font-weight: 600; color: hsl(var(--background)); padding-top: .5rem; border-top: 1px solid hsl(var(--background)/.2); margin-top: .5rem; }
 
-.f-contact p { font-size: var(--font-size-small); color: hsl(var(--background)/.5); margin-bottom: .625rem; }
-.f-news p    { font-size: var(--font-size-small); color: hsl(var(--background)/.4); margin-bottom: 1rem; }
+/* --- Estilo unificado para os textos e links de contato --- */
+.f-contact p, 
+.f-contact a { 
+  display: block; 
+  font-size: var(--font-size-small); 
+  color: hsl(var(--background)/.5); 
+  margin-bottom: .875rem; 
+  text-decoration: none; /* Remove o sublinhado */
+  line-height: 1.5;
+  transition: color .15s; 
+}
+
+/* Quando passar o mouse sobre os links, eles ficam brancos */
+.f-contact a:hover { 
+  color: hsl(var(--background)); 
+}
+
+/* Ajuste o último link para não ter margem sobrando */
+.f-contact a:last-child {
+  margin-bottom: 0;
+}.f-news p    { font-size: var(--font-size-small); color: hsl(var(--background)/.4); margin-bottom: 1rem; }
 
 .f-news-row { display: flex; gap: .5rem; }
 .f-news-row input {
