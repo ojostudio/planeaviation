@@ -1,30 +1,140 @@
 /* ================================================================
    5. PÁGINAS ESPECÍFICAS E ESTRUTURA DE LAYOUTS
-   (Proibido estilos inline ou embutidos no HTML. Tudo mora aqui)
+   (Design System: Proibido inserir qualquer estilo interno no HTML.
+   Toda a inteligência de posicionamento do site mora aqui)
    ================================================================ */
 
-/* --- UTILITÁRIOS ESTRUTURAIS --- */
+/* --- UTILITÁRIOS ESTRUTURAIS DE PÁGINA --- */
 body.home-page { padding-top: 0; min-height: 100vh; }
 #site-header { display: block; height: var(--header-h, 4rem); }
 
-/* --- ÍCONE DE SETA DIAGONAL (PADRÃO GLOBAL) --- */
+/* Ícone de Seta Diagonal Unificado (Prevenção de estouro de escala) */
 .icon-arrow-diag {
   width: 1.25em; height: 1.25em; stroke: currentColor; stroke-width: 2;
   fill: none; stroke-linecap: round; stroke-linejoin: round;
   display: inline-block; vertical-align: middle;
 }
 
-/* Fundo com Gradiente Radial Premium + Textura Noise Reutilizável */
-.bg-radial-dark {
-  background: 
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
-    radial-gradient(circle at top center, #7c7575 0%, #000000 100%) !important;
-  color: #ffffff !important;
-  min-height: 100vh;
-}
 
 /* ================================================================
-   AERONAVES DISPONÍVEIS (LISTAGEM)
+   A HERO GLASS SECTION (MÁSCARA E VIDEOS DO TOP DA HOME)
+   ================================================================ */
+.hero-glass-section {
+  position: relative; width: 100vw; height: 85vh; min-height: 600px;
+  overflow: hidden; display: flex; align-items: center;
+}
+.hero-bg { position: absolute; inset: 0; z-index: 1; transition: opacity 0.4s ease-in-out; }
+.hero-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-glass-mask {
+  position: absolute; inset: 0; z-index: 2;
+  background: rgba(20, 20, 20, 0.15); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1401.24 1080' preserveAspectRatio='none'%3E%3Cpath d='M1401.24,1080C399.65,1080,658.63,0,75.71,0H0v1080h1401.24Z' fill='%23fff'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%; -webkit-mask-repeat: no-repeat;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1401.24 1080' preserveAspectRatio='none'%3E%3Cpath d='M1401.24,1080C399.65,1080,658.63,0,75.71,0H0v1080h1401.24Z' fill='%23fff'/%3E%3C/svg%3E");
+  mask-size: 100% 100%; mask-repeat: no-repeat;
+}
+.hero-content-wrapper { position: relative; z-index: 3; width: 100%; height: 100%; display: flex; align-items: center; }
+.hero-text-box { max-width: 600px; color: #fff; transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; }
+.hero-badge-container { margin-bottom: 1.25rem; display: none; }
+.hero-cta { margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+
+/* Controles e paginação do Hero Slider */
+.btn-hero { background-color: #000; color: #fff; border: none; display: flex; align-items: center; transition: opacity 0.2s; }
+.btn-hero:hover { opacity: 0.85; }
+.hero-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.25); cursor: pointer; z-index: 10; font-size: 1.5rem; padding: 1rem; transition: color 0.2s ease, transform 0.2s ease; }
+.hero-nav-arrow:hover { color: #ffffff; transform: translateY(-50%) scale(1.1); }
+.arrow-left { left: 1rem; } .arrow-right { right: 1rem; }
+
+/* Centraliza os Dots universais no rodapé do Hero */
+.hero-slider-dots-wrapper {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  z-index: 10; margin-top: 0; width: auto;
+}
+
+/* Emblema lateral Cirrus */
+.hero-badge-glass { position: absolute; bottom: 2.5rem; right: 1.5rem; display: flex; flex-direction: column; align-items: flex-end; text-align: right; color: #fff; }
+@media (min-width: 1024px) { .hero-badge-glass { right: 2.5rem; } }
+.hero-badge-glass img { height: 54px; margin-bottom: 0.5rem; }
+
+
+/* ================================================================
+   OPORTUNIDADES EM DESTAQUE (HOME CAROUSEL)
+   ================================================================ */
+.inv-dark-section {
+  position: relative; 
+  background-image: url('../images/bg_destaque.png'); 
+  background-size: cover; background-position: center; background-repeat: no-repeat; 
+  background-color: #050505;
+  padding: 8rem 0; /* Respiro vertical premium restaurado */
+  min-height: 85vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden;
+}
+.inv-dark-head { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem; }
+@media(min-width:640px){ .inv-dark-head { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
+
+/* Botão retangular retido do Design System */
+.inv-dark-see-all {
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 1rem; color: #000; background: #fff; border-radius: 8px; text-decoration: none; white-space: nowrap; transition: opacity .15s; padding: 0.75rem 1.25rem;
+}
+.inv-dark-see-all:hover { opacity: 0.9; }
+
+/* Grid responsivo do carrossel */
+.inv-carousel { position: relative; display: flex; align-items: center; gap: 1.5rem; }
+@media(min-width: 1024px) { .inv-carousel { gap: 2.5rem; } }
+.inv-car-viewport { overflow: hidden; flex: 1; min-width: 0; padding-bottom: 1rem; }
+.inv-dark-grid { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: 1rem; transition: transform .5s cubic-bezier(.4,0,.2,1); }
+@media(min-width:640px) { .inv-dark-grid { grid-auto-columns: calc(50% - .5rem); } }
+@media(min-width:1024px) { .inv-dark-grid { grid-auto-columns: calc(25% - .9375rem); gap: 1.25rem; } }
+
+/* Setas laterais do carrossel */
+.inv-car-arrow { flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; }
+.inv-car-arrow:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
+.inv-car-arrow:disabled { opacity: .25; cursor: not-allowed; }
+.inv-car-arrow:disabled:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+.inv-car-arrow svg { width: 1.1rem; height: 1.1rem; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.inv-dots-wrapper { margin-top: 1.75rem; width: 100%; }
+
+
+/* ================================================================
+   A CASA DO SEU CIRRUS & SCROLL INSTITUCIONAL
+   ================================================================ */
+.home-casa-cirrus { position: relative; background-image: url('../images/background-cirrus.webp'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 8rem 1rem; display: flex; align-items: center; justify-content: center; }
+.casa-cirrus-card { position: relative; background-color: #151515; border-radius: 24px; padding: 4rem 3rem; max-width: 460px; margin: 0 auto; text-align: center; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.6); z-index: 1; }
+.casa-cirrus-card .cirrus-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140%; height: auto; opacity: 0.04; z-index: -1; pointer-events: none; }
+.casa-cirrus-card .cirrus-badge { display: inline-flex; margin-bottom: 2.5rem; }
+.casa-cirrus-card .cirrus-badge img { height: 36px; width: auto; }
+@media (max-width: 640px) { .casa-cirrus-card { padding: 3rem 2rem; } .home-casa-cirrus { padding: 5rem 1rem; } }
+
+.inst-scroll-section { position: relative; z-index: 10; width: 100vw; height: 100vh; background-color: #ffffff; color: #000000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.red-line-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.red-line-anim { position: absolute; top: 50%; left: -50vw; transform: translateY(-50%); height: 160vh; width: auto; max-width: none; }
+.scroll-texts-container { position: relative; z-index: 2; width: 100%; max-width: 800px; text-align: center; padding: 0 1.5rem; }
+.scroll-slide { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; opacity: 0; visibility: hidden; }
+.scroll-slide.active { opacity: 1; visibility: visible; }
+
+
+/* ================================================================
+   PARALAXE CIRRUS (SEQUÊNCIA AVIAO 3D)
+   ================================================================ */
+.cp-section { position: relative; z-index: 20; background-color: #000000; color: white; overflow: hidden; }
+.cp-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.cp-camada { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+.cp-fundo { z-index: 1; } .cp-canvas-container { z-index: 2; } .cp-frente { z-index: 3; }
+.cp-camada canvas { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
+
+#cp-texto-aviao { font-size: 20vw; top: 15%; opacity: 0; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8); position: absolute; width: 100%; text-align: center; line-height: 1; }
+#cp-texto-modelo { font-size: 15vw; top: 40%; opacity: 0; scale: 1.1; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8); position: absolute; width: 100%; text-align: center; line-height: 1; }
+#cp-card-glass { position: absolute; bottom: 5%; width: 90%; max-width: 900px; padding: 2.5rem; border-radius: 24px; background: rgba(10, 10, 10, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid rgba(255, 255, 255, 0.25); border-left: 1px solid rgba(255, 255, 255, 0.15); border-right: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 10px 20px rgba(255, 255, 255, 0.02); color: white; pointer-events: auto; overflow: hidden; opacity: 0; transform: translateY(100px); }
+#cp-card-glass::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='752.86 739.9 1059.07 767.06' preserveAspectRatio='none'%3E%3Cpath d='M432.98,708.96s66.85,156.3,214.84,499.64c133.88,310.58,347.94,333.57,432.83,333.57h1177.89c33.92,0,34.37-46.19,0-46.19-552.39,0-895.83-299.82-1085.3-601.86-65.64-104.64-206.59-185.16-324.02-185.16-436.59,0-416.23,0-416.23,0h0Z' fill='%23dc0000' fill-opacity='0.12' stroke='%23dc0000' stroke-width='2.5'/%3E%3C/svg%3E"); background-size: 100% 100%; background-repeat: no-repeat; }
+.cp-card-content { display: flex; justify-content: space-between; gap: 40px; }
+.cp-card-left { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+.cp-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: max-content; }
+.cp-card-right { flex: 0.8; display: flex; flex-direction: column; justify-content: center; gap: 25px; }
+.cp-stat { display: flex; flex-direction: column; }
+@media (max-width: 768px) { .cp-card-content { flex-direction: column; } }
+
+
+/* ================================================================
+   AERONAVES DISPONÍVEIS (PÁGINA DE LISTAGEM)
    ================================================================ */
 .ac-hero { padding: 4rem 0 3rem; }
 .ac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
@@ -33,144 +143,77 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 
 
 /* ================================================================
-   AERONA-DETALHE (PÁGINA DE PRODUTO)
+   AERONA-DETALHE (PÁGINA DE PRODUTO COMPOSIÇÃO 2/3 E 1/3)
    ================================================================ */
-
-/* Breadcrumb / Linha de Navegação */
-.crumb { border-bottom: 1px solid rgba(255,255,255,0.08); padding: .625rem 0; }
-.crumb .container { display: flex; align-items: center; gap: .5rem; font-size: var(--text-xs); color: rgba(255,255,255,0.35); }
+.crumb { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.75rem 0; }
+.crumb .container { display: flex; align-items: center; gap: 0.5rem; font-size: var(--text-xs); color: rgba(255,255,255,0.35); }
 .crumb a { color: rgba(255,255,255,0.35); transition: color 0.2s; }
-.crumb a:hover { color: rgba(255,255,255,0.7); }
-.crumb .sep { opacity: .3; }
+.crumb a:hover { color: #fff; }
+.crumb .sep { opacity: 0.3; }
 .crumb .cur { color: rgba(255,255,255,0.6); font-weight: 500; }
 
-/* Grid de Distribuição de Conteúdo */
-.det-wrap { padding: 3.5rem 0 5rem; }
-.det-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
-@media(min-width:1024px) { .det-grid { grid-template-columns: 1.1fr 1fr; gap: 4rem; } }
+.det-wrap { padding: 3rem 0 var(--section-py); }
 
-/* --- GALERIA DE FOTOS (GLASS BLOCK) --- */
-.gal-main {
-  border-radius: 12px; overflow: hidden; position: relative; 
-  background: rgba(15, 15, 15, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.1); aspect-ratio: 4/3;
-  box-shadow: 0 32px 64px rgba(0,0,0,0.6); padding: 0.375rem; /* Margem interna fina protetora */
+/* Box Unificado de Preparo Premium (Idêntico ao mockup de referência) */
+.product-premium-box {
+  display: grid; grid-template-columns: 1fr; background: rgba(15, 15, 15, 0.5);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px; padding: 0.5rem; gap: 1.5rem; box-shadow: 0 40px 80px rgba(0,0,0,0.7);
 }
-.gal-main img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
-.gal-main .ph-dark { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.15); font-size:var(--text-xs); letter-spacing:.1em; text-transform:uppercase; }
+@media(min-width: 1024px) { .product-premium-box { grid-template-columns: 2.1fr 1fr; gap: 1rem; padding: 0.625rem; } }
 
-/* Setas Nav Galeria */
-.gal-nav {
-  position: absolute; top: 50%; transform: translateY(-50%); width: 2.5rem; height: 2.5rem;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: background .15s; z-index: 2;
-}
-.gal-nav:hover { background: rgba(0,0,0,0.85); }
-.gal-nav.prev { left: 1rem; }
-.gal-nav.next { right: 1rem; }
-.gal-tag { position: absolute; top: 1rem; left: 1rem; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-sm); color: #fff; padding: .3rem .625rem; z-index: 5; }
+/* Slider de Mídia 2/3 */
+.product-gallery-side { position: relative; width: 100%; display: flex; flex-direction: column; }
+.product-slider-viewport { position: relative; width: 100%; aspect-ratio: 16 / 10; background: rgba(255,255,255,0.02); border-radius: 14px; overflow: hidden; }
+.product-slider-viewport img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 14px; }
+.product-tag-overlay { position: absolute; top: 1.25rem; left: 1.25rem; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-sm); color: #fff; padding: 0.35rem 0.75rem; z-index: 5; }
 
-/* Miniaturas (Thumbnails) */
-.thumbs { display: grid; grid-template-columns: repeat(4,1fr); gap: .5rem; margin-top: .75rem; }
-.thumbs button { background: none; padding: 0; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden; transition: border-color .15s; }
-.thumbs button.active { border-color: rgba(255,255,255,0.5); }
-.thumbs button img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+/* Controles acoplados na base do slider */
+.product-slider-controls { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1rem 0.75rem 1rem; width: 100%; }
+.product-slider-controls .slider-arrow { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); width: 2.5rem; height: 2.5rem; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+.product-slider-controls .slider-arrow:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); }
+.product-slider-controls .slider-arrow svg { width: 1.1rem; height: 1.1rem; stroke: currentColor; fill: none; stroke-width: 2.5; }
+.product-slider-controls .slider-dots { margin-top: 0; width: auto; }
 
-/* --- COLUNA DE INFORMAÇÕES COMERCIAIS --- */
-.det-badge { margin-bottom: .5rem; }
-.det-title { line-height: 1; color: #fff; margin-bottom: 1rem; }
-.det-metas { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
-.det-meta-pill {
-  display: inline-flex; align-items: center; gap: .375rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 6px; padding: .4rem .75rem; font-size: var(--text-sm); font-weight: 500; color: rgba(255,255,255,0.8); white-space: nowrap;
-}
-.det-meta-pill .ml { color: rgba(255,255,255,0.4); font-weight: 400; margin-right: .125rem; }
-.det-price { font-size: 1.75rem; font-weight: 700; color: #fff; margin-bottom: 2rem; }
-.det-price.consult { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.4); font-style: italic; }
+/* Ficha Comercial 1/3 */
+.product-info-side { display: flex; flex-direction: column; padding: 1.5rem 1.25rem; height: 100%; }
+.product-info-side .eyebrow { margin-bottom: 0.375rem; }
+.product-info-side .product-main-title { font-family: var(--font-main); font-size: clamp(1.8rem, 2.5vw, 2.5rem); font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; line-height: 1.05; margin-bottom: 1.25rem; }
+.product-info-side .product-main-title span { font-weight: 400; }
 
-/* CTAs e Ações Comerciais */
-.det-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
-.det-btn-primary {
-  display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
-  background: #fff; color: #0a0a0a; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; padding: 1rem 2.5rem; cursor: pointer; text-decoration: none; transition: opacity .15s; flex: 1; min-width: 160px;
-}
-.det-btn-primary:hover { opacity: .88; }
+.product-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1.75rem; }
+.product-meta-pill { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.125rem; }
+.product-meta-pill .label-tag { font-size: 9px; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+.product-meta-pill .value-tag { font-size: 0.9375rem; font-weight: 700; color: #fff; }
 
-.det-btn-pdf {
-  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px;
-  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 1rem 2rem; cursor: pointer;
-  text-decoration: none; transition: background .15s, border-color .15s; flex: 1; min-width: 160px;
-}
-.det-btn-pdf:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
+.product-price-display { font-size: 1.75rem; font-weight: 700; color: #fff; margin-top: auto; margin-bottom: 2rem; }
+.product-price-display.consult { font-size: 1.125rem; font-weight: 500; color: rgba(255,255,255,0.4); font-style: italic; }
+.product-actions-layout { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; }
 
-/* --- BLOCOS DE CONTEÚDO (SOBRE E FICHA TÉCNICA) --- */
-.det-desc-box {
-  background: rgba(18, 18, 18, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 2rem; margin-top: 2rem;
-}
-.det-desc-text { color: rgba(255,255,255,0.65); white-space: pre-wrap; }
-.det-specs { border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.1); }
-.det-spec-row { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: var(--text-sm); }
-.det-spec-row:last-child { border-bottom: none; }
-.det-spec-key { color: rgba(255,255,255,0.4); }
-.det-spec-val { font-weight: 600; color: #fff; }
+.btn-premium-action { display: inline-flex; align-items: center; justify-content: space-between; background: #ffffff; color: #000000; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 1rem 1.25rem; border-radius: 8px; border: none; cursor: pointer; transition: opacity 0.2s; width: 100%; }
+.btn-premium-action:hover { opacity: 0.9; }
+.btn-premium-pdf { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background: transparent; color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.875rem 1.25rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; transition: background 0.2s; width: 100%; }
+.btn-premium-pdf:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.4); }
 
-/* Tecnologias a Bordo */
-.det-tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: 1.5rem; }
-@media(min-width:640px) { .det-tech-grid { grid-template-columns: repeat(4,1fr); } }
-.det-tech-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.5rem; }
-.det-tech-card svg { color: rgba(255,255,255,0.5); margin-bottom: .625rem; }
-.det-tech-card h3 { color: #fff; margin-bottom: .25rem; }
-.det-tech-card p { color: rgba(255,255,255,0.4); line-height: 1.5; }
+.product-desc-box { background: rgba(18, 18, 18, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 2.25rem; margin-top: 1.5rem; }
+.product-desc-text { color: rgba(255,255,255,0.65); white-space: pre-wrap; }
+.product-specs-table { border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.1); }
+.product-spec-row { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: var(--text-sm); }
+.product-spec-row:last-child { border-bottom: none; }
+.product-spec-key { color: rgba(255,255,255,0.4); }
+.product-spec-val { font-weight: 600; color: #fff; }
 
-/* --- OUTRAS OPÇÕES (VITRINE INFERIOR) --- */
-.other-section { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 5rem; padding-top: 4rem; }
-.other-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: .75rem; }
-.other-section-head h2 { color: #fff; margin: 0; }
-.other-see-all { color: rgba(255,255,255,0.4); text-decoration: none; display: inline-flex; align-items: center; gap: .375rem; transition: color .15s; }
-.other-see-all:hover { color: #fff; }
-.other-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
-@media(min-width:1024px) { .other-grid { grid-template-columns: repeat(4,1fr); gap: 1.25rem; } }
+.product-tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; }
+@media(min-width:640px) { .product-tech-grid { grid-template-columns: repeat(4, 1fr); } }
+.product-tech-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; }
+.product-tech-card svg { color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; }
+.product-tech-card h3 { color: #fff; margin-bottom: 0.25rem; }
+.product-tech-card p { color: rgba(255,255,255,0.4); line-height: 1.5; }
 
 
 /* ================================================================
-   MODAL DE CONTATO / POP-UP (GLASSMORPHISM CARD)
+   RODAPÉ DA HOME (CONFIGURADOR, BANNERS SPLIT)
    ================================================================ */
-.overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:999; padding:2rem 1rem; overflow-y:auto; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.overlay.open { display:flex; }
-.modal { background:#0d0d0d; border:1px solid rgba(255,255,255,0.12); border-radius:16px; width:100%; max-width:32rem; margin:auto; color:#fff; box-shadow: 0 32px 64px rgba(0,0,0,0.8); overflow: hidden; }
-.modal-head { display:flex; align-items:center; justify-content:space-between; padding:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
-.modal-head h3 { margin: 0; }
-.modal-wa-btn { display:inline-flex; align-items:center; gap:.375rem; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#fff; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:6px; padding:.5rem .75rem; text-decoration:none; transition:background .15s, border-color .15s; }
-.modal-wa-btn:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.4); }
-.modal-body { padding:1.5rem; }
-.x-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); font-size:1.25rem; display: flex; align-items: center; justify-content: center; transition: color .15s;}
-.x-btn:hover { color:#fff; }
-
-/* Formulário Interno */
-.form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
-.form-group label { color: rgba(255,255,255,0.6); }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.875rem 1rem; font-size: var(--text-sm); background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; transition: border-color 0.2s, background-color 0.2s; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #fff; background: rgba(255, 255, 255, 0.08); }
-.form-group select { appearance: none; cursor: pointer; }
-.form-group select option { background: #1a1a1a; color: #fff; }
-
-/* Plugin de Telefone */
-.iti { width: 100%; }
-.iti__country-list { background-color: #151515 !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 8px; color: #ffffff; max-width: 300px; z-index: 1000; }
-.iti__country:hover, .iti__country.iti__highlight { background-color: rgba(255, 255, 255, 0.1) !important; }
-.iti__divider { border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; }
-.form-group input#modalPhone { padding-left: 3.5rem !important; }
-
-
-/* ================================================================
-   HERO MULTI-BANNER GLOBAIS E EXTRA SECTIONS
-   ================================================================ */
-.hero-badge-container { margin-bottom: 1.25rem; display: none; }
-.hero-slider-dots-wrapper { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 10; margin-top: 0; width: auto; }
-.inv-dots-wrapper { margin-top: 1.75rem; width: 100%; }
 .home-bottom-sections { padding: 6rem 0; }
 .home-config-banner { background-color: #050505; border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 3rem; gap: 2rem; overflow: hidden; }
 .home-config-banner .config-img { flex: 1.2; margin: -3rem 0 -3rem -3rem; display: flex; align-items: center; }
@@ -181,87 +224,3 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .home-split-top { margin-top: 3rem; }
 .home-split-section .split-text { max-width: 550px; }
 @media (max-width: 768px) { .home-config-banner { flex-direction: column; text-align: center; padding: 2rem; } .home-config-banner .config-img { margin: 0; width: 100%; } .home-config-banner .config-content { align-items: center; text-align: center; } .home-split-section { flex-direction: column; align-items: flex-start; } .home-split-section .split-action { width: 100%; } .home-split-section .btn { width: 100%; justify-content: center; } }
-
-/* ================================================================
-   HOMEPAGE (RESTAURAÇÃO DEFINITIVA)
-   ================================================================ */
-
-/* 1. HERO BANNER */
-.hero-glass-section { position: relative; min-height: 100vh; display: flex; align-items: center; background: #000; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: opacity 0.5s ease-in-out; }
-.hero-glass-mask { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 100%); z-index: 1; }
-.hero-content-wrapper { position: relative; z-index: 10; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 2rem; padding-top: var(--header-h); }
-@media (min-width: 1024px) { .hero-content-wrapper { flex-direction: row; align-items: center; } }
-.hero-text-box { max-width: 600px; }
-.hero-title-glass { font-family: var(--font-main); font-size: var(--text-hero); font-weight: 700; font-style: italic; text-transform: uppercase; color: #fff; line-height: 1; letter-spacing: -0.02em; margin: 0; }
-.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
-.hero-badge-glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-width: 240px; color: #fff; font-size: var(--text-xs); line-height: 1.5; }
-/* Trava o ícone gigantesco da Cirrus no Banner */
-.hero-badge-glass img { width: 70px; height: auto; }
-
-/* 2. CARROSSEL DE OPORTUNIDADES (DARK SECTION) */
-.inv-dark-section { background: #0a0a0a; padding: 5rem 0; }
-.inv-dark-head { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
-@media (min-width: 640px) { .inv-dark-head { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
-.inv-dark-eyebrow { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 500; margin-bottom: .5rem; }
-.inv-dark-title { font-family: var(--font-main); font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; font-style: italic; text-transform: uppercase; letter-spacing: -.01em; line-height: 1; color: #fff; margin: 0; }
-.inv-dark-see-all { display: inline-flex; align-items: center; gap: .5rem; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.4); text-decoration: none; white-space: nowrap; transition: color .15s; }
-.inv-dark-see-all:hover { color: #fff; }
-.inv-carousel { position: relative; display: flex; align-items: center; gap: .75rem; }
-.inv-car-viewport { overflow: hidden; flex: 1; min-width: 0; }
-.inv-dark-grid { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: 1rem; transition: transform .5s cubic-bezier(.4,0,.2,1); }
-@media (min-width: 640px) { .inv-dark-grid { grid-auto-columns: calc(50% - .5rem); } }
-@media (min-width: 1024px) { .inv-dark-grid { grid-auto-columns: calc(25% - .9375rem); gap: 1.25rem; } }
-.inv-car-arrow { flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; }
-.inv-car-arrow:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
-.inv-car-arrow:disabled { opacity: .25; cursor: not-allowed; }
-.inv-car-dots { display: flex; justify-content: center; gap: .5rem; margin-top: 1.75rem; }
-.inv-car-dot { width: .5rem; height: .5rem; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; cursor: pointer; padding: 0; transition: background .2s, width .2s; }
-.inv-car-dot.active { background: #fff; width: 1.5rem; border-radius: 9999px; }
-
-/* 3. A CASA DO SEU CIRRUS */
-.home-casa-cirrus { padding: 6rem 1.5rem; background: #000; }
-.casa-cirrus-card { position: relative; max-width: 1000px; margin: 0 auto; background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 6rem 2rem; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
-.cirrus-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 600px; opacity: 0.03; pointer-events: none; }
-.cirrus-badge { margin-bottom: 2rem; position: relative; z-index: 2; }
-/* Trava o ícone gigantesco da Cirrus no Meio da Página */
-.cirrus-badge img { width: 70px; height: auto; }
-.casa-cirrus-card .title { margin: 1rem 0 1.5rem; color: #fff; }
-.casa-cirrus-card .muted { max-width: 600px; margin: 0 auto; line-height: 1.6; }
-
-/* 4. SCROLL INSTITUCIONAL (LINHA VERMELHA) */
-.inst-scroll-section { position: relative; height: 100vh; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.red-line-container { position: absolute; top: 50%; left: 0; width: 100%; height: 4px; transform: translateY(-50%); z-index: 1; }
-.red-line-anim { height: 100%; width: 100vw; object-fit: cover; object-position: left; }
-.scroll-texts-container { position: relative; z-index: 2; width: 100%; max-width: 800px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; }
-.scroll-slide { position: absolute; width: 100%; padding: 0 1.5rem; opacity: 0; visibility: hidden; will-change: opacity, transform, visibility; }
-.scroll-slide.active { opacity: 1; visibility: visible; }
-.scroll-slide .h-display { margin: 0.5rem 0 1rem; color: #000; }
-.scroll-slide .muted { max-width: 600px; margin: 0 auto; }
-
-/* 5. PARALAXE CIRRUS (SEQUÊNCIA 3D) */
-.cp-section { position: relative; height: 100vh; background: #000; overflow: hidden; }
-.cp-container { position: relative; width: 100%; height: 100%; max-width: var(--maxw); margin: 0 auto; }
-.cp-camada { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-.cp-fundo { z-index: 1; }
-.cp-canvas-container { z-index: 2; pointer-events: none; }
-.cp-frente { z-index: 3; pointer-events: none; }
-
-.cp-title { font-family: var(--font-main); font-size: clamp(4rem, 15vw, 15rem); font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 1; margin: 0; white-space: nowrap; }
-#cp-texto-aviao { color: rgba(255, 255, 255, 0.04); }
-#cp-texto-modelo { color: #fff; opacity: 0; }
-#cp-aviao-canvas { width: 100%; max-width: 1400px; height: auto; object-fit: contain; }
-
-#cp-card-glass { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1000px; background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px; padding: 2.5rem; pointer-events: auto; opacity: 0; }
-.cp-card-content { display: flex; flex-direction: column; gap: 2rem; }
-@media (min-width: 768px) { .cp-card-content { flex-direction: row; justify-content: space-between; align-items: center; } }
-.cp-card-left { flex: 1; }
-.cp-brand { font-size: var(--text-micro); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); display: block; margin-bottom: 0.5rem; }
-.cp-model-title { font-family: var(--font-main); font-size: 2.5rem; font-weight: 800; font-style: italic; color: #fff; margin: 0 0 1rem; line-height: 1; }
-.cp-subtitle { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 0.5rem; }
-.cp-description { font-size: var(--text-sm); color: rgba(255, 255, 255, 0.6); line-height: 1.6; max-width: 400px; }
-.cp-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
-.cp-card-right { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; text-align: left; }
-.cp-stat { display: flex; flex-direction: column; gap: 0.25rem; }
-.cp-stat-label { font-size: var(--text-micro); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.4); }
-.cp-stat-value { font-size: 1rem; font-weight: 700; color: #fff; }
