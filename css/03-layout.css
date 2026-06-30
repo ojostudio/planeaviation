@@ -118,7 +118,11 @@ footer.site .lang-dropdown { bottom: calc(100% + .5rem); top: auto; }
 .f-bottom .lang-selector { margin-left: auto; }
 
 /* --- FOOTER --- */
-footer.site { background: hsl(var(--foreground)); color: hsl(var(--background) / .8); margin-top: auto; }
+footer.site { 
+  background: #000000; /* Preto absoluto solicitado */
+  color: hsl(var(--background) / .8); 
+  margin-top: auto; 
+}
 footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 
 .f-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
@@ -126,9 +130,24 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 @media(min-width:1024px) { .f-grid { grid-template-columns: repeat(4,1fr); } }
 
 .f-logo  { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; }
-.f-selo  { border: 1px solid hsl(var(--background)/.2); border-radius: var(--radius-sm); padding: .5rem .75rem; display: inline-block; margin-bottom: 1rem; }
+
+.f-selo  { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  border: 1px solid hsl(var(--background)/.2); 
+  border-radius: var(--radius-sm); 
+  padding: .5rem .75rem; 
+  margin-bottom: 1rem; 
+}
 .f-selo span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--background)/.5); }
-.f-desc  { font-size: var(--font-size-xs); color: hsl(var(--background)/.4); line-height: 1.6; }
+
+/* Controla o tamanho do selo em proporção de ~66% em relação à logo da Plane */
+.f-cirrus-seal { 
+  height: 24px; 
+  width: auto; 
+  display: block; 
+}
 
 /* Redes sociais no rodapé */
 .f-social {
