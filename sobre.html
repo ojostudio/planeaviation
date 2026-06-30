@@ -14,7 +14,7 @@
     body { background-color: #000; color: #fff; min-height: 100vh; overflow-x: hidden; }
 
     /* ================================================================
-       1. HERO (IMAGEM DE FUNDO MAIS ESTREITA)
+       1. HERO (IMAGEM DE FUNDO MAIS ESTREITA E ALINHADA COERENTE)
        ================================================================ */
     .sobre-hero {
       position: relative;
@@ -106,12 +106,12 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      opacity: 0.2; 
+      opacity: 0; /* Começa 100% invisível */
       padding-left: 2rem;
     }
     .tl-dot {
       position: absolute;
-      left: -1.75rem; 
+      left: -2rem; /* Centralização matemática exata no eixo X (Mobile) */
       top: 0;
       width: 16px;
       height: 16px;
@@ -158,7 +158,7 @@
       .tl-dot {
         left: 50%;
         transform: translateX(-50%);
-        top: -3px; 
+        top: 0; /* Centralização matemática exata no eixo Y (Desktop) */
       }
       .tl-desc {
         max-width: 160px;
