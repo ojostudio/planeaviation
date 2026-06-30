@@ -54,6 +54,8 @@
     .sobre-hero-content .h-display {
       color: #fff;
       margin-bottom: 2rem;
+      font-weight: 800;
+      font-style: italic;
     }
     .sobre-hero-content .eyebrow {
       color: rgba(255, 255, 255, 0.9);
@@ -67,7 +69,7 @@
     }
 
     /* ================================================================
-       2. LINHA DO TEMPO (FUNDO PRETO + SCROLL PARALAXE)
+       2. LINHA DO TEMPO (FUNDO PRETO)
        ================================================================ */
     .timeline-section {
       background-color: #000000; 
@@ -78,6 +80,8 @@
     .timeline-section .h-display {
       color: #ffffff;
       margin-bottom: 4rem;
+      font-weight: 800;
+      font-style: italic;
     }
     .timeline-wrapper {
       position: relative;
@@ -167,67 +171,38 @@
     }
 
     /* ================================================================
-       3. INFRAESTRUTURA (FUNDO BRANCO + SEÇÃO MAIS ESTREITA)
+       3. INFRAESTRUTURA (FUNDO BRANCO + SCROLL DESLIZANTE)
        ================================================================ */
-    .infra-scroll-section {
-      position: relative;
-      height: 70vh; /* Seção mais estreita conforme solicitado */
-      min-height: 500px;
+    .infra-section {
       background-color: #ffffff;
       color: #000000;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 6rem 0;
     }
-    .infra-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding-top: 2rem;
-    }
-    .infra-container .h-display {
-      position: relative;
+    .infra-section .h-display {
       color: #000000;
-      margin: 0 0 2rem 0; /* Espaço reduzido entre título e o conteúdo */
-      z-index: 5;
+      margin-bottom: 4rem;
+      font-weight: 800;
+      font-style: italic;
     }
-    .infra-slides-content {
-      position: relative;
-      width: 100%;
-      height: 50vh; /* Ajuste proporcional ao 70vh da seção pai */
-    }
-    .infra-slide {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      visibility: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      will-change: opacity, transform, visibility;
-    }
-    .infra-slide.active {
-      opacity: 1;
-      visibility: visible;
-    }
-    .infra-grid-layout {
+    .infra-row {
       display: grid;
       grid-template-columns: 1fr;
       gap: 2rem;
-      width: 100%;
+      margin-bottom: 6rem;
       align-items: center;
     }
+    .infra-row:last-child {
+      margin-bottom: 0;
+    }
+
     @media(min-width: 768px) {
-      .infra-grid-layout {
+      .infra-row {
         grid-template-columns: 1.1fr 1fr; 
         gap: 4rem;
       }
     }
-    .infra-img-box {
+
+    .infra-img {
       width: 100%;
       aspect-ratio: 16 / 10;
       background: #f4f4f4;
@@ -235,7 +210,7 @@
       border: 1px solid rgba(0,0,0,0.08);
       overflow: hidden;
     }
-    .infra-img-box .ph {
+    .infra-img .ph {
       width: 100%; height: 100%; 
       display: flex; align-items: center; justify-content: center;
       color: rgba(0,0,0,0.3); 
@@ -244,7 +219,8 @@
       letter-spacing: 0.1em;
       background: #f4f4f4;
     }
-    .infra-text-box h3 {
+
+    .infra-content h3 {
       font-family: var(--font-main);
       font-size: var(--text-h2);
       font-weight: 700;
@@ -253,7 +229,7 @@
       margin-bottom: 1rem;
       color: #000000;
     }
-    .infra-text-box p {
+    .infra-content p {
       font-size: var(--text-sm);
       color: rgba(0,0,0,0.7);
       line-height: 1.6;
@@ -334,52 +310,43 @@
     </div>
   </section>
 
-  <section class="infra-scroll-section" id="infraScrollSec">
-    <div class="container infra-container">
+  <section class="infra-section">
+    <div class="container">
       <h2 class="h-display" data-i18n="sobre_infra">INFRAESTRUTURA</h2>
       
-      <div class="infra-slides-content">
-        
-        <div class="infra-slide active" id="infra-slide-1">
-          <div class="infra-grid-layout">
-            <div class="infra-img-box">
-              <div class="ph rounded">[ Imagem Hangar ]</div>
-            </div>
-            <div class="infra-text-box">
-              <h3 data-i18n="sobre_hangar">HANGAR PRINCIPAL</h3>
-              <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
-              <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-            </div>
-          </div>
+      <div class="infra-row">
+        <div class="infra-img">
+          <div class="ph rounded">[ Imagem Hangar ]</div>
         </div>
-
-        <div class="infra-slide" id="infra-slide-2">
-          <div class="infra-grid-layout">
-            <div class="infra-img-box">
-              <div class="ph rounded">[ Imagem Manutenção ]</div>
-            </div>
-            <div class="infra-text-box">
-              <h3 data-i18n="sobre_manut">CENTRO DE MANUTENÇÃO</h3>
-              <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
-              <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-            </div>
-          </div>
+        <div class="infra-content">
+          <h3 data-i18n="sobre_hangar">HANGAR PRINCIPAL</h3>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
+          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
         </div>
-
-        <div class="infra-slide" id="infra-slide-3">
-          <div class="infra-grid-layout">
-            <div class="infra-img-box">
-              <div class="ph rounded">[ Imagem Equipe ]</div>
-            </div>
-            <div class="infra-text-box">
-              <h3 data-i18n="sobre_team">NOSSA EQUIPE</h3>
-              <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
-              <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-            </div>
-          </div>
-        </div>
-
       </div>
+
+      <div class="infra-row">
+        <div class="infra-img">
+          <div class="ph rounded">[ Imagem Manutenção ]</div>
+        </div>
+        <div class="infra-content">
+          <h3 data-i18n="sobre_manut">CENTRO DE MANUTENÇÃO</h3>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
+          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        </div>
+      </div>
+
+      <div class="infra-row">
+        <div class="infra-img">
+          <div class="ph rounded">[ Imagem Equipe ]</div>
+        </div>
+        <div class="infra-content">
+          <h3 data-i18n="sobre_team">NOSSA EQUIPE</h3>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
+          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -422,29 +389,27 @@
       tlAnim.to(node, { opacity: 1, duration: 0.1 }, stepTime);
     });
 
-    /* --- 2. Animação de Pila / Paralaxe da Infraestrutura (Estilo Home) --- */
-    const infraSection = document.getElementById("infraScrollSec");
-    if (infraSection) {
-      gsap.set("#infra-slide-1", { autoAlpha: 1, y: 0 });
-      gsap.set(["#infra-slide-2", "#infra-slide-3"], { autoAlpha: 0, y: 40 });
+    /* --- 2. Animação da Infraestrutura (Deslizamento Lateral) --- */
+    const infraRows = gsap.utils.toArray('.infra-row');
 
-      const tlInfra = gsap.timeline({
+    infraRows.forEach((row) => {
+      const img = row.querySelector('.infra-img');
+      const content = row.querySelector('.infra-content');
+
+      gsap.set(img, { opacity: 0, x: -50 });
+      gsap.set(content, { opacity: 0, x: 50 });
+
+      const rowTl = gsap.timeline({
         scrollTrigger: {
-          trigger: infraSection,
-          start: "top top",
-          end: "+=250%", 
-          pin: true,
-          scrub: 1
+          trigger: row,
+          start: "top 80%", 
+          toggleActions: "play none none reverse" 
         }
       });
 
-      tlInfra.to("#infra-slide-1", { autoAlpha: 0, y: -40, duration: 0.4 }, 0.2)
-             .to("#infra-slide-2", { autoAlpha: 1, y: 0, duration: 0.4 }, 0.6);
-
-      tlInfra.to("#infra-slide-2", { autoAlpha: 0, y: -40, duration: 0.4 }, 1.2)
-             .to("#infra-slide-3", { autoAlpha: 1, y: 0, duration: 0.4 }, 1.6);
-    }
-
+      rowTl.to(img, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" })
+           .to(content, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, "-=0.4"); 
+    });
   });
 </script>
 
