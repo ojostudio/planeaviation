@@ -15,13 +15,25 @@ function iniciarAnimacaoCirrus() {
   const images = [];
   const aviao = { frame: 0 };
 
+  // Conta quantas imagens já terminaram de carregar, para saber quando
+  // o canvas está com o tamanho real e o layout pode ser recalculado.
+  let loadedCount = 0;
+
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
+    img.onload = () => {
+      loadedCount++;
+      if (i === 0) renderCanvas();
+      // Quando TODAS as imagens carregarem, força o ScrollTrigger a
+      // recalcular as alturas dos pins — evita o cálculo errado de
+      // pin-spacer que acontecia enquanto o canvas ainda tinha tamanho 0.
+      if (loadedCount === frameCount) {
+        ScrollTrigger.refresh();
+      }
+    };
     img.src = currentFrame(i);
     images.push(img);
   }
-
-  images[0].onload = renderCanvas;
 
   function renderCanvas() {
     if(images[aviao.frame]) {
@@ -56,6 +68,15 @@ function iniciarAnimacaoCirrus() {
     animation: tl,
     scrub: 1
   });
+
+  // Rede de segurança: recalcula todos os ScrollTriggers da página
+  // depois que a janela e as fontes terminarem de carregar 100%.
+  // Isso corrige alturas erradas de pin-spacer causadas por imagens
+  // ou fontes que ainda estavam carregando no momento do cálculo inicial.
+  window.addEventListener("load", () => ScrollTrigger.refresh());
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
 }
 
 document.addEventListener("DOMContentLoaded", iniciarAnimacaoCirrus);

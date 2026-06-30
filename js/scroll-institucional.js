@@ -37,6 +37,13 @@ function iniciarAnimacaoInstitucional() {
   // Slide 3 para 4
   tlInst.to("#slide-3", { autoAlpha: 0, y: -40, duration: 0.4 }, 2.2)
         .to("#slide-4", { autoAlpha: 1, y: 0, duration: 0.4 }, 2.6);
+
+  // Rede de segurança: recalcula o pin depois que a página e as fontes
+  // terminarem de carregar, evitando altura errada de pin-spacer.
+  window.addEventListener("load", () => ScrollTrigger.refresh());
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
 }
 
 // Inicializa quando o DOM estiver pronto
