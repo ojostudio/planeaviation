@@ -1,123 +1,420 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sobre a Plane Aviation | Plane Aviation</title>
-<link rel="stylesheet" href="styles.css">
-  <!-- Reserva espaço do header antes do JS rodar — evita flash de layout -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre a Plane Aviation | Plane Aviation</title>
+  
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  
   <style>
-    #site-header { display: block; height: 4rem; }
-    body { min-height: 100vh; }
+    /* Reserva espaço do header */
+    #site-header { display: block; height: var(--header-h, 4rem); }
+    body { background-color: #000; color: #fff; min-height: 100vh; }
+
+    /* ================================================================
+       1. HERO (IMAGEM DE FUNDO COM FADE)
+       ================================================================ */
+    .sobre-hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: #000;
+      overflow: hidden;
+      padding-top: var(--header-h);
+    }
+    .sobre-hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('images/asset-about.webp');
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+    }
+    .sobre-hero-mask {
+      position: absolute;
+      inset: 0;
+      /* Degradê escuro vindo da esquerda para dar leitura ao texto */
+      background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%);
+      z-index: 2;
+    }
+    .sobre-hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 650px;
+      color: #fff;
+    }
+    .sobre-hero-content .h-display {
+      color: #fff;
+      margin-bottom: 2.5rem;
+    }
+    .sobre-hero-content .eyebrow {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 0.75rem;
+    }
+    .sobre-hero-content p {
+      font-size: var(--text-body);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ================================================================
+       2. LINHA DO TEMPO (FUNDO BRANCO + SCROLL PARALAXE)
+       ================================================================ */
+    .timeline-section {
+      background-color: hsl(var(--card)); /* Fundo Branco do Design System */
+      color: hsl(var(--foreground)); /* Texto Preto */
+      padding: 6rem 0;
+      overflow: hidden;
+    }
+    .timeline-section .h-display {
+      color: hsl(var(--foreground));
+      margin-bottom: 4rem;
+    }
+
+    /* Linha base e Linha de progresso */
+    .timeline-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      padding-left: 2rem;
+    }
+    .timeline-line {
+      position: absolute;
+      top: 0; bottom: 0; left: 7px;
+      width: 2px;
+      background: hsl(var(--border));
+      z-index: 1;
+    }
+    .timeline-line-progress {
+      position: absolute;
+      top: 0; left: 7px;
+      width: 2px; height: 0%;
+      background: #d9202a; /* Vermelho Plane Aviation */
+      z-index: 2;
+    }
+
+    /* Nodos da Linha do Tempo */
+    .tl-node {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      opacity: 0.2; /* Fica opaco e vai clareando no scroll */
+      padding-left: 2rem;
+    }
+    .tl-dot {
+      position: absolute;
+      left: -1.75rem; /* Centraliza sobre a linha vertical */
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid #d9202a;
+    }
+    .tl-year {
+      font-family: var(--font-main);
+      font-weight: 800;
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+      line-height: 1;
+    }
+    .tl-desc {
+      font-size: var(--text-xs);
+      color: hsl(var(--muted-foreground));
+      max-width: 100%;
+    }
+
+    /* Layout Horizontal (Desktop) */
+    @media(min-width: 768px) {
+      .timeline-wrapper {
+        flex-direction: row;
+        justify-content: space-between;
+        padding-left: 0;
+        gap: 0;
+        margin-top: 5rem;
+      }
+      .timeline-line {
+        top: 7px; left: 0; right: 0; bottom: auto;
+        height: 2px; width: 100%;
+      }
+      .timeline-line-progress {
+        top: 7px; left: 0; bottom: auto;
+        height: 2px; width: 0%;
+      }
+      .tl-node {
+        align-items: center;
+        text-align: center;
+        padding-left: 0;
+        padding-top: 2.5rem;
+        flex: 1;
+      }
+      .tl-dot {
+        left: 50%;
+        transform: translateX(-50%);
+        top: -3px; /* Centraliza sobre a linha horizontal */
+      }
+      .tl-desc {
+        max-width: 160px;
+      }
+    }
+
+    /* ================================================================
+       3. INFRAESTRUTURA (FUNDO PRETO + SLIDE IN)
+       ================================================================ */
+    .infra-section {
+      background-color: #000000;
+      color: #ffffff;
+      padding: 6rem 0;
+    }
+    .infra-section .h-display {
+      color: #ffffff;
+      margin-bottom: 4rem;
+    }
+
+    .infra-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-bottom: 6rem;
+      align-items: center;
+    }
+    .infra-row:last-child {
+      margin-bottom: 0;
+    }
+
+    @media(min-width: 768px) {
+      .infra-row {
+        grid-template-columns: 1.1fr 1fr; /* Imagem um pouco mais larga */
+        gap: 4rem;
+      }
+    }
+
+    .infra-img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: #111;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .infra-img .ph {
+      width: 100%; height: 100%; 
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.2); 
+      font-size: var(--text-sm); 
+      text-transform: uppercase; 
+      letter-spacing: 0.1em;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+    }
+
+    .infra-content h3 {
+      font-family: var(--font-main);
+      font-size: var(--text-h2);
+      font-weight: 700;
+      font-style: italic;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .infra-content p {
+      font-size: var(--text-sm);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
   </style>
-<style>
-  .prose{ max-width:56rem; margin:0 auto; }
-  .prose p{ font-size:1rem; color:hsl(var(--muted-foreground)); line-height:1.7; margin-bottom:1rem; }
 
-  /* timeline */
-  .tl{ position:relative; max-width:56rem; margin:0 auto; }
-  .tl-line{ position:absolute; left:1rem; top:0; bottom:0; width:1px; background:hsl(var(--border)); }
-  @media(min-width:640px){ .tl-line{ left:50%; transform:translateX(-.5px); } }
-  .tl-items{ display:flex; flex-direction:column; gap:2.5rem; }
-  .tl-item{ position:relative; display:flex; align-items:flex-start; }
-  .tl-dot{ position:absolute; left:1rem; width:.75rem; height:.75rem; background:hsl(var(--foreground)); border-radius:9999px; transform:translateX(-.375rem); margin-top:.375rem; z-index:2; }
-  @media(min-width:640px){ .tl-dot{ left:50%; } }
-  .tl-content{ margin-left:3rem; }
-  @media(min-width:640px){ .tl-content{ margin-left:0; width:50%; } }
-  .tl-item.right .tl-content{ }
-  @media(min-width:640px){
-    .tl-item.left{ flex-direction:row; }
-    .tl-item.left .tl-content{ padding-right:3rem; text-align:right; }
-    .tl-item.right{ flex-direction:row-reverse; }
-    .tl-item.right .tl-content{ padding-left:3rem; }
-  }
-  .tl-year{ font-size:1.125rem; font-weight:700; }
-  .tl-ev{ font-size:.875rem; color:hsl(var(--muted-foreground)); margin-top:.25rem; }
-
-  .insights{ background:hsl(var(--foreground)); color:hsl(var(--background)); padding:4rem 0; }
-  .insights .row{ max-width:56rem; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:2rem; text-align:center; }
-  @media(min-width:640px){ .insights .row{ flex-direction:row; text-align:left; } }
-  .insights h2{ font-size:1.5rem; font-weight:700; letter-spacing:-.025em; color:hsl(var(--background)); margin-top:.25rem; margin-bottom:.5rem; }
-  .insights p{ font-size:.875rem; color:hsl(var(--background)/.6); max-width:32rem; }
-</style>
-  <script src="js/i18n.js" defer></script>
-  <script src="js/site.js" defer></script>
 </head>
 <body>
+
 <div id="site-header"></div>
+
 <main>
 
-  <!-- HERO -->
-  <section class="page-hero tall center">
+  <section class="sobre-hero">
+    <div class="sobre-hero-bg"></div>
+    <div class="sobre-hero-mask"></div>
+    
     <div class="container">
-      <span class="eyebrow" data-i18n="sobre_eyebrow">Institucional</span>
-      <h1 class="h-display" data-i18n="sobre_title">Sobre a Plane Aviation</h1>
-    </div>
-  </section>
-
-  <!-- HISTÓRIA -->
-  <section style="padding:4rem 0">
-    <div class="container prose">
-      <h2 class="label" style="margin-bottom:1.5rem" data-i18n="sobre_hist" data-i18n="sobre_hist">Nossa História</h2>
-      <p data-i18n="sobre_hist_p1">Há mais de 20 anos, a Plane Aviation é a representante exclusiva da Cirrus Aircraft no Brasil. Desde o início, nossa missão é oferecer o que há de mais avançado em aviação geral, combinando tecnologia, segurança e excelência operacional.</p>
-      <p data-i18n="sobre_hist_p2">Com uma equipe especializada e infraestrutura completa, atendemos proprietários, operadores e pilotos que buscam o máximo em performance e confiabilidade. Nossa trajetória reflete o compromisso com cada cliente que escolhe voar Cirrus.</p>
-    </div>
-  </section>
-
-  <!-- TIMELINE -->
-  <section style="padding:4rem 0;background:hsl(var(--muted))">
-    <div class="container">
-      <h2 class="label center" style="margin-bottom:2.5rem" data-i18n="sobre_tl" data-i18n="sobre_tl">Linha do Tempo</h2>
-      <div class="tl">
-        <div class="tl-line"></div>
-        <div class="tl-items" id="tlItems"></div>
+      <div class="sobre-hero-content">
+        <h1 class="h-display" data-i18n="sobre_title">SOBRE A PLANE AVIATION</h1>
+        
+        <span class="eyebrow" data-i18n="sobre_hist">NOSSA HISTÓRIA</span>
+        
+        <p data-i18n="sobre_hist_p1">
+          Há mais de 20 anos, a Plane Aviation é a representante exclusiva da Cirrus Aircraft no Brasil. Desde o início, nossa missão é oferecer o que há de mais avançado em aviação geral, combinando tecnologia, segurança e excelência operacional.
+        </p>
+        <p data-i18n="sobre_hist_p2">
+          Com uma equipe especializada e infraestrutura completa, atendemos proprietários, operadores e pilotos que buscam o máximo em performance e confiabilidade.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- INFRAESTRUTURA -->
-  <section style="padding:4rem 0">
+  <section class="timeline-section">
     <div class="container">
-      <h2 class="label center" style="margin-bottom:2rem" data-i18n="sobre_infra" data-i18n="sobre_infra">Infraestrutura</h2>
-      <div class="grid g1 sm-g3" style="gap:1.5rem">
-        <div class="center"><div class="ph rounded" style="aspect-ratio:4/3"><svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="lbl">[Imagem Hangar]</span></div><p style="font-size:.875rem;font-weight:500;margin-top:.75rem" data-i18n="sobre_hangar">Hangar Principal</p></div>
-        <div class="center"><div class="ph rounded" style="aspect-ratio:4/3"><svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="lbl">[Imagem Centro de Manutenção]</span></div><p style="font-size:.875rem;font-weight:500;margin-top:.75rem" data-i18n="sobre_manut">Centro de Manutenção</p></div>
-        <div class="center"><div class="ph rounded" style="aspect-ratio:4/3"><svg class="icon ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="lbl">[Imagem Equipe]</span></div><p style="font-size:.875rem;font-weight:500;margin-top:.75rem" data-i18n="sobre_team">Nossa Equipe</p></div>
-      </div>
-    </div>
-  </section>
+      <h2 class="h-display" data-i18n="sobre_tl">LINHA DO TEMPO</h2>
+      
+      <div class="timeline-wrapper">
+        <div class="timeline-line"></div>
+        <div class="timeline-line-progress"></div>
 
-  <!-- PLANE INSIGHTS -->
-  <section class="insights">
-    <div class="container">
-      <div class="row">
-        <div>
-          <span class="eyebrow dark">Conteúdo</span>
-          <h2>Plane Insights</h2>
-          <p>Acompanhe nossa visão de mercado, análises de especialistas e episódios exclusivos do nosso podcast sobre o universo da aviação executiva.</p>
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2003</div>
+          <div class="tl-desc">Início da parceria exclusiva com a Cirrus Aircraft no Brasil.</div>
         </div>
-        <a href="news.html" class="btn btn-invert btn-wide"><svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg> Acessar News &amp; Podcast</a>
+
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2008</div>
+          <div class="tl-desc">Entrega da aeronave de número 100 no mercado brasileiro.</div>
+        </div>
+
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2013</div>
+          <div class="tl-desc">Inauguração do novo centro de manutenção em Jundiaí.</div>
+        </div>
+
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2017</div>
+          <div class="tl-desc">Primeira entrega do Vision Jet na América Latina.</div>
+        </div>
+
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2020</div>
+          <div class="tl-desc">Mais de 400 aeronaves Cirrus entregues no Brasil.</div>
+        </div>
+
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2024</div>
+          <div class="tl-desc">Expansão do hangar e certificação Cirrus Vision Center.</div>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <section class="infra-section">
+    <div class="container">
+      <h2 class="h-display" data-i18n="sobre_infra">INFRAESTRUTURA</h2>
+      
+      <div class="infra-row">
+        <div class="infra-img">
+          <div class="ph rounded">[ Imagem Hangar ]</div>
+        </div>
+        <div class="infra-content">
+          <h3 data-i18n="sobre_hangar">HANGAR PRINCIPAL</h3>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
+          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        </div>
+      </div>
+
+      <div class="infra-row">
+        <div class="infra-img">
+          <div class="ph rounded">[ Imagem Manutenção ]</div>
+        </div>
+        <div class="infra-content">
+          <h3 data-i18n="sobre_manut">CENTRO DE MANUTENÇÃO</h3>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
+          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        </div>
+      </div>
+
+      <div class="infra-row">
+        <div class="infra-img">
+          <div class="ph rounded">[ Imagem Equipe ]</div>
+        </div>
+        <div class="infra-content">
+          <h3 data-i18n="sobre_team">NOSSA EQUIPE</h3>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
+          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
 </main>
+
 <div id="site-footer"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+
 <script>
-  const timeline = [
-    ["2003","Início da parceria exclusiva com a Cirrus Aircraft no Brasil."],
-    ["2008","Entrega da aeronave de número 100 no mercado brasileiro."],
-    ["2013","Inauguração do novo centro de manutenção em Jundiaí."],
-    ["2017","Primeira entrega do Vision Jet na América Latina."],
-    ["2020","Mais de 400 aeronaves Cirrus entregues no Brasil."],
-    ["2024","Expansão do hangar e certificação Cirrus Vision Center."]
-  ];
-  document.getElementById("tlItems").innerHTML = timeline.map((t,i)=>`
-    <div class="tl-item ${i%2===0?'left':'right'}">
-      <div class="tl-dot"></div>
-      <div class="tl-content"><span class="tl-year">${t[0]}</span><p class="tl-ev">${t[1]}</p></div>
-    </div>`).join("");
+  document.addEventListener("DOMContentLoaded", () => {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* --- 1. Animação da Linha do Tempo --- */
+    const tlNodes = gsap.utils.toArray('.tl-node');
+    const lineProgress = document.querySelector('.timeline-line-progress');
+    const isDesktop = window.innerWidth >= 768;
+
+    // Timeline controlada pelo Scroll
+    const tlAnim = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.timeline-wrapper',
+        start: 'top 80%',    // Começa a animar quando a barra entra nos 80% da tela
+        end: 'bottom 50%',   // Termina quando o fim da barra chega na metade da tela
+        scrub: 1             // O 1 cria o efeito macio (smooth scrub)
+      }
+    });
+
+    // Anima a barra de progresso (Width no Desktop, Height no Mobile)
+    if (isDesktop) {
+      tlAnim.to(lineProgress, { width: '100%', ease: 'none', duration: 1 }, 0);
+    } else {
+      tlAnim.to(lineProgress, { height: '100%', ease: 'none', duration: 1 }, 0);
+    }
+
+    // Revela os Anos um a um acompanhando o avanço da barra
+    tlNodes.forEach((node, i) => {
+      const stepTime = i * (1 / (tlNodes.length - 1 || 1));
+      tlAnim.to(node, { opacity: 1, duration: 0.1 }, stepTime);
+    });
+
+
+    /* --- 2. Animação da Infraestrutura (Deslizamento Lateral) --- */
+    const infraRows = gsap.utils.toArray('.infra-row');
+
+    infraRows.forEach((row) => {
+      const img = row.querySelector('.infra-img');
+      const content = row.querySelector('.infra-content');
+
+      // Posição inicial: Invisível. Imagem vem da esquerda (-50px) e Texto vem da direita (+50px)
+      gsap.set(img, { opacity: 0, x: -50 });
+      gsap.set(content, { opacity: 0, x: 50 });
+
+      // Animação disparada individualmente para cada linha
+      const rowTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: row,
+          start: "top 80%", // Dispara quando a linha bate nos 80% da tela
+          toggleActions: "play none none reverse" // Repete o efeito caso o usuário suba a tela de novo
+        }
+      });
+
+      rowTl.to(img, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" })
+           .to(content, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, "-=0.4"); // Text surge um pouquinho depois da imagem
+    });
+
+  });
 </script>
+
 </body>
 </html>
