@@ -67,16 +67,16 @@
     }
 
     /* ================================================================
-       2. LINHA DO TEMPO (FUNDO BRANCO + SCROLL PARALAXE)
+       2. LINHA DO TEMPO (FUNDO PRETO + SCROLL PARALAXE)
        ================================================================ */
     .timeline-section {
-      background-color: hsl(var(--card)); 
-      color: hsl(var(--foreground)); 
+      background-color: #000000; 
+      color: #ffffff; 
       padding: 6rem 0;
       overflow: hidden;
     }
     .timeline-section .h-display {
-      color: hsl(var(--foreground));
+      color: #ffffff;
       margin-bottom: 4rem;
     }
     .timeline-wrapper {
@@ -90,7 +90,7 @@
       position: absolute;
       top: 0; bottom: 0; left: 7px;
       width: 2px;
-      background: hsl(var(--border));
+      background: rgba(255, 255, 255, 0.2);
       z-index: 1;
     }
     .timeline-line-progress {
@@ -106,29 +106,30 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      opacity: 0; /* Começa 100% invisível */
+      opacity: 0; 
       padding-left: 2rem;
     }
     .tl-dot {
       position: absolute;
-      left: -2rem; /* Centralização matemática exata no eixo X (Mobile) */
+      left: -2rem; 
       top: 0;
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: #fff;
+      background: #000;
       border: 3px solid #d9202a;
     }
     .tl-year {
       font-family: var(--font-main);
       font-weight: 800;
       font-size: 1.25rem;
+      color: #ffffff;
       margin-bottom: 0.25rem;
       line-height: 1;
     }
     .tl-desc {
       font-size: var(--text-xs);
-      color: hsl(var(--muted-foreground));
+      color: rgba(255, 255, 255, 0.6);
       max-width: 100%;
     }
 
@@ -158,7 +159,7 @@
       .tl-dot {
         left: 50%;
         transform: translateX(-50%);
-        top: 0; /* Centralização matemática exata no eixo Y (Desktop) */
+        top: 0; 
       }
       .tl-desc {
         max-width: 160px;
@@ -166,13 +167,14 @@
     }
 
     /* ================================================================
-       3. INFRAESTRUTURA SCROLL PINNED (ESTILO PARALAXE DA HOME)
+       3. INFRAESTRUTURA (FUNDO BRANCO + SEÇÃO MAIS ESTREITA)
        ================================================================ */
     .infra-scroll-section {
       position: relative;
-      height: 100vh;
-      background-color: #000000;
-      color: #ffffff;
+      height: 70vh; /* Seção mais estreita conforme solicitado */
+      min-height: 500px;
+      background-color: #ffffff;
+      color: #000000;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -185,20 +187,18 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      padding-top: 2rem;
     }
     .infra-container .h-display {
-      position: absolute;
-      top: 10%;
-      left: 1.5rem;
-      color: #ffffff;
-      margin: 0;
+      position: relative;
+      color: #000000;
+      margin: 0 0 2rem 0; /* Espaço reduzido entre título e o conteúdo */
       z-index: 5;
     }
     .infra-slides-content {
       position: relative;
       width: 100%;
-      height: 60vh;
-      margin-top: 4rem;
+      height: 50vh; /* Ajuste proporcional ao 70vh da seção pai */
     }
     .infra-slide {
       position: absolute;
@@ -230,20 +230,19 @@
     .infra-img-box {
       width: 100%;
       aspect-ratio: 16 / 10;
-      background: #111;
+      background: #f4f4f4;
       border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.08);
       overflow: hidden;
     }
     .infra-img-box .ph {
       width: 100%; height: 100%; 
       display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,0.2); 
+      color: rgba(0,0,0,0.3); 
       font-size: var(--text-sm); 
       text-transform: uppercase; 
       letter-spacing: 0.1em;
-      background: #111;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
+      background: #f4f4f4;
     }
     .infra-text-box h3 {
       font-family: var(--font-main);
@@ -252,11 +251,11 @@
       font-style: italic;
       text-transform: uppercase;
       margin-bottom: 1rem;
-      color: #fff;
+      color: #000000;
     }
     .infra-text-box p {
       font-size: var(--text-sm);
-      color: rgba(255,255,255,0.6);
+      color: rgba(0,0,0,0.7);
       line-height: 1.6;
       margin-bottom: 1rem;
     }
@@ -426,7 +425,6 @@
     /* --- 2. Animação de Pila / Paralaxe da Infraestrutura (Estilo Home) --- */
     const infraSection = document.getElementById("infraScrollSec");
     if (infraSection) {
-      // Configura os estados iniciais dos slides de forma absoluta
       gsap.set("#infra-slide-1", { autoAlpha: 1, y: 0 });
       gsap.set(["#infra-slide-2", "#infra-slide-3"], { autoAlpha: 0, y: 40 });
 
@@ -434,17 +432,15 @@
         scrollTrigger: {
           trigger: infraSection,
           start: "top top",
-          end: "+=250%", // Mantém a seção travada por 2.5x a altura da janela
+          end: "+=250%", 
           pin: true,
           scrub: 1
         }
       });
 
-      // Transição: Slide 1 some subindo -> Slide 2 surge do centro
       tlInfra.to("#infra-slide-1", { autoAlpha: 0, y: -40, duration: 0.4 }, 0.2)
              .to("#infra-slide-2", { autoAlpha: 1, y: 0, duration: 0.4 }, 0.6);
 
-      // Transição: Slide 2 some subindo -> Slide 3 surge do centro
       tlInfra.to("#infra-slide-2", { autoAlpha: 0, y: -40, duration: 0.4 }, 1.2)
              .to("#infra-slide-3", { autoAlpha: 1, y: 0, duration: 0.4 }, 1.6);
     }
