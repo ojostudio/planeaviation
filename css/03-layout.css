@@ -131,17 +131,15 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 
 .f-logo  { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; }
 
-.f-selo  { 
-  display: inline-flex; 
-  align-items: center; 
-  gap: 0.5rem; 
-  border: 1px solid hsl(var(--background)/.2); 
-  border-radius: var(--radius-sm); 
-  padding: .5rem .75rem; 
+/* Selo com espaçamento inferior */
+.f-cirrus-seal { 
+  height: 24px; 
+  width: auto; 
+  display: block; 
   margin-bottom: 1rem; 
 }
-.f-selo span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--background)/.5); }
 
+.f-desc  { font-size: var(--font-size-xs); color: hsl(var(--background)/.4); line-height: 1.6; }
 /* Controla o tamanho do selo em proporção de ~66% em relação à logo da Plane */
 .f-cirrus-seal { 
   height: 24px; 

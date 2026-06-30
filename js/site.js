@@ -94,10 +94,8 @@
         <div class="f-logo">
           <a href="index.html" aria-label="Plane Aviation">${LOGO_LIGHT}</a>
         </div>
-        <div class="f-selo">
           <img src="images/cirrus-badge.svg" alt="Cirrus Authorized" class="f-cirrus-seal">
           <span data-i18n="f_partner">${t("f_partner")}</span>
-        </div>
         <p class="f-desc" data-i18n="f_desc">${t("f_desc")}</p>
         <!-- Redes sociais -->
         <div class="f-social">
