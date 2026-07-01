@@ -71,7 +71,7 @@ function iniciarAnimacaoCirrus() {
     .to("#cp-texto-modelo", { y: "-30%", opacity: 0, duration: 0.5, ease: "power2.in" }, 2.3)
     
     // O grande card de Glassmorphism final surge com o efeito elástico suave de fechamento
-    .to("#cp-card-glass", { y: 0, opacity: 1, duration: 1, ease: "back.out(1.2)" }, 3);
+    .to("#cp-card-glass", { y: 0, opacity: 1, duration: 1, ease: "back.out(1.2)" }, 4.5);
 
   /* 3. SCROLLTRIGGER COM AUTOPLAY:
      Arrancamos o 'scrub: 1' para o usuário não ditar a velocidade arrastando o mouse.
