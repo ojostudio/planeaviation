@@ -1,5 +1,6 @@
 /* ================================================================
    PARALAXE CIRRUS GSAP (Apenas para a Homepage)
+   Dinâmica: Autoplay por gatilho com 60 Frames Unificados
    ================================================================ */
 function iniciarAnimacaoCirrus() {
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
@@ -9,24 +10,20 @@ function iniciarAnimacaoCirrus() {
   if (!canvas) return; 
   const context = canvas.getContext('2d');
 
-  const frameCount = 34; 
+  // 1. ATUALIZADO: Agora mapeando a nova sequência de 60 imagens
+  const frameCount = 60; 
   const currentFrame = index => `img/cirrus-sequence/${(index + 1).toString().padStart(2, '0')}.webp`;
 
   const images = [];
   const aviao = { frame: 0 };
-
-  // Conta quantas imagens já terminaram de carregar, para saber quando
-  // o canvas está com o tamanho real e o layout pode ser recalculado.
   let loadedCount = 0;
 
+  // Pré-carregamento das imagens no Canvas
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
     img.onload = () => {
       loadedCount++;
       if (i === 0) renderCanvas();
-      // Quando TODAS as imagens carregarem, força o ScrollTrigger a
-      // recalcular as alturas dos pins — evita o cálculo errado de
-      // pin-spacer que acontecia enquanto o canvas ainda tinha tamanho 0.
       if (loadedCount === frameCount) {
         ScrollTrigger.refresh();
       }
@@ -47,32 +44,54 @@ function iniciarAnimacaoCirrus() {
     }
   }
 
+  // Estados iniciais limpos da tipografia e do card
   gsap.set("#cp-texto-aviao", { y: "50%", opacity: 0 });
   gsap.set("#cp-texto-modelo", { y: "50%", opacity: 0, scale: 1.1 });
   gsap.set("#cp-card-glass", { y: 100, opacity: 0 });
 
-  const tl = gsap.timeline();
+  /* 2. TIMELINE PAUSADA: Criada em modo estático para controle autônomo.
+     Ajustei as durações (duration) e atrasos com tempos reais em segundos, 
+     já que agora ela corre sozinha em velocidade constante!
+  */
+  const tl = gsap.timeline({ paused: true });
 
-  tl.to(aviao, { frame: frameCount - 1, snap: "frame", ease: "none", onUpdate: renderCanvas, duration: 1 }, 0)
-    .to("#cp-texto-aviao", { y: "-10%", opacity: 1, duration: 0.3, ease: "power1.out" }, 0.1)
-    .to("#cp-texto-aviao", { y: "-40%", opacity: 0, duration: 0.2, ease: "power1.in" }, 0.4)
-    .to("#cp-texto-modelo", { y: "0%", opacity: 1, scale: 1, duration: 0.3, ease: "power1.out" }, 0.4)
-    .to("#cp-texto-modelo", { y: "-30%", opacity: 0, duration: 0.2, ease: "power1.in" }, 0.7)
-    .to("#cp-card-glass", { y: 0, opacity: 1, duration: 0.2, ease: "back.out(1.5)" }, 0.8);
+  tl.to(aviao, { 
+      frame: frameCount - 1, 
+      snap: "frame", 
+      ease: "none", 
+      onUpdate: renderCanvas, 
+      duration: 3.5 // O avião vai rodar os 60 frames perfeitamente em 3.5 segundos
+    }, 0)
+    // Texto de cima entra e sai no primeiro terço da animação
+    .to("#cp-texto-aviao", { y: "-10%", opacity: 1, duration: 0.6, ease: "power2.out" }, 0.3)
+    .to("#cp-texto-aviao", { y: "-40%", opacity: 0, duration: 0.5, ease: "power2.in" }, 1.2)
+    
+    // Texto de baixo (Modelo) entra logo em seguida
+    .to("#cp-texto-modelo", { y: "0%", opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 1.4)
+    .to("#cp-texto-modelo", { y: "-30%", opacity: 0, duration: 0.5, ease: "power2.in" }, 2.3)
+    
+    // O grande card de Glassmorphism final surge com o efeito elástico suave de fechamento
+    .to("#cp-card-glass", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.2)" }, 2.6);
 
+  /* 3. SCROLLTRIGGER COM AUTOPLAY:
+     Arrancamos o 'scrub: 1' para o usuário não ditar a velocidade arrastando o mouse.
+     Agora, o scroll funciona como um botão de 'Play' e 'Reverse' inteligente.
+  */
   ScrollTrigger.create({
     trigger: ".cp-section",
     start: "top top",
-    end: "+=400%", 
-    pin: true,
-    animation: tl,
-    scrub: 1
+    end: "+=250%", // Espaço que o usuário vai scrollar enquanto assiste o avião passar
+    pin: true,     // Prende a tela de forma limpa
+    scrub: false,  // LIBERADO: Desativa o travamento manual por pixel de scroll
+    
+    // Dispara a animação 100% automática e fluída ao entrar na seção
+    onEnter: () => tl.play(),
+    
+    // Se o usuário voltar a rolagem pro topo do site, reverte a animação inteira com classe
+    onLeaveBack: () => tl.reverse()
   });
 
-  // Rede de segurança: recalcula todos os ScrollTriggers da página
-  // depois que a janela e as fontes terminarem de carregar 100%.
-  // Isso corrige alturas erradas de pin-spacer causadas por imagens
-  // ou fontes que ainda estavam carregando no momento do cálculo inicial.
+  // Redes de segurança para recálculo de layouts
   window.addEventListener("load", () => ScrollTrigger.refresh());
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => ScrollTrigger.refresh());
