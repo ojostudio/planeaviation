@@ -436,11 +436,18 @@
         let html = "";
         snap.forEach(doc => {
           const p = doc.data();
+          
+          // Trava de segurança: Garante que o link tenha https:// se o usuário esqueceu de digitar
+          let safeUrl = p.url || '#';
+          if (safeUrl !== '#' && !safeUrl.startsWith('http://') && !safeUrl.startsWith('https://')) {
+            safeUrl = 'https://' + safeUrl;
+          }
+
           html += `
             <div class="partner-card">
               <h3 class="partner-title">${p.title}</h3>
               <p class="partner-desc">${p.desc}</p>
-              <a href="${p.url || '#'}" target="${p.url ? '_blank' : '_self'}" class="partner-btn">
+              <a href="${safeUrl}" target="${safeUrl !== '#' ? '_blank' : '_self'}" class="partner-btn">
                 ${p.btnText || 'Acessar'} ${ARROW_SVG}
               </a>
             </div>

@@ -142,39 +142,45 @@
   });
 
   async function loadPartners() {
-    if (!window.PA || !PA.configured) return;
-    const grid = document.getElementById("partnersGrid");
-    const section = document.getElementById("partnersSection");
+      if (!window.PA || !PA.configured) return;
+      const grid = document.getElementById("partnersGrid");
+      const section = document.getElementById("partnersSection");
 
-    try {
-      const snap = await PA.db.collection("partners").orderBy("order", "asc").get();
-      
-      if (snap.empty) {
-        section.style.display = "none";
-        return;
+      try {
+        const snap = await PA.db.collection("partners").orderBy("order", "asc").get();
+        
+        if (snap.empty) {
+          section.style.display = "none";
+          return;
+        }
+
+        let html = "";
+        snap.forEach(doc => {
+          const p = doc.data();
+          
+          // Trava de segurança: Garante que o link tenha https:// se o usuário esqueceu de digitar
+          let safeUrl = p.url || '#';
+          if (safeUrl !== '#' && !safeUrl.startsWith('http://') && !safeUrl.startsWith('https://')) {
+            safeUrl = 'https://' + safeUrl;
+          }
+
+          html += `
+            <div class="partner-card">
+              <h3 class="partner-title">${p.title}</h3>
+              <p class="partner-desc">${p.desc}</p>
+              <a href="${safeUrl}" target="${safeUrl !== '#' ? '_blank' : '_self'}" class="partner-btn">
+                ${p.btnText || 'Acessar'} ${ARROW_SVG}
+              </a>
+            </div>
+          `;
+        });
+        
+        grid.innerHTML = html;
+        section.style.display = "block";
+      } catch (e) {
+        console.error("Erro ao carregar parceiros:", e);
       }
-
-      let html = "";
-      snap.forEach(doc => {
-        const p = doc.data();
-        html += `
-          <div class="partner-card">
-            <h3 class="partner-title">${p.title}</h3>
-            <p class="partner-desc">${p.desc}</p>
-            <a href="${p.url || '#'}" target="${p.url ? '_blank' : '_self'}" class="partner-btn">
-              ${p.btnText || 'Acessar'} ${ARROW_SVG}
-            </a>
-          </div>
-        `;
-      });
-      
-      grid.innerHTML = html;
-      section.style.display = "block";
-    } catch (e) {
-      console.error("Erro ao carregar parceiros:", e);
-      grid.innerHTML = `<p style="color: #b42318;">Erro ao carregar os parceiros.</p>`;
     }
-  }
 </script>
 </body>
 </html>
