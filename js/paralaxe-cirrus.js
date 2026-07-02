@@ -1,6 +1,6 @@
 /* ================================================================
    PARALAXE CIRRUS GSAP (Apenas para a Homepage)
-   Dinâmica: Autoplay por gatilho com 60 Frames Unificados
+   Dinâmica: Autoplay por gatilho com ajuste fino de tempo de trava
    ================================================================ */
 function iniciarAnimacaoCirrus() {
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
@@ -10,7 +10,6 @@ function iniciarAnimacaoCirrus() {
   if (!canvas) return; 
   const context = canvas.getContext('2d');
 
-  // 1. ATUALIZADO: Agora mapeando a nova sequência de 60 imagens
   const frameCount = 60; 
   const currentFrame = index => `img/cirrus-sequence/${(index + 1).toString().padStart(2, '0')}.webp`;
 
@@ -49,10 +48,7 @@ function iniciarAnimacaoCirrus() {
   gsap.set("#cp-texto-modelo", { y: "50%", opacity: 0, scale: 1.1 });
   gsap.set("#cp-card-glass", { y: 100, opacity: 0 });
 
-  /* 2. TIMELINE PAUSADA: Criada em modo estático para controle autônomo.
-     Ajustei as durações (duration) e atrasos com tempos reais em segundos, 
-     já que agora ela corre sozinha em velocidade constante!
-  */
+  // Criação da Timeline automatizada
   const tl = gsap.timeline({ paused: true });
 
   tl.to(aviao, { 
@@ -60,38 +56,36 @@ function iniciarAnimacaoCirrus() {
       snap: "frame", 
       ease: "none", 
       onUpdate: renderCanvas, 
-      duration: 3.5 // O avião vai rodar os 60 frames perfeitamente em 3.5 segundos
+      duration: 3.5 
     }, 0)
-    // Texto de cima entra e sai no primeiro terço da animação
+    // Texto 1 entra e sai
     .to("#cp-texto-aviao", { y: "-10%", opacity: 1, duration: 0.6, ease: "power2.out" }, 0.3)
     .to("#cp-texto-aviao", { y: "-40%", opacity: 0, duration: 0.5, ease: "power2.in" }, 1.2)
     
-    // Texto de baixo (Modelo) entra logo em seguida
+    // Texto 2 (Modelo) entra e sai (termina no segundo 2.8)
     .to("#cp-texto-modelo", { y: "0%", opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 1.4)
     .to("#cp-texto-modelo", { y: "-30%", opacity: 0, duration: 0.5, ease: "power2.in" }, 2.3)
     
-    // O grande card de Glassmorphism final surge com o efeito elástico suave de fechamento
-    .to("#cp-card-glass", { y: 0, opacity: 1, duration: 1, ease: "back.out(1.2)" }, 4.5);
+    /* CORREÇÃO 1: O Card agora entra exatamente no segundo 2.8 (sem buraco de espera).
+       Aumentei a duração para 0.8s para ele subir com elegância mecânica.
+    */
+    .to("#cp-card-glass", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.2)" }, 2.8);
 
-  /* 3. SCROLLTRIGGER COM AUTOPLAY:
-     Arrancamos o 'scrub: 1' para o usuário não ditar a velocidade arrastando o mouse.
-     Agora, o scroll funciona como um botão de 'Play' e 'Reverse' inteligente.
+  /* CORREÇÃO 2: Ajuste fino do ScrollTrigger.
+     Reduzido o 'end' de +=250% para +=120%. Isso remove o "scroll fantasma"
+     e faz a página desprender o pin quase imediatamente após a subida do card.
   */
   ScrollTrigger.create({
     trigger: ".cp-section",
     start: "top top",
-    end: "+=250%", // Espaço que o usuário vai scrollar enquanto assiste o avião passar
-    pin: true,     // Prende a tela de forma limpa
-    scrub: false,  // LIBERADO: Desativa o travamento manual por pixel de scroll
-    
-    // Dispara a animação 100% automática e fluída ao entrar na seção
+    end: "+=120%",   /* O segredo para eliminar o "site travado" está aqui! */
+    pin: true, 
+    scrub: false, 
     onEnter: () => tl.play(),
-    
-    // Se o usuário voltar a rolagem pro topo do site, reverte a animação inteira com classe
     onLeaveBack: () => tl.reverse()
   });
 
-  // Redes de segurança para recálculo de layouts
+  // Redes de segurança de renderização
   window.addEventListener("load", () => ScrollTrigger.refresh());
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => ScrollTrigger.refresh());
