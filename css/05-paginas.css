@@ -273,6 +273,48 @@ OPORTUNIDADES EM DESTAQUE (HOME CAROUSEL)
 
 
 /* ================================================================
+   MODAL DE CONTATO RÁPIDO PAGINA DETALHES PRODUTOS (OVERLAY)
+   ================================================================ */
+.overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+  padding: 1rem;
+}
+.overlay.open { 
+  opacity: 1; visibility: visible; 
+}
+
+.modal {
+  background: #0a0a0a; 
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px; width: 100%; max-width: 500px;
+  padding: 2.5rem; position: relative;
+  transform: translateY(20px); transition: transform 0.3s ease;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+.overlay.open .modal { 
+  transform: translateY(0); 
+}
+
+.modal-head { 
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; 
+}
+.x-btn { 
+  background: transparent; color: rgba(255,255,255,0.5); border: none; font-size: 1.5rem; 
+  cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1;
+}
+.x-btn:hover { color: #ffffff; }
+
+.modal-wa-btn { 
+  display: flex; align-items: center; gap: 0.5rem; color: #fff; text-decoration: none; 
+  font-size: 10px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); 
+  padding: 0.75rem 1rem; border-radius: 8px; transition: background 0.2s;
+}
+.modal-wa-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* ================================================================
    RODAPÉ DA HOME (CONFIGURADOR, BANNERS SPLIT)
    ================================================================ */
 .home-bottom-sections { padding: 6rem 0; }
@@ -305,3 +347,4 @@ OPORTUNIDADES EM DESTAQUE (HOME CAROUSEL)
   margin: 0 auto;
   color: rgba(255, 255, 255, 0.6); /* Cor cinza suave para leitura no escuro */
 }
+
