@@ -372,6 +372,16 @@ CONFIGURADOR
   let heroAutoplayTimer = null;
   const HERO_ROTATION_SPEED = 6000;
 
+ // Função que transforma a barra " | " em design de duas espessuras
+  function formatarTituloDuplo(texto) {
+    if (!texto) return "";
+    if (texto.includes("|")) {
+      const partes = texto.split("|");
+      return `<span class="font-light">${partes[0].trim()}</span><br><span class="font-bold">${partes[1].trim()}</span>`;
+    }
+    return texto; // Se não tiver a barra, carrega o texto normal sem quebrar o site
+  }
+
   function applyHeroSlide(index) {
     if (!heroSlides.length) return;
     const slide = heroSlides[index];
@@ -387,7 +397,9 @@ CONFIGURADOR
       if(slide.tag) { document.getElementById("heroTag").textContent = slide.tag; badge.style.display = "block"; } 
       else { badge.style.display = "none"; }
       
-      document.getElementById("heroTitle").textContent = slide.title || "";
+      // AQUI ACONTECE A MÁGICA DA TIPOGRAFIA:
+      document.getElementById("heroTitle").innerHTML = formatarTituloDuplo(slide.title || "");
+      
       document.getElementById("heroBtnText").textContent = slide.btnText || "Saber Mais";
       document.getElementById("heroBtn").href = slide.btnUrl || "contato.html";
 
