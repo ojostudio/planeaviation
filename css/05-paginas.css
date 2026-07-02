@@ -234,3 +234,22 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .home-split-top { margin-top: 3rem; }
 .home-split-section .split-text { max-width: 550px; }
 @media (max-width: 768px) { .home-config-banner { flex-direction: column; text-align: center; padding: 2rem; } .home-config-banner .config-img { margin: 0; width: 100%; } .home-config-banner .config-content { align-items: center; text-align: center; } .home-split-section { flex-direction: column; align-items: flex-start; } .home-split-section .split-action { width: 100%; } .home-split-section .btn { width: 100%; justify-content: center; } }
+
+/* ================================================================
+   SEÇÃO CONTEÚDO EXTRA INTERMEDIÁRIA (FUNDO PRETO)
+   ================================================================ */
+.home-dark-extra-section {
+  background-color: #000000;
+  padding: var(--section-py) 0; /* Usa o espaçamento padrão de 5rem do sistema */
+  text-align: center;
+}
+.home-dark-extra-section .h-display {
+  color: #ffffff;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.home-dark-extra-section .text-body {
+  max-width: 600px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.6); /* Cor cinza suave para leitura no escuro */
+}
