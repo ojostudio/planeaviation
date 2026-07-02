@@ -3,6 +3,8 @@
    ================================================================ */
 
 /* --- Importação das Fontes --- */
+
+/* 1. Regular Reta (Peso 400, Normal) */
 @font-face {
   font-family: 'Grift';
   src: url('../fonts/Grift-Regular.otf') format('opentype');
@@ -11,6 +13,16 @@
   font-display: swap;
 }
 
+/* 2. Regular Itálica (Peso 400, Italic) - A NOVA ARMA! */
+@font-face {
+  font-family: 'Grift';
+  src: url('../fonts/Grift-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* 3. Bold Reta (Peso 700, Normal) */
 @font-face {
   font-family: 'Grift';
   src: url('../fonts/Grift-Bold.otf') format('opentype');
@@ -19,10 +31,11 @@
   font-display: swap;
 }
 
+/* 4. Bold Itálica (Peso 700, Italic) */
 @font-face {
   font-family: 'Grift';
   src: url('../fonts/Grift-BoldItalic.otf') format('opentype');
-  font-weight: 600; /* Mapeado como 600 para itálicos pesados */
+  font-weight: 700; /* Pode deixar o peso original como 700 para consistência pesada */
   font-style: italic;
   font-display: swap;
 }

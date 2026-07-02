@@ -20,7 +20,7 @@
 .h-display .light,
 .font-light {
   font-weight: 400;
-  font-style: italic;
+  font-style: italic; /* RESTAURADO PARA O DESIGN ORIGINAL (Itálico fino elegante) */
 }
 
 .h-display .bold,
