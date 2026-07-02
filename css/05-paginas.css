@@ -59,6 +59,7 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .hero-badge-glass img { height: 54px; margin-bottom: 0.5rem; }
 .hero-badge-glass .fine-print { color: #fff; opacity: 0.8; max-width: 200px; }
 
+
 /* ================================================================
    OPORTUNIDADES EM DESTAQUE (HOME CAROUSEL)
    ================================================================ */
@@ -80,67 +81,6 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   display: flex; 
   align-items: center; 
   width: 100%;
-}
-
-/* ================================================================
-   AJUSTES FINOS DOS CARDS (APENAS NO CARROSSEL ESCURO)
-   ================================================================ */
-
-/* 1. Fundo do card e Borda Premium */
-.inv-dark-grid .inv-card {
-  background: rgba(20, 20, 20, 0.4); 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1); 
-}
-
-/* 2. Caixa mais espaçosa (Respiro para o botão) */
-.inv-dark-grid .inv-card-content {
-  padding: 1.5rem !important; /* Aumenta a altura interna da caixa */
-}
-
-/* 3. Correção Absoluta de Contraste (Tudo Branco/Claro) */
-.inv-dark-grid .inv-card-title,
-.inv-dark-grid .inv-card-price {
-  color: #ffffff !important;
-}
-.inv-dark-grid .inv-card-price.consult {
-  color: rgba(255, 255, 255, 0.6) !important;
-}
-.inv-dark-grid .fine-print {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* 4. Aproximar o Título da Tag SEMINOVO */
-.inv-dark-grid .inv-card-head {
-  margin-bottom: 0.25rem !important;
-}
-.inv-dark-grid .inv-card-title {
-  margin-top: 0 !important;
-  margin-bottom: 0.75rem !important; 
-}
-
-/* 5. Colar o Preço nas Horas de Voo */
-.inv-dark-grid .inv-card-specs {
-  margin-bottom: 0.25rem !important; 
-}
-.inv-dark-grid .inv-card-price {
-  margin-top: 0 !important;  /* Tira a força que empurrava ele pro fundo */
-  padding-top: 0 !important; 
-  margin-bottom: 1.5rem !important; /* Cria um espaço abaixo dele */
-}
-
-/* 6. Comportamento do Botão (Isolado no fundo) e Contraste */
-.inv-dark-grid .btn {
-  margin-top: auto !important; /* Essa é a mágica: APENAS o botão vai pro fundo */
-  width: 100%; 
-}
-.inv-dark-grid .btn-solid {
-  background: #ffffff;
-  color: #000000;
-}
-.inv-dark-grid .btn-solid:hover {
-  background: #e0e0e0;
 }
 
 /* O Viewport agora manda no alinhamento e ocupa 100% do limite do container */
@@ -200,6 +140,44 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .inv-dots-wrapper { margin-top: 2rem; width: 100%; }
 
 /* ================================================================
+   AJUSTES FINOS DOS CARDS (APENAS NO CARROSSEL ESCURO)
+   ================================================================ */
+
+/* 1. Caixa mais espaçosa (Respiro geral) */
+.inv-dark-grid .ac-card-body {
+  padding: 1.5rem 1.25rem 1.25rem 1.25rem !important; 
+}
+
+/* 2. Aproximar o Título da Tag SEMINOVO e arrumar contraste */
+.inv-dark-grid .ac-card-cond {
+  margin-bottom: 0.15rem !important; 
+}
+.inv-dark-grid .ac-card-title {
+  color: #ffffff !important;
+  margin-top: 0 !important;
+  margin-bottom: 1.25rem !important; 
+}
+
+/* 3. Colar o Preço nas Horas de Voo e dar destaque */
+.inv-dark-grid .ac-card-meta {
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 0.15rem !important; 
+}
+.inv-dark-grid .ac-card-price {
+  color: #ffffff !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  margin-top: 0 !important; 
+  margin-bottom: 1.5rem !important; /* Cria um espaço isolando o botão */
+}
+
+/* 4. Comportamento do Botão (Isolado no fundo) */
+.inv-dark-grid .ac-card-btn {
+  margin-top: auto !important; /* Empurra o botão pro fundo preenchendo o respiro */
+}
+
+
+/* ================================================================
    A CASA DO SEU CIRRUS & SCROLL INSTITUCIONAL
    ================================================================ */
 
@@ -216,7 +194,7 @@ body.home-page { padding-top: 0; min-height: 100vh; }
      Para deixar a seção BEM MAIS ALTA, mude esse `8rem` para `12rem`, `15rem` ou até `20rem`.
      Exemplo para altura massiva: padding: 15rem 1rem;
   */
-  padding: 20rem 20rem; 
+  padding: 20rem 12rem; 
   
   display: flex; 
   align-items: center; 
@@ -269,6 +247,7 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .scroll-slide { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; opacity: 0; visibility: hidden; }
 .scroll-slide.active { opacity: 1; visibility: visible; }
 .scroll-slide .h-display { color: #000; margin-bottom: 1.5rem; }
+
 
 /* ================================================================
    PARALAXE CIRRUS (SEQUÊNCIA AVIAO 3D)
@@ -556,4 +535,3 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   margin: 0 auto;
   color: rgba(255, 255, 255, 0.6); /* Cor cinza suave para leitura no escuro */
 }
-
