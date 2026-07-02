@@ -155,7 +155,7 @@ body.home-page { padding-top: 0; min-height: 100vh; }
      Para deixar a seção BEM MAIS ALTA, mude esse `8rem` para `12rem`, `15rem` ou até `20rem`.
      Exemplo para altura massiva: padding: 15rem 1rem;
   */
-  padding: 12rem 12rem; 
+  padding: 20rem 20rem; 
   
   display: flex; 
   align-items: center; 
