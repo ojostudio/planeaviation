@@ -82,6 +82,67 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   width: 100%;
 }
 
+/* ================================================================
+   AJUSTES FINOS DOS CARDS (APENAS NO CARROSSEL ESCURO)
+   ================================================================ */
+
+/* 1. Fundo do card e Borda Premium */
+.inv-dark-grid .inv-card {
+  background: rgba(20, 20, 20, 0.4); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+/* 2. Caixa mais espaçosa (Respiro para o botão) */
+.inv-dark-grid .inv-card-content {
+  padding: 1.5rem !important; /* Aumenta a altura interna da caixa */
+}
+
+/* 3. Correção Absoluta de Contraste (Tudo Branco/Claro) */
+.inv-dark-grid .inv-card-title,
+.inv-dark-grid .inv-card-price {
+  color: #ffffff !important;
+}
+.inv-dark-grid .inv-card-price.consult {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.inv-dark-grid .fine-print {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* 4. Aproximar o Título da Tag SEMINOVO */
+.inv-dark-grid .inv-card-head {
+  margin-bottom: 0.25rem !important;
+}
+.inv-dark-grid .inv-card-title {
+  margin-top: 0 !important;
+  margin-bottom: 0.75rem !important; 
+}
+
+/* 5. Colar o Preço nas Horas de Voo */
+.inv-dark-grid .inv-card-specs {
+  margin-bottom: 0.25rem !important; 
+}
+.inv-dark-grid .inv-card-price {
+  margin-top: 0 !important;  /* Tira a força que empurrava ele pro fundo */
+  padding-top: 0 !important; 
+  margin-bottom: 1.5rem !important; /* Cria um espaço abaixo dele */
+}
+
+/* 6. Comportamento do Botão (Isolado no fundo) e Contraste */
+.inv-dark-grid .btn {
+  margin-top: auto !important; /* Essa é a mágica: APENAS o botão vai pro fundo */
+  width: 100%; 
+}
+.inv-dark-grid .btn-solid {
+  background: #ffffff;
+  color: #000000;
+}
+.inv-dark-grid .btn-solid:hover {
+  background: #e0e0e0;
+}
+
 /* O Viewport agora manda no alinhamento e ocupa 100% do limite do container */
 .inv-car-viewport { 
   overflow: hidden; 
