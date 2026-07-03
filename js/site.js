@@ -133,8 +133,7 @@
           <button id="footerNewsBtn" data-i18n="f_newsletter_btn">${t("f_newsletter_btn")}</button>
         </div>
         <div class="f-cirrus-block">
-          <img src="images/cirrus-badge.svg" alt="Cirrus Authorized" class="f-cirrus-seal">
-          <span data-i18n="f_partner">${t("f_partner")}</span>
+          <img src="images/cirrus-badge.svg" alt="Cirrus Authorized Partner" class="f-cirrus-seal">
           <p class="f-desc" data-i18n="f_desc">${t("f_desc")}</p>
         </div>
       </div>
