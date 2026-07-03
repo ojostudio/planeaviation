@@ -77,8 +77,15 @@
   .btn-outline-dark:hover { 
       background: rgba(255,255,255,0.1); 
       border-color: rgba(255,255,255,0.4); 
-      color: #ffffff !important; /* Isso impede que o texto fique preto */
+      color: #ffffff !important; 
     }
+
+  /* --- Paginação Customizada --- */
+  .pagination-wrap { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 3rem; }
+  .page-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+  .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.15); border-color: #fff; }
+  .page-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: rgba(255,255,255,0.05); }
+  .page-info { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 0.15em; }
 
   /* --- Newsletter CTA --- */
   .news-cta { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 4rem 2rem; text-align: center; margin: 4rem 0; }
@@ -114,6 +121,7 @@
       <div class="grid g1 md-g3" id="artGrid" style="gap:1.5rem">
         <p style="color:rgba(255,255,255,0.4); grid-column:1/-1;">Carregando artigos...</p>
       </div>
+      <div id="artPagination"></div>
     </div>
   </section>
 
@@ -125,6 +133,7 @@
       <div id="epList" style="display:flex;flex-direction:column;gap:1.5rem">
         <p style="color:rgba(255,255,255,0.4);">Carregando episódios...</p>
       </div>
+      <div id="epPagination"></div>
     </div>
   </section>
 
@@ -138,6 +147,7 @@
       <div id="vidList" style="display:flex;flex-direction:column;gap:1.5rem">
         <p style="color:rgba(255,255,255,0.4);">Carregando vídeos técnicos...</p>
       </div>
+      <div id="vidPagination"></div>
     </div>
   </section>
 
@@ -165,6 +175,21 @@
 <script src="js/firebase-config.js"></script>
 
 <script>
+// Constantes Globais de Paginação
+const ART_PER_PAGE = 3;
+const POD_PER_PAGE = 4;
+const VID_PER_PAGE = 4;
+
+// Armazenamento em Memória
+let articlesData = [];
+let podcastsData = [];
+let videosData = [];
+
+// Estado da Página Atual (inicia em 0)
+let artPage = 0;
+let podPage = 0;
+let vidPage = 0;
+
 // Helpers de formatação e YouTube
 const ARROW = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:.9em;height:.9em;flex-shrink:0;fill:currentColor;display:inline-block;vertical-align:middle"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
@@ -221,66 +246,143 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadNewsData() {
   if (!window.PA || !PA.configured) return;
 
-  // 1. CARREGAR ARTIGOS
-  const artGrid = document.getElementById("artGrid");
+  // 1. CARREGAR ARTIGOS NO CACHE
   try {
     const artSnap = await PA.db.collection("articles").orderBy("createdAt", "desc").get();
-    if(artSnap.empty) {
-      artGrid.innerHTML = "<p style='color:rgba(255,255,255,0.4); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
-    } else {
-      artGrid.innerHTML = artSnap.docs.map(doc => {
-        const a = doc.data();
-        const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
-        const imgHtml = a.imageUrl ? `<img src="${a.imageUrl}" alt="${a.title}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:0.75rem;letter-spacing:0.1em;">SEM IMAGEM</div>`;
-        return `<a href="artigo.html?id=${doc.id}" class="art"><div class="imgph">${imgHtml}</div><div class="body"><div class="row"><span class="date">${dateStr}</span><span class="cat">${a.category || 'Geral'}</span></div><h3>${a.title}</h3><p class="ex">${(a.excerpt || '').substring(0, 120)}...</p><span class="read">Ler Artigo Completo ${ARROW}</span></div></a>`;
-      }).join("");
+    if (!artSnap.empty) {
+      articlesData = artSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
-  } catch(e) { artGrid.innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
+    renderArticles();
+  } catch(e) { document.getElementById("artGrid").innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
 
-  // 2. CARREGAR PODCASTS (Com ordenação inteligente via JavaScript)
-  const epList = document.getElementById("epList");
+  // 2. CARREGAR PODCASTS NO CACHE
   try {
     const podSnap = await PA.db.collection("podcasts").get();
-    if(podSnap.empty) {
-      epList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum episódio publicado ainda.</p>";
-    } else {
-      let docs = podSnap.docs.map(d => d.data());
-      // Ordena misturando a data nova do YouTube com a data de criação antiga
-      docs.sort((a,b) => {
+    if (!podSnap.empty) {
+      podcastsData = podSnap.docs.map(d => d.data());
+      podcastsData.sort((a,b) => {
         const tA = a.videoDate ? new Date(a.videoDate).getTime() : (a.createdAt ? a.createdAt.seconds*1000 : 0);
         const tB = b.videoDate ? new Date(b.videoDate).getTime() : (b.createdAt ? b.createdAt.seconds*1000 : 0);
         return tB - tA;
       });
-      
-      epList.innerHTML = docs.map(p => {
-        const videoId = getYouTubeId(p.youtubeUrl);
-        const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
-        return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(p.videoDate)} · ${p.duration || '0 min'}</span><h3>${p.title}</h3><p>${p.desc || ''}</p></div><a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR NO YOUTUBE <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
-      }).join("");
     }
-  } catch(e) { epList.innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
+    renderPodcasts();
+  } catch(e) { document.getElementById("epList").innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
 
-  // 3. CARREGAR VÍDEOS TÉCNICOS & MÍDIA
-  const vidList = document.getElementById("vidList");
+  // 3. CARREGAR VÍDEOS NO CACHE
   try {
     const vidSnap = await PA.db.collection("videos").get();
-    if(vidSnap.empty) {
-      vidList.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum vídeo técnico cadastrado ainda.</p>";
-    } else {
-      let docs = vidSnap.docs.map(d => d.data());
-      docs.sort((a,b) => {
+    if (!vidSnap.empty) {
+      videosData = vidSnap.docs.map(d => d.data());
+      videosData.sort((a,b) => {
         const tA = a.videoDate ? new Date(a.videoDate).getTime() : (a.createdAt ? a.createdAt.seconds*1000 : 0);
         const tB = b.videoDate ? new Date(b.videoDate).getTime() : (b.createdAt ? b.createdAt.seconds*1000 : 0);
         return tB - tA;
       });
-      
-      vidList.innerHTML = docs.map(v => {
-        const videoId = getYouTubeId(v.youtubeUrl);
-        const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
-        return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(v.videoDate)} · ${v.duration || '0 min'}</span><h3>${v.title}</h3><p>${v.desc || ''}</p></div><a href="${v.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR CONTEÚDO <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
-      }).join("");
     }
-  } catch(e) { vidList.innerHTML = `<p style="color:#ff6b6b">Erro de Permissão (Verifique o Firestore Rules): ${e.message}</p>`; }
+    renderVideos();
+  } catch(e) { document.getElementById("vidList").innerHTML = `<p style="color:#ff6b6b">Erro: ${e.message}</p>`; }
+}
+
+// --- FUNÇÕES DE RENDERIZAÇÃO COM PAGINAÇÃO ---
+
+function renderArticles() {
+  const grid = document.getElementById("artGrid");
+  const pagination = document.getElementById("artPagination");
+  
+  if (articlesData.length === 0) {
+    grid.innerHTML = "<p style='color:rgba(255,255,255,0.4); grid-column:1/-1;'>Nenhum artigo publicado ainda.</p>";
+    pagination.innerHTML = "";
+    return;
+  }
+
+  const totalPages = Math.ceil(articlesData.length / ART_PER_PAGE);
+  const start = artPage * ART_PER_PAGE;
+  const visible = articlesData.slice(start, start + ART_PER_PAGE);
+
+  grid.innerHTML = visible.map(a => {
+    const dateStr = a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'}) : "";
+    const imgHtml = a.imageUrl ? `<img src="${a.imageUrl}" alt="${a.title}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:0.75rem;letter-spacing:0.1em;">SEM IMAGEM</div>`;
+    return `<a href="artigo.html?id=${a.id}" class="art"><div class="imgph">${imgHtml}</div><div class="body"><div class="row"><span class="date">${dateStr}</span><span class="cat">${a.category || 'Geral'}</span></div><h3>${a.title}</h3><p class="ex">${(a.excerpt || '').substring(0, 120)}...</p><span class="read">Ler Artigo Completo ${ARROW}</span></div></a>`;
+  }).join("");
+
+  renderPaginationControls(pagination, artPage, totalPages, (newPg) => { artPage = newPg; renderArticles(); });
+}
+
+function renderPodcasts() {
+  const list = document.getElementById("epList");
+  const pagination = document.getElementById("epPagination");
+  
+  if (podcastsData.length === 0) {
+    list.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum episódio publicado ainda.</p>";
+    pagination.innerHTML = "";
+    return;
+  }
+
+  const totalPages = Math.ceil(podcastsData.length / POD_PER_PAGE);
+  const start = podPage * POD_PER_PAGE;
+  const visible = podcastsData.slice(start, start + POD_PER_PAGE);
+
+  list.innerHTML = visible.map(p => {
+    const videoId = getYouTubeId(p.youtubeUrl);
+    const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
+    return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(p.videoDate)} · ${p.duration || '0 min'}</span><h3>${p.title}</h3><p>${p.desc || ''}</p></div><a href="${p.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR NO YOUTUBE <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
+  }).join("");
+
+  renderPaginationControls(pagination, podPage, totalPages, (newPg) => { podPage = newPg; renderPodcasts(); });
+}
+
+function renderVideos() {
+  const list = document.getElementById("vidList");
+  const pagination = document.getElementById("vidPagination");
+  
+  if (videosData.length === 0) {
+    list.innerHTML = "<p style='color:rgba(255,255,255,0.4);'>Nenhum vídeo técnico cadastrado ainda.</p>";
+    pagination.innerHTML = "";
+    return;
+  }
+
+  const totalPages = Math.ceil(videosData.length / VID_PER_PAGE);
+  const start = vidPage * VID_PER_PAGE;
+  const visible = videosData.slice(start, start + VID_PER_PAGE);
+
+  list.innerHTML = visible.map(v => {
+    const videoId = getYouTubeId(v.youtubeUrl);
+    const thumbHtml = videoId ? `<div class="player"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Capa" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"></div>` : `<div class="player"></div>`;
+    return `<div class="ep">${thumbHtml}<div class="info"><div><span class="epnum">${humanDate(v.videoDate)} · ${v.duration || '0 min'}</span><h3>${v.title}</h3><p>${v.desc || ''}</p></div><a href="${v.youtubeUrl || '#'}" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">ASSISTIR CONTEÚDO <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em;margin-left:0.25rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></a></div></div>`;
+  }).join("");
+
+  renderPaginationControls(pagination, vidPage, totalPages, (newPg) => { vidPage = newPg; renderVideos(); });
+}
+
+// Criador Genérico de Botões de Paginação
+function renderPaginationControls(container, current, total, onChange) {
+  if (total <= 1) { 
+    container.innerHTML = ""; 
+    return; 
+  }
+  
+  const prevDisabled = current === 0 ? "disabled" : "";
+  const nextDisabled = current === total - 1 ? "disabled" : "";
+  
+  container.innerHTML = `
+    <div class="pagination-wrap">
+      <button class="page-btn prev-btn" ${prevDisabled} aria-label="Anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:1.2rem;height:1.2rem;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span class="page-info">${current + 1} / ${total}</span>
+      <button class="page-btn next-btn" ${nextDisabled} aria-label="Próximo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:1.2rem;height:1.2rem;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  `;
+  
+  container.querySelector('.prev-btn').addEventListener('click', () => {
+    if (current > 0) onChange(current - 1);
+  });
+  container.querySelector('.next-btn').addEventListener('click', () => {
+    if (current < total - 1) onChange(current + 1);
+  });
 }
 </script>
 </body>
