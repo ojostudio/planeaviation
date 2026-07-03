@@ -49,7 +49,7 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 2rem;
-      min-height: 60vh; /* Garante que a página não encolha enquanto carrega */
+      min-height: 60vh;
     }
     
     @media(min-width: 768px) {
@@ -290,7 +290,7 @@
     }
 
     /* ================================================================
-       BANNER CTA DE VÍDEOS (Design Reformulado e Refinado)
+       BANNER CTA DE NEWS & INSIGHTS
        ================================================================ */
     .video-cta-section { 
       background: #ffffff !important; 
@@ -318,9 +318,9 @@
     .video-img-box { 
       flex: 1; 
       position: relative; 
-      aspect-ratio: 16 / 9; /* Força o formato retangular de vídeo perfeito */
+      aspect-ratio: 16 / 9; 
       background: #111; 
-      border-radius: 16px; /* Cantinhos bem arredondados */
+      border-radius: 16px; 
       border: 1px solid rgba(255,255,255,0.1);
       overflow: hidden;
       box-shadow: 0 20px 40px rgba(0,0,0,0.5);
@@ -331,11 +331,11 @@
       height: 100%; 
       object-fit: cover; 
       display: block;
-      transition: transform 0.4s ease; /* Transição macia de zoom */
+      transition: transform 0.4s ease; 
     }
     
     .video-cta-banner:hover .video-img-box img {
-      transform: scale(1.05); /* Efeito de hover profissional na thumbnail */
+      transform: scale(1.05); 
     }
     
     .video-cta-content { 
@@ -349,11 +349,10 @@
 
     .video-cta-title { 
       font-family: 'Grift', 'Bebas Neue', sans-serif; 
-      font-size: clamp(2.5rem, 4vw, 4rem); 
+      font-size: clamp(2.5rem, 4vw, 3.5rem); 
       font-weight: 800; 
       font-style: italic; 
-      color: transparent; 
-      -webkit-text-stroke: 1px white; 
+      color: #ffffff; /* Ajustado para padrão de título sólido */
       text-transform: uppercase; 
       line-height: 1.05; 
       margin: 0.5rem 0 1rem 0; 
@@ -421,15 +420,18 @@
     <section class="video-cta-section">
       <div class="container">
         <div class="video-cta-banner">
-          <div class="video-img-box" id="latestVideoThumb">
-             <div class="ph" style="color: rgba(255,255,255,0.2);">Carregando vídeo...</div>
+          <div class="video-img-box">
+             <img src="images/learn-more.webp" alt="Conheça mais sobre o Universo Cirrus">
           </div>
           <div class="video-cta-content">
-            <span style="color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;">Plane no YouTube</span>
-            <h2 class="video-cta-title">Vídeos Técnicos</h2>
-            <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem; max-width: 320px; margin-bottom: 2rem; line-height: 1.6;">Acompanhe reviews completos, tours de cabine e demonstrações detalhadas da frota Cirrus.</p>
+            <span style="color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;">Conteúdo & Mídia</span>
+            
+            <h2 class="video-cta-title">MAIS SOBRE O<br>UNIVERSO CIRRUS</h2>
+            
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem; max-width: 320px; margin-bottom: 2rem; line-height: 1.6;">Acompanhe nossas análises de mercado, podcast oficial e vídeos com demonstrações detalhadas da frota.</p>
+            
             <a href="news.html" class="video-cta-btn">
-              ASSISTIR AGORA 
+              ACESSAR CONTEÚDO 
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1.2em; height: 1.2em;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </a>
           </div>
@@ -451,19 +453,9 @@
   <script>
     const ARROW_SVG = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1.2em;height:1.2em;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
-    // Helper para extrair ID do YouTube
-    function getYouTubeId(url) {
-      if (!url) return null;
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = url.match(regExp);
-      return (match && match[2].length === 11) ? match[2] : null;
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-      // Retirado o setTimeout de 500ms para o carregamento ser imediato!
       loadCirrusFleet();
       loadPartners();
-      loadLatestVideoCTA();
       
       document.addEventListener("pa:langchange", () => {
         loadCirrusFleet();
@@ -575,33 +567,6 @@
         section.style.display = "block";
       } catch (e) {
         console.error("Erro ao carregar parceiros:", e);
-      }
-    }
-
-    // Função que busca a thumbnail do último vídeo para a CTA
-    async function loadLatestVideoCTA() {
-      if (!window.PA || !PA.configured) return;
-      try {
-        const vidSnap = await PA.db.collection("videos").get();
-        if (vidSnap.empty) return;
-        
-        let docs = vidSnap.docs.map(d => d.data());
-        // Ordena para pegar o mais recente
-        docs.sort((a,b) => {
-          const tA = a.videoDate ? new Date(a.videoDate).getTime() : (a.createdAt ? a.createdAt.seconds*1000 : 0);
-          const tB = b.videoDate ? new Date(b.videoDate).getTime() : (b.createdAt ? b.createdAt.seconds*1000 : 0);
-          return tB - tA;
-        });
-        
-        const latest = docs[0];
-        const videoId = getYouTubeId(latest.youtubeUrl);
-        const thumbBox = document.getElementById("latestVideoThumb");
-        
-        if(videoId && thumbBox) {
-          thumbBox.innerHTML = `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Último Vídeo" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">`;
-        }
-      } catch(e) {
-        console.error("Erro ao carregar video CTA", e);
       }
     }
   </script>
