@@ -518,13 +518,29 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 @media (max-width: 768px) { .home-config-banner { flex-direction: column; text-align: center; padding: 2rem; } .home-config-banner .config-img { margin: 0; width: 100%; } .home-config-banner .config-content { align-items: center; text-align: center; } .home-split-section { flex-direction: column; align-items: flex-start; } .home-split-section .split-action { width: 100%; } .home-split-section .btn { width: 100%; justify-content: center; } }
 
 /* ================================================================
-   SEÇÃO CONTEÚDO EXTRA INTERMEDIÁRIA (FUNDO PRETO)
+   SEÇÃO CONTEÚDO EXTRA INTERMEDIÁRIA (FUNDO PRETO + IMAGEM BASE)
    ================================================================ */
 .home-dark-extra-section {
+  position: relative;
   background-color: #000000;
-  padding: var(--section-py) 0; /* Usa o espaçamento padrão de 5rem do sistema */
+  
+  /* --- MÁGICA DA IMAGEM NA BASE --- */
+  background-image: url('../images/vision-bg.webp');
+  background-position: bottom center; /* Prega a imagem na parte de baixo */
+  background-repeat: no-repeat;
+  background-size: 100% auto; /* 100% da largura, ajustando a altura automaticamente */
+  
+  /* --- AJUSTE DE POSIÇÃO DOS TEXTOS --- */
+  padding-top: 8rem; /* Começa o texto um pouco abaixo do começo da seção */
+  padding-bottom: 25vw; /* Deixa um grande buraco vazio na base para a imagem aparecer sem textos por cima */
+  min-height: 80vh; /* Garante que a seção seja bem alta e imponente */
+  
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Força o texto a ficar na parte de cima */
 }
+
 .home-dark-extra-section .h-display {
   color: #ffffff;
   margin-top: 0.5rem;
@@ -534,6 +550,16 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   max-width: 600px;
   margin: 0 auto;
   color: rgba(255, 255, 255, 0.6); /* Cor cinza suave para leitura no escuro */
+}
+
+/* --- AJUSTE PARA CELULARES --- */
+@media (max-width: 768px) {
+  .home-dark-extra-section {
+    background-size: cover; /* No mobile, o cover evita que a imagem fique um risco fino na base */
+    padding-top: 5rem;
+    padding-bottom: 15rem; /* Ajusta o buraco da base pro tamanho da tela do celular */
+    min-height: 60vh;
+  }
 }
 
 /* ================================================================
