@@ -44,11 +44,12 @@
       padding: 3rem 0 4rem 0;
     }
 
-    /* Grid dos modelos */
+    /* Grid dos modelos com Altura Mínima para evitar pulo de layout */
     .fleet-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 2rem;
+      min-height: 60vh; /* Garante que a página não encolha enquanto carrega */
     }
     
     @media(min-width: 768px) {
@@ -195,7 +196,7 @@
     .partners-section {
       background: #ffffff !important; 
       color: #000000 !important;
-      padding: 6rem 0 3rem 0; /* Padding inferior reduzido para colar com o novo banner */
+      padding: 6rem 0 3rem 0; 
       display: none; 
     }
 
@@ -289,52 +290,63 @@
     }
 
     /* ================================================================
-       BANNER CTA DE VÍDEOS (Estilo Configurador)
+       BANNER CTA DE VÍDEOS (Design Reformulado e Refinado)
        ================================================================ */
     .video-cta-section { 
       background: #ffffff !important; 
       padding: 3rem 0 6rem 0; 
     }
+    
     .video-cta-banner { 
       background-color: #050505; 
       border-radius: 24px; 
       display: flex; 
       flex-direction: column; 
-      overflow: hidden; 
+      padding: 2rem;
+      gap: 2rem;
     }
+    
     @media(min-width: 768px) { 
-      .video-cta-banner { flex-direction: row; align-items: stretch; } 
+      .video-cta-banner { 
+        flex-direction: row; 
+        align-items: center; 
+        padding: 3rem;
+        gap: 4rem;
+      } 
     }
+    
     .video-img-box { 
-      flex: 1.2; 
+      flex: 1; 
       position: relative; 
-      min-height: 300px; 
+      aspect-ratio: 16 / 9; /* Força o formato retangular de vídeo perfeito */
       background: #111; 
+      border-radius: 16px; /* Cantinhos bem arredondados */
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     }
+    
     .video-img-box img { 
-      position: absolute; 
-      top: 0; left: 0; 
-      width: 100%; height: 100%; 
+      width: 100%; 
+      height: 100%; 
       object-fit: cover; 
-      border-right: 1px solid rgba(255,255,255,0.1); 
-      filter: brightness(0.85);
-      transition: filter 0.3s;
+      display: block;
+      transition: transform 0.4s ease; /* Transição macia de zoom */
     }
+    
     .video-cta-banner:hover .video-img-box img {
-      filter: brightness(1);
+      transform: scale(1.05); /* Efeito de hover profissional na thumbnail */
     }
+    
     .video-cta-content { 
       flex: 1; 
-      padding: 3rem; 
       display: flex; 
       flex-direction: column; 
       justify-content: center; 
       align-items: flex-start; 
       text-align: left; 
     }
-    @media(min-width: 768px) { 
-      .video-cta-content { align-items: flex-end; text-align: right; } 
-    }
+
     .video-cta-title { 
       font-family: 'Grift', 'Bebas Neue', sans-serif; 
       font-size: clamp(2.5rem, 4vw, 4rem); 
@@ -346,6 +358,7 @@
       line-height: 1.05; 
       margin: 0.5rem 0 1rem 0; 
     }
+    
     .video-cta-btn { 
       display: inline-flex; 
       align-items: center; 
@@ -363,6 +376,7 @@
       text-decoration: none; 
       transition: all 0.2s; 
     }
+    
     .video-cta-btn:hover { 
       background: rgba(255,255,255,0.1); 
       border-color: #fff; 
@@ -388,8 +402,7 @@
     <section class="fleet-section">
       <div class="container">
         <div class="fleet-grid" id="fleetGrid">
-          <div style="color: rgba(255,255,255,0.4); padding: 2rem 0;">Carregando frota...</div>
-        </div>
+          </div>
       </div>
     </section>
 
@@ -447,11 +460,11 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(() => {
-        loadCirrusFleet();
-        loadPartners();
-        loadLatestVideoCTA(); // Chama a nova função
-      }, 500);
+      // Retirado o setTimeout de 500ms para o carregamento ser imediato!
+      loadCirrusFleet();
+      loadPartners();
+      loadLatestVideoCTA();
+      
       document.addEventListener("pa:langchange", () => {
         loadCirrusFleet();
         loadPartners();
@@ -565,7 +578,7 @@
       }
     }
 
-    // Função que busca a thumbnail do último vídeo para a CTA..
+    // Função que busca a thumbnail do último vídeo para a CTA
     async function loadLatestVideoCTA() {
       if (!window.PA || !PA.configured) return;
       try {
