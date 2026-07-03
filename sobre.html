@@ -171,46 +171,45 @@
     }
 
     /* ================================================================
-       3. INFRAESTRUTURA (FUNDO BRANCO + SCROLL DESLIZANTE)
+       3. NOSSO TIME (FUNDO BRANCO + IMAGEM GIGANTE + SLIDER)
        ================================================================ */
-    .infra-section {
+    .team-section {
       background-color: #ffffff;
       color: #000000;
       padding: 6rem 0;
+      overflow: hidden;
     }
-    .infra-section .h-display {
+    
+    .team-intro {
+      max-width: 800px;
+      margin-bottom: 3rem;
+    }
+    .team-intro .h-display {
       color: #000000;
-      margin-bottom: 4rem;
+      margin-bottom: 1.5rem;
       font-weight: 800;
       font-style: italic;
     }
-    .infra-row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-      margin-bottom: 6rem;
-      align-items: center;
-    }
-    .infra-row:last-child {
-      margin-bottom: 0;
+    .team-intro p {
+      font-size: 1.125rem;
+      color: rgba(0,0,0,0.6);
+      line-height: 1.6;
     }
 
-    @media(min-width: 768px) {
-      .infra-row {
-        grid-template-columns: 1.1fr 1fr; 
-        gap: 4rem;
-      }
-    }
-
-    .infra-img {
+    /* Imagem Gigante de Contexto */
+    .team-main-img {
       width: 100%;
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 21 / 9; /* Formato bem largo e panorâmico */
       background: #f4f4f4;
       border-radius: 16px;
       border: 1px solid rgba(0,0,0,0.08);
       overflow: hidden;
+      margin-bottom: 6rem;
     }
-    .infra-img .ph {
+    @media(max-width: 768px) {
+      .team-main-img { aspect-ratio: 16 / 9; }
+    }
+    .team-main-img .ph {
       width: 100%; height: 100%; 
       display: flex; align-items: center; justify-content: center;
       color: rgba(0,0,0,0.3); 
@@ -220,20 +219,121 @@
       background: #f4f4f4;
     }
 
-    .infra-content h3 {
-      font-family: var(--font-main);
-      font-size: var(--text-h2);
-      font-weight: 700;
+    /* Cabeçalho do Slider */
+    .team-slider-head {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    @media(min-width: 640px) {
+      .team-slider-head {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+    }
+    .team-slider-head h3 {
+      font-family: 'Grift', 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
       font-style: italic;
       text-transform: uppercase;
-      margin-bottom: 1rem;
-      color: #000000;
+      color: #000;
+      margin: 0;
+      line-height: 1;
     }
-    .infra-content p {
-      font-size: var(--text-sm);
-      color: rgba(0,0,0,0.7);
-      line-height: 1.6;
-      margin-bottom: 1rem;
+
+    /* Controles do Slider */
+    .team-slider-nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .team-nav-btn {
+      width: 3rem; height: 3rem;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.2);
+      background: transparent;
+      color: #000;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .team-nav-btn:hover {
+      background: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    /* Container do Slider */
+    .team-slider {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding-bottom: 2rem; /* Espaço para sombra e scroll invisível */
+      margin-bottom: -2rem; 
+      -ms-overflow-style: none;  /* IE/Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .team-slider::-webkit-scrollbar { 
+      display: none; /* Chrome/Safari/Opera */
+    }
+
+    /* Card Individual do Funcionário */
+    .team-card {
+      flex: 0 0 calc(85vw - 1.5rem);
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+    }
+    @media(min-width: 640px) { .team-card { flex: 0 0 calc(50% - 0.75rem); } }
+    @media(min-width: 1024px) { .team-card { flex: 0 0 calc(25% - 1.125rem); } } /* 4 cartões por vez */
+
+    .team-photo {
+      width: 100%;
+      aspect-ratio: 3 / 4; /* Formato Retrato Vertical perfeito para pessoas */
+      background: #f4f4f4;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+    .team-card:hover .team-photo {
+      transform: translateY(-4px); /* Leve flutuação ao passar o mouse */
+    }
+    .team-photo .ph {
+      width: 100%; height: 100%; 
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(0,0,0,0.3); 
+      font-size: 0.75rem; 
+      text-transform: uppercase; 
+      letter-spacing: 0.1em;
+    }
+
+    .team-role {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #d9202a; /* Destaque no vermelho da marca */
+      margin-bottom: 0.25rem;
+    }
+    .team-name {
+      font-family: var(--font-main);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .team-desc {
+      font-size: 0.875rem;
+      color: rgba(0,0,0,0.6);
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -310,44 +410,78 @@
     </div>
   </section>
 
-  <section class="infra-section">
+  <section class="team-section">
     <div class="container">
-      <h2 class="h-display" data-i18n="sobre_infra">INFRAESTRUTURA</h2>
       
-      <div class="infra-row">
-        <div class="infra-img">
-          <div class="ph rounded">[ Imagem Hangar ]</div>
-        </div>
-        <div class="infra-content">
-          <h3 data-i18n="sobre_hangar">HANGAR PRINCIPAL</h3>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
-          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+      <div class="team-intro">
+        <h2 class="h-display">NOSSO TIME</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate.</p>
+      </div>
+
+      <div class="team-main-img">
+        <div class="ph rounded">[ Imagem Geral da Equipe / Infraestrutura ]</div>
+      </div>
+
+      <div class="team-slider-head">
+        <h3>Conheça Nossos Especialistas</h3>
+        <div class="team-slider-nav">
+          <button class="team-nav-btn" id="teamPrev" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 1.2rem; height: 1.2rem;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="team-nav-btn" id="teamNext" aria-label="Próximo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 1.2rem; height: 1.2rem;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
       </div>
 
-      <div class="infra-row">
-        <div class="infra-img">
-          <div class="ph rounded">[ Imagem Manutenção ]</div>
+      <div class="team-slider" id="teamSlider">
+        
+        <div class="team-card">
+          <div class="team-photo">
+            <div class="ph">[ Foto Vertical 1 ]</div>
+          </div>
+          <div class="team-role">CEO / Diretor</div>
+          <div class="team-name">Nome Sobrenome</div>
+          <div class="team-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem, vel vehicula erat volutpat.</div>
         </div>
-        <div class="infra-content">
-          <h3 data-i18n="sobre_manut">CENTRO DE MANUTENÇÃO</h3>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
-          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-        </div>
-      </div>
 
-      <div class="infra-row">
-        <div class="infra-img">
-          <div class="ph rounded">[ Imagem Equipe ]</div>
+        <div class="team-card">
+          <div class="team-photo">
+            <div class="ph">[ Foto Vertical 2 ]</div>
+          </div>
+          <div class="team-role">Especialista de Vendas</div>
+          <div class="team-name">Nome Sobrenome</div>
+          <div class="team-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem, vel vehicula erat volutpat.</div>
         </div>
-        <div class="infra-content">
-          <h3 data-i18n="sobre_team">NOSSA EQUIPE</h3>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in.</p>
-          <p>Vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-        </div>
-      </div>
 
-    </div>
+        <div class="team-card">
+          <div class="team-photo">
+            <div class="ph">[ Foto Vertical 3 ]</div>
+          </div>
+          <div class="team-role">Atendimento</div>
+          <div class="team-name">Nome Sobrenome</div>
+          <div class="team-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem, vel vehicula erat volutpat.</div>
+        </div>
+
+        <div class="team-card">
+          <div class="team-photo">
+            <div class="ph">[ Foto Vertical 4 ]</div>
+          </div>
+          <div class="team-role">Engenheiro Chefe</div>
+          <div class="team-name">Nome Sobrenome</div>
+          <div class="team-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem, vel vehicula erat volutpat.</div>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-photo">
+            <div class="ph">[ Foto Vertical 5 ]</div>
+          </div>
+          <div class="team-role">Suporte Técnico</div>
+          <div class="team-name">Nome Sobrenome</div>
+          <div class="team-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem, vel vehicula erat volutpat.</div>
+        </div>
+
+      </div> </div>
   </section>
 
 </main>
@@ -361,55 +495,59 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-    gsap.registerPlugin(ScrollTrigger);
+    
+    // ==========================================
+    // 1. Animação da Linha do Tempo (Timeline)
+    // ==========================================
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
 
-    /* --- 1. Animação da Linha do Tempo --- */
-    const tlNodes = gsap.utils.toArray('.tl-node');
-    const lineProgress = document.querySelector('.timeline-line-progress');
-    const isDesktop = window.innerWidth >= 768;
+      const tlNodes = gsap.utils.toArray('.tl-node');
+      const lineProgress = document.querySelector('.timeline-line-progress');
+      const isDesktop = window.innerWidth >= 768;
 
-    const tlAnim = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.timeline-wrapper',
-        start: 'top 80%',    
-        end: 'bottom 50%',   
-        scrub: 1             
-      }
-    });
-
-    if (isDesktop) {
-      tlAnim.to(lineProgress, { width: '100%', ease: 'none', duration: 1 }, 0);
-    } else {
-      tlAnim.to(lineProgress, { height: '100%', ease: 'none', duration: 1 }, 0);
-    }
-
-    tlNodes.forEach((node, i) => {
-      const stepTime = i * (1 / (tlNodes.length - 1 || 1));
-      tlAnim.to(node, { opacity: 1, duration: 0.1 }, stepTime);
-    });
-
-    /* --- 2. Animação da Infraestrutura (Deslizamento Lateral) --- */
-    const infraRows = gsap.utils.toArray('.infra-row');
-
-    infraRows.forEach((row) => {
-      const img = row.querySelector('.infra-img');
-      const content = row.querySelector('.infra-content');
-
-      gsap.set(img, { opacity: 0, x: -50 });
-      gsap.set(content, { opacity: 0, x: 50 });
-
-      const rowTl = gsap.timeline({
+      const tlAnim = gsap.timeline({
         scrollTrigger: {
-          trigger: row,
-          start: "top 80%", 
-          toggleActions: "play none none reverse" 
+          trigger: '.timeline-wrapper',
+          start: 'top 80%',    
+          end: 'bottom 50%',   
+          scrub: 1             
         }
       });
 
-      rowTl.to(img, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" })
-           .to(content, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, "-=0.4"); 
-    });
+      if (isDesktop) {
+        tlAnim.to(lineProgress, { width: '100%', ease: 'none', duration: 1 }, 0);
+      } else {
+        tlAnim.to(lineProgress, { height: '100%', ease: 'none', duration: 1 }, 0);
+      }
+
+      tlNodes.forEach((node, i) => {
+        const stepTime = i * (1 / (tlNodes.length - 1 || 1));
+        tlAnim.to(node, { opacity: 1, duration: 0.1 }, stepTime);
+      });
+    }
+
+    // ==========================================
+    // 2. Lógica do Slider do "Nosso Time"
+    // ==========================================
+    const teamSlider = document.getElementById('teamSlider');
+    const teamPrev = document.getElementById('teamPrev');
+    const teamNext = document.getElementById('teamNext');
+
+    if(teamSlider && teamPrev && teamNext) {
+      // Define a quantidade de pixels para pular ao clicar na seta
+      // Se for celular (menor que 640px) ele pula um cartão inteiro, se for PC pula 2.
+      teamPrev.addEventListener('click', () => {
+        const scrollAmount = window.innerWidth < 640 ? window.innerWidth * 0.85 : teamSlider.clientWidth / 2;
+        teamSlider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+      
+      teamNext.addEventListener('click', () => {
+        const scrollAmount = window.innerWidth < 640 ? window.innerWidth * 0.85 : teamSlider.clientWidth / 2;
+        teamSlider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
+
   });
 </script>
 
