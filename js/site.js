@@ -91,12 +91,9 @@
   <div class="container">
     <div class="f-grid">
       <div>
-        <div class="f-logo">
+        <div class="f-logo f-logo-lg">
           <a href="index.html" aria-label="Plane Aviation">${LOGO_LIGHT}</a>
         </div>
-          <img src="images/cirrus-badge.svg" alt="Cirrus Authorized" class="f-cirrus-seal">
-          <span data-i18n="f_partner">${t("f_partner")}</span>
-        <p class="f-desc" data-i18n="f_desc">${t("f_desc")}</p>
         <!-- Redes sociais -->
         <div class="f-social">
           <a href="https://www.instagram.com/_planeaviation/" target="_blank" rel="noopener" class="f-social-link" aria-label="Instagram">
@@ -134,6 +131,11 @@
         <div class="f-news-row">
           <input type="email" id="footerNewsEmail" data-i18n="f_newsletter_ph" placeholder="${t("f_newsletter_ph")}">
           <button id="footerNewsBtn" data-i18n="f_newsletter_btn">${t("f_newsletter_btn")}</button>
+        </div>
+        <div class="f-cirrus-block">
+          <img src="images/cirrus-badge.svg" alt="Cirrus Authorized" class="f-cirrus-seal">
+          <span data-i18n="f_partner">${t("f_partner")}</span>
+          <p class="f-desc" data-i18n="f_desc">${t("f_desc")}</p>
         </div>
       </div>
     </div>
