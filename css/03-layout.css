@@ -135,17 +135,44 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 .f-logo-lg { transform: scale(1.15); transform-origin: left center; margin-bottom: 1.5rem; }
 
 /* Bloco do selo Cirrus + texto de parceria, abaixo da newsletter */
-.f-cirrus-block { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid hsl(var(--background)/.1); }
-
-.f-cirrus-block span { font-size: var(--font-size-xs); color: hsl(var(--background)/.6); display: block; margin-top: .5rem; }
+.f-cirrus-block { 
+  margin-top: 2rem; /* Espaço para respirar em relação à newsletter */
+  padding-top: 1.5rem; 
+  border-top: 1px solid hsl(var(--background)/.1); 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* No celular, mantém na esquerda para facilitar a leitura */
+  text-align: left;
+}
 
 .f-cirrus-seal { 
-  height: 24px; 
+  height: 28px; /* Selo um pouquinho mais visível */
   width: auto; 
   display: block; 
 }
 
-.f-desc  { font-size: var(--font-size-xs); color: hsl(var(--background)/.4); line-height: 1.6; margin-top: .5rem; }
+.f-cirrus-block span { 
+  font-size: var(--font-size-xs); 
+  color: hsl(var(--background)/.6); 
+  display: block; 
+  margin-top: 1rem; 
+}
+
+.f-desc { 
+  font-size: var(--font-size-xs); 
+  color: hsl(var(--background)/.4); 
+  line-height: 1.6; 
+  margin-top: 0.25rem; 
+  max-width: 280px; /* Limita a largura para o texto quebrar bonito em duas linhas */
+}
+
+/* Alinhamento premium à direita exclusivo para telas grandes (Desktop) */
+@media (min-width: 1024px) {
+  .f-cirrus-block {
+    align-items: flex-end; /* Empurra o selo para a direita */
+    text-align: right;     /* Alinha o texto para a direita */
+  }
+}
 
 /* Redes sociais no rodapé */
 .f-social {
