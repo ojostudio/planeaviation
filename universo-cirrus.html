@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   
   <style>
-    /* Forçando o fundo preto absoluto em toda a página */
+    /* Forçando o fundo preto absoluto no topo da página */
     body {
       background-color: #000000 !important;
       color: #ffffff !important;
@@ -190,13 +190,12 @@
     }
 
     /* ================================================================
-       REDE DE PARCEIROS (REESTRUTURADO EM FUNDO BRANCO PRESERVA DIRETRIZES)
+       REDE DE PARCEIROS (FUNDO BRANCO)
        ================================================================ */
     .partners-section {
-      background: #ffffff !important; /* Fundo branco adaptado */
+      background: #ffffff !important; 
       color: #000000 !important;
-      padding: 6rem 0;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 6rem 0 3rem 0; /* Padding inferior reduzido para colar com o novo banner */
       display: none; 
     }
 
@@ -209,7 +208,7 @@
       font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.4); /* Adaptado para texto escuro */
+      color: rgba(0, 0, 0, 0.4);
       margin-bottom: 0.75rem;
       display: block;
     }
@@ -220,7 +219,7 @@
       font-weight: 800;
       font-style: italic;
       text-transform: uppercase;
-      color: #000000; /* Adaptado para texto escuro */
+      color: #000000; 
       margin: 0;
     }
 
@@ -238,7 +237,7 @@
     }
 
     .partner-card {
-      background: #f9f9f9; /* Card claro para contrastar elegantemente */
+      background: #f9f9f9;
       border: 1px solid rgba(0, 0, 0, 0.08); 
       border-radius: 12px;
       padding: 2rem;
@@ -278,7 +277,7 @@
       text-transform: uppercase;
       color: #ffffff;
       text-decoration: none;
-      background: #000000; /* Botão escuro de alta fidelidade visual */
+      background: #000000;
       padding: 0.625rem 1.25rem;
       border-radius: 6px;
       transition: opacity 0.2s;
@@ -287,6 +286,86 @@
 
     .partner-btn:hover {
       opacity: 0.85;
+    }
+
+    /* ================================================================
+       BANNER CTA DE VÍDEOS (Estilo Configurador)
+       ================================================================ */
+    .video-cta-section { 
+      background: #ffffff !important; 
+      padding: 3rem 0 6rem 0; 
+    }
+    .video-cta-banner { 
+      background-color: #050505; 
+      border-radius: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+    @media(min-width: 768px) { 
+      .video-cta-banner { flex-direction: row; align-items: stretch; } 
+    }
+    .video-img-box { 
+      flex: 1.2; 
+      position: relative; 
+      min-height: 300px; 
+      background: #111; 
+    }
+    .video-img-box img { 
+      position: absolute; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      object-fit: cover; 
+      border-right: 1px solid rgba(255,255,255,0.1); 
+      filter: brightness(0.85);
+      transition: filter 0.3s;
+    }
+    .video-cta-banner:hover .video-img-box img {
+      filter: brightness(1);
+    }
+    .video-cta-content { 
+      flex: 1; 
+      padding: 3rem; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: flex-start; 
+      text-align: left; 
+    }
+    @media(min-width: 768px) { 
+      .video-cta-content { align-items: flex-end; text-align: right; } 
+    }
+    .video-cta-title { 
+      font-family: 'Grift', 'Bebas Neue', sans-serif; 
+      font-size: clamp(2.5rem, 4vw, 4rem); 
+      font-weight: 800; 
+      font-style: italic; 
+      color: transparent; 
+      -webkit-text-stroke: 1px white; 
+      text-transform: uppercase; 
+      line-height: 1.05; 
+      margin: 0.5rem 0 1rem 0; 
+    }
+    .video-cta-btn { 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 0.5rem; 
+      background: transparent; 
+      border: 1px solid rgba(255,255,255,0.4); 
+      color: #fff; 
+      border-radius: 8px; 
+      padding: 0.875rem 1.5rem; 
+      font-size: 10px; 
+      font-weight: 700; 
+      letter-spacing: 0.1em; 
+      text-transform: uppercase; 
+      text-decoration: none; 
+      transition: all 0.2s; 
+    }
+    .video-cta-btn:hover { 
+      background: rgba(255,255,255,0.1); 
+      border-color: #fff; 
     }
   </style>
 </head>
@@ -301,7 +380,7 @@
         <h1 class="h-display" style="margin-top: 0.5rem;">UNIVERSO CIRRUS</h1>
         <p class="muted">
           Conheça a linha completa de aeronaves da fabricante que revolucionou a aviação geral. 
-          Como representative exclusiva no Brasil, a Plane Aviation oferece acesso direto ao que há de mais moderno em tecnologia e segurança no mundo.
+          Como representante exclusiva no Brasil, a Plane Aviation oferece acesso direto ao que há de mais moderno em tecnologia e segurança no mundo.
         </p>
       </div>
     </section>
@@ -325,6 +404,26 @@
         <div class="partners-grid" id="partnersGrid"></div>
       </div>
     </section>
+
+    <section class="video-cta-section">
+      <div class="container">
+        <div class="video-cta-banner">
+          <div class="video-img-box" id="latestVideoThumb">
+             <div class="ph" style="color: rgba(255,255,255,0.2);">Carregando vídeo...</div>
+          </div>
+          <div class="video-cta-content">
+            <span style="color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;">Plane no YouTube</span>
+            <h2 class="video-cta-title">Vídeos Técnicos</h2>
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem; max-width: 320px; margin-bottom: 2rem; line-height: 1.6;">Acompanhe reviews completos, tours de cabine e demonstrações detalhadas da frota Cirrus.</p>
+            <a href="news.html" class="video-cta-btn">
+              ASSISTIR AGORA 
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1.2em; height: 1.2em;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <div id="site-footer"></div>
@@ -339,10 +438,19 @@
   <script>
     const ARROW_SVG = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1.2em;height:1.2em;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
+    // Helper para extrair ID do YouTube
+    function getYouTubeId(url) {
+      if (!url) return null;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         loadCirrusFleet();
         loadPartners();
+        loadLatestVideoCTA(); // Chama a nova função
       }, 500);
       document.addEventListener("pa:langchange", () => {
         loadCirrusFleet();
@@ -454,6 +562,33 @@
         section.style.display = "block";
       } catch (e) {
         console.error("Erro ao carregar parceiros:", e);
+      }
+    }
+
+    // Função que busca a thumbnail do último vídeo para a CTA
+    async function loadLatestVideoCTA() {
+      if (!window.PA || !PA.configured) return;
+      try {
+        const vidSnap = await PA.db.collection("videos").get();
+        if (vidSnap.empty) return;
+        
+        let docs = vidSnap.docs.map(d => d.data());
+        // Ordena para pegar o mais recente
+        docs.sort((a,b) => {
+          const tA = a.videoDate ? new Date(a.videoDate).getTime() : (a.createdAt ? a.createdAt.seconds*1000 : 0);
+          const tB = b.videoDate ? new Date(b.videoDate).getTime() : (b.createdAt ? b.createdAt.seconds*1000 : 0);
+          return tB - tA;
+        });
+        
+        const latest = docs[0];
+        const videoId = getYouTubeId(latest.youtubeUrl);
+        const thumbBox = document.getElementById("latestVideoThumb");
+        
+        if(videoId && thumbBox) {
+          thumbBox.innerHTML = `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Último Vídeo" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">`;
+        }
+      } catch(e) {
+        console.error("Erro ao carregar video CTA", e);
       }
     }
   </script>
