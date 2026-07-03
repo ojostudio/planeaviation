@@ -243,6 +243,35 @@ CONFIGURADOR
 
 
 </main>
+
+<button id="btnScrollTop" class="scroll-to-top" aria-label="Voltar ao topo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1.2rem; height: 1.2rem;">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnTop = document.getElementById("btnScrollTop");
+      if (btnTop) {
+        // Monitora o scroll da página
+        window.addEventListener("scroll", () => {
+          // Se desceu mais de 500 pixels, mostra o botão. Se não, esconde.
+          if (window.scrollY > 500) {
+            btnTop.classList.add("show");
+          } else {
+            btnTop.classList.remove("show");
+          }
+        });
+
+        // Adiciona a ação de clique para subir suavemente
+        btnTop.addEventListener("click", () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
+
 <div id="site-footer"></div>
 
 <script src="js/i18n.js" defer></script>

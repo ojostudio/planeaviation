@@ -535,3 +535,41 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   margin: 0 auto;
   color: rgba(255, 255, 255, 0.6); /* Cor cinza suave para leitura no escuro */
 }
+
+/* ================================================================
+   BOTÃO VOLTAR AO TOPO (HOME)
+   ================================================================ */
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px); /* Começa escondido para baixo */
+  opacity: 0;
+  visibility: hidden;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, background 0.2s ease;
+}
+
+/* Classe que será injetada pelo JavaScript para mostrar o botão */
+.scroll-to-top.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.scroll-to-top:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+}
