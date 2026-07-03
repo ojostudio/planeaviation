@@ -196,10 +196,9 @@
       line-height: 1.6;
     }
 
-    /* Imagem Gigante de Contexto */
     .team-main-img {
       width: 100%;
-      aspect-ratio: 21 / 9; /* Formato bem largo e panorâmico */
+      aspect-ratio: 21 / 9; 
       background: #f4f4f4;
       border-radius: 16px;
       border: 1px solid rgba(0,0,0,0.08);
@@ -219,7 +218,6 @@
       background: #f4f4f4;
     }
 
-    /* Cabeçalho do Slider */
     .team-slider-head {
       display: flex;
       flex-direction: column;
@@ -244,7 +242,6 @@
       line-height: 1;
     }
 
-    /* Controles do Slider */
     .team-slider-nav {
       display: flex;
       gap: 0.5rem;
@@ -265,23 +262,21 @@
       border-color: #000;
     }
 
-    /* Container do Slider */
     .team-slider {
       display: flex;
       gap: 1.5rem;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
-      padding-bottom: 2rem; /* Espaço para sombra e scroll invisível */
+      padding-bottom: 2rem; 
       margin-bottom: -2rem; 
-      -ms-overflow-style: none;  /* IE/Edge */
-      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none;  
+      scrollbar-width: none;  
     }
     .team-slider::-webkit-scrollbar { 
-      display: none; /* Chrome/Safari/Opera */
+      display: none; 
     }
 
-    /* Card Individual do Funcionário */
     .team-card {
       flex: 0 0 calc(85vw - 1.5rem);
       scroll-snap-align: start;
@@ -289,11 +284,11 @@
       flex-direction: column;
     }
     @media(min-width: 640px) { .team-card { flex: 0 0 calc(50% - 0.75rem); } }
-    @media(min-width: 1024px) { .team-card { flex: 0 0 calc(25% - 1.125rem); } } /* 4 cartões por vez */
+    @media(min-width: 1024px) { .team-card { flex: 0 0 calc(25% - 1.125rem); } } 
 
     .team-photo {
       width: 100%;
-      aspect-ratio: 3 / 4; /* Formato Retrato Vertical perfeito para pessoas */
+      aspect-ratio: 3 / 4; 
       background: #f4f4f4;
       border-radius: 12px;
       border: 1px solid rgba(0,0,0,0.08);
@@ -302,7 +297,7 @@
       transition: transform 0.3s ease;
     }
     .team-card:hover .team-photo {
-      transform: translateY(-4px); /* Leve flutuação ao passar o mouse */
+      transform: translateY(-4px); 
     }
     .team-photo .ph {
       width: 100%; height: 100%; 
@@ -318,7 +313,7 @@
       font-weight: 700;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #d9202a; /* Destaque no vermelho da marca */
+      color: #d9202a; 
       margin-bottom: 0.25rem;
     }
     .team-name {
@@ -334,6 +329,84 @@
       font-size: 0.875rem;
       color: rgba(0,0,0,0.6);
       line-height: 1.5;
+    }
+
+    /* ================================================================
+       4. SUSTENTABILIDADE (FUNDO ESCURO + LAYOUT EDITORIAL SPLIT)
+       ================================================================ */
+    .sust-section {
+      background-color: #050505;
+      color: #ffffff;
+      padding: 8rem 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .sust-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    
+    @media(min-width: 768px) {
+      .sust-grid {
+        grid-template-columns: 1.1fr 0.9fr; /* Texto levemente mais largo que a imagem */
+        gap: 6rem;
+      }
+    }
+
+    .sust-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sust-content .eyebrow {
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1rem;
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .sust-content .h-display {
+      color: #ffffff;
+      margin-bottom: 2rem;
+      font-weight: 800;
+      font-style: italic;
+    }
+
+    .sust-content p {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .sust-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sust-img-box {
+      width: 100%;
+      aspect-ratio: 4 / 5; /* Formato vertical sofisticado */
+      background: #111;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .sust-img-box .ph {
+      width: 100%; height: 100%; 
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.2); 
+      font-size: 0.875rem; 
+      text-transform: uppercase; 
+      letter-spacing: 0.1em;
+      background: #111;
     }
   </style>
 </head>
@@ -415,7 +488,7 @@
       
       <div class="team-intro">
         <h2 class="h-display">NOSSO TIME</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate.</p>
+        <p>A excelência da Plane Aviation é reflexo direto da paixão e especialização da nossa equipe. Conheça as pessoas por trás das operações que garantem o mais alto padrão em atendimento e segurança. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       </div>
 
       <div class="team-main-img">
@@ -484,6 +557,27 @@
       </div> </div>
   </section>
 
+  <section class="sust-section">
+    <div class="container">
+      <div class="sust-grid">
+        
+        <div class="sust-content">
+          <span class="eyebrow">Compromisso com o Futuro</span>
+          <h2 class="h-display">SUSTENTABILIDADE</h2>
+          
+          <p>Acreditamos que o futuro da aviação executiva passa por inovações e práticas mais limpas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+          
+          <p>Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.</p>
+        </div>
+
+        <div class="sust-img-box">
+          <div class="ph">[ Imagem Sustentabilidade ]</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <div id="site-footer"></div>
@@ -535,8 +629,6 @@
     const teamNext = document.getElementById('teamNext');
 
     if(teamSlider && teamPrev && teamNext) {
-      // Define a quantidade de pixels para pular ao clicar na seta
-      // Se for celular (menor que 640px) ele pula um cartão inteiro, se for PC pula 2.
       teamPrev.addEventListener('click', () => {
         const scrollAmount = window.innerWidth < 640 ? window.innerWidth * 0.85 : teamSlider.clientWidth / 2;
         teamSlider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
