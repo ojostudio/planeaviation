@@ -131,21 +131,21 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 
 .f-logo  { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; }
 
-/* Selo com espaçamento inferior */
-.f-cirrus-seal { 
-  height: 28px; 
-  width: auto; 
-  display: block; 
-  margin-bottom: 1rem; 
-}
+/* Logo maior no rodapé (coluna esquerda) */
+.f-logo-lg { transform: scale(1.15); transform-origin: left center; margin-bottom: 1.5rem; }
 
-.f-desc  { font-size: var(--font-size-xs); color: hsl(var(--background)/.4); line-height: 1.6; }
-/* Controla o tamanho do selo em proporção de ~66% em relação à logo da Plane */
+/* Bloco do selo Cirrus + texto de parceria, abaixo da newsletter */
+.f-cirrus-block { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid hsl(var(--background)/.1); }
+
+.f-cirrus-block span { font-size: var(--font-size-xs); color: hsl(var(--background)/.6); display: block; margin-top: .5rem; }
+
 .f-cirrus-seal { 
   height: 24px; 
   width: auto; 
   display: block; 
 }
+
+.f-desc  { font-size: var(--font-size-xs); color: hsl(var(--background)/.4); line-height: 1.6; margin-top: .5rem; }
 
 /* Redes sociais no rodapé */
 .f-social {
