@@ -524,21 +524,24 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   position: relative;
   background-color: #000000;
   
-  /* --- MÁGICA DA IMAGEM NA BASE --- */
+  /* Imagem colada na base com gradiente */
   background-image: url('../images/vision-bg.webp');
-  background-position: bottom center; /* Prega a imagem na parte de baixo */
+  background-position: bottom center; 
   background-repeat: no-repeat;
-  background-size: 100% auto; /* 100% da largura, ajustando a altura automaticamente */
+  background-size: 100% auto; 
   
-  /* --- AJUSTE DE POSIÇÃO DOS TEXTOS --- */
-  padding-top: 8rem; /* Começa o texto um pouco abaixo do começo da seção */
-  padding-bottom: 25vw; /* Deixa um grande buraco vazio na base para a imagem aparecer sem textos por cima */
-  min-height: 80vh; /* Garante que a seção seja bem alta e imponente */
+  /* 👇 AQUI ESTÃO OS 3 CONTROLES DE ALTURA PARA VOCÊ BRINCAR 👇 */
+  
+  min-height: 200vh;    /* 1. ALTURA GERAL: Define o tamanho da tela. Aumente para 120vh se quiser a seção gigante. */
+  padding-top: 10rem;   /* 2. ESPAÇO NO TOPO: Empurra os textos ("Próximo Capítulo") mais para baixo. */
+  padding-bottom: 35vw; /* 3. BURACO DO AVIÃO: Espaço em branco no fundo. Aumente esse número (ex: 40vw) se o texto estiver caindo em cima da foto do avião. */
+  
+  /* ========================================================= */
   
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Força o texto a ficar na parte de cima */
+  justify-content: flex-start; 
 }
 
 .home-dark-extra-section .h-display {
@@ -546,18 +549,19 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   margin-top: 0.5rem;
   margin-bottom: 1.5rem;
 }
+
 .home-dark-extra-section .text-body {
   max-width: 600px;
   margin: 0 auto;
-  color: rgba(255, 255, 255, 0.6); /* Cor cinza suave para leitura no escuro */
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* --- AJUSTE PARA CELULARES --- */
+/* Ajuste de altura para celulares */
 @media (max-width: 768px) {
   .home-dark-extra-section {
-    background-size: cover; /* No mobile, o cover evita que a imagem fique um risco fino na base */
-    padding-top: 5rem;
-    padding-bottom: 15rem; /* Ajusta o buraco da base pro tamanho da tela do celular */
+    background-size: cover; 
+    padding-top: 6rem;
+    padding-bottom: 18rem; /* Ajuste o buraco do avião para o mobile aqui */
     min-height: 60vh;
   }
 }
