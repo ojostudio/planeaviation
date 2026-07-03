@@ -347,9 +347,15 @@
       text-align: left; 
     }
 
-    /* Apenas definimos margem e cor locais, a fonte é herdada da classe global .h-display no HTML */
+    /* Restaurando as propriedades completas e rigorosas do título principal (Negrito e Itálico) */
     .video-cta-title { 
+      font-family: 'Grift', 'Bebas Neue', sans-serif; 
+      font-size: clamp(2.5rem, 4vw, 3.5rem); 
+      font-weight: 800; 
+      font-style: italic; 
       color: #ffffff;
+      text-transform: uppercase; 
+      line-height: 1.05; 
       margin: 0.5rem 0 1rem 0; 
     }
     
@@ -421,7 +427,7 @@
           <div class="video-cta-content">
             <span style="color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;">Conteúdo & Mídia</span>
             
-            <h2 class="h-display video-cta-title">MAIS SOBRE O<br>UNIVERSO CIRRUS</h2>
+            <h2 class="video-cta-title">MAIS SOBRE O<br>UNIVERSO CIRRUS</h2>
             
             <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem; max-width: 320px; margin-bottom: 2rem; line-height: 1.6;">Acompanhe nossas análises de mercado, podcast oficial e vídeos com demonstrações detalhadas da frota.</p>
             
