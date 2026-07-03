@@ -403,7 +403,7 @@ function renderPaginationControls(container, targetGridId, current, total, onCha
     </div>
   `;
   
-  // O clique agora engatilha a animação e passa a troca de página como callback!
+  // O clique agora engatilha a animação e passa a troca de página como callback
   container.querySelector('.prev-btn').addEventListener('click', () => {
     if (current > 0) animateChange(targetGridId, () => onChange(current - 1));
   });
