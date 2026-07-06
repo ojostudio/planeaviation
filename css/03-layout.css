@@ -2,6 +2,7 @@
    3. LAYOUT, HEADER E FOOTER
    ================================================================ */
 .container {
+  width: 100%;
   max-width: var(--maxw);
   margin: 0 auto;
   padding-left: 1rem;
@@ -155,6 +156,9 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 
 /* Logo maior no rodapé (coluna esquerda) */
 .f-logo-lg { transform: scale(1.15); transform-origin: left center; margin-bottom: 1.5rem; }
+@media(max-width: 640px) {
+  .f-logo-lg { transform: scale(1); }
+}
 
 /* Bloco do selo Cirrus + texto de parceria, abaixo da newsletter */
 .f-cirrus-block { 
