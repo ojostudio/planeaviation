@@ -21,7 +21,7 @@
   const NAV = [
     { key:"nav_aircraft", href:"aeronaves.html" },
     { key:"nav_cirrus",   href:"universo-cirrus.html" },
-   /* ---- { key:"nav_services", href:"servicos.html" },---- */
+    { key:"nav_services", href:"servicos.html" },
     { key:"nav_about",    href:"sobre.html" },
     { key:"nav_contact",  href:"contato.html" },
   ];
@@ -78,7 +78,7 @@
   const FOOTER_LINKS = [
     { key:"nav_aircraft",  href:"aeronaves.html" },
     { key:"uc_title",      href:"universo-cirrus.html" },
-    { key:"cfg_title",     href:"configurador.html" },
+    { key:"cfg_title",     href:"https://plane-configurator-kappa.vercel.app/" },
     { key:"sobre_title",   href:"sobre.html" },
     { key:"svc_title",     href:"servicos.html" },
     { key:"news_title",    href:"news.html" },
@@ -110,7 +110,11 @@
       <div class="f-col">
         <h4 data-i18n="f_nav">${t("f_nav")}</h4>
         <nav>
-          ${FOOTER_LINKS.map(l => `<a href="${l.href}" data-i18n="${l.key}">${t(l.key)}</a>`).join("")}
+          ${FOOTER_LINKS.map(l => {
+            const external = /^https?:\/\//.test(l.href);
+            const attrs = external ? ` target="_blank" rel="noopener"` : "";
+            return `<a href="${l.href}"${attrs} data-i18n="${l.key}">${t(l.key)}</a>`;
+          }).join("")}
           <a href="contato.html" class="last" data-i18n="f_consultant">${t("f_consultant")}</a>
         </nav>
       </div>
