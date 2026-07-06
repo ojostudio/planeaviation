@@ -148,7 +148,7 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 .f-cirrus-block span { font-size: var(--font-size-xs); color: hsl(var(--background)/.6); display: block; margin-top: .5rem; }
 
 .f-cirrus-seal { 
-  height: 30px; 
+  height: 45px; 
   width: auto; 
   display: block; 
 }
