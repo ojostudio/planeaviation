@@ -19,6 +19,16 @@
   
   .art-content { max-width: 1000px; margin: 0 auto 5rem; font-size: 1.125rem; line-height: 1.8; color: hsl(var(--foreground)); }
   .art-content p { margin-bottom: 1.5rem; }
+
+  .art-nav-wrap { max-width: 1000px; margin: 4rem auto 0; border-top: 1px solid hsl(var(--border)); padding-top: 2rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .art-nav-btn { flex: 1 1 220px; min-width: 0; text-align: left; border-radius: 8px; padding: 1rem; text-decoration: none; }
+  .art-nav-next { text-align: right; margin-left: auto; }
+  .art-nav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #000; display: block; margin-bottom: 0.25rem; }
+  .art-nav-title { font-size: 14px; font-weight: 700; color: #000; text-transform: none; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  @media(max-width: 560px) {
+    .art-nav-wrap { flex-direction: column; }
+    .art-nav-next { text-align: left; margin-left: 0; }
+  }
 </style>
 <script src="js/i18n.js" defer></script>
 <script src="js/site.js" defer></script>
@@ -37,14 +47,14 @@
       <div class="art-cover" id="artCover"></div>
       <div class="art-content" id="artBody"></div>
     </div>
-    <div style="max-width: 1000px; margin: 4rem auto 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex; justify-content: space-between; gap: 2rem;" id="artNav">
-      <a href="#" id="btnPrevArt" class="btn-outline-dark" style="display:none; text-align:left; border-radius:8px; padding:1rem; min-width:12rem; text-decoration:none;">
-        <span style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:rgb(0, 0, 0); display:block; margin-bottom:0.25rem;">← ANTERIOR</span>
-        <span id="lblPrevTitle" style="font-size:14px; font-weight:700; color:#000000; text-transform:none;"></span>
+    <div class="art-nav-wrap" id="artNav">
+      <a href="#" id="btnPrevArt" class="btn-outline-dark art-nav-btn art-nav-prev" style="display:none;">
+        <span class="art-nav-label">← ANTERIOR</span>
+        <span id="lblPrevTitle" class="art-nav-title"></span>
       </a>
-      <a href="#" id="btnNextArt" class="btn-outline-dark" style="display:none; text-align:right; margin-left:auto; border-radius:8px; padding:1rem; min-width:12rem; text-decoration:none;">
-        <span style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:rgb(0, 0, 0); display:block; margin-bottom:0.25rem;">PRÓXIMO →</span>
-        <span id="lblNextTitle" style="font-size:14px; font-weight:700; color:#000000; text-transform:none;"></span>
+      <a href="#" id="btnNextArt" class="btn-outline-dark art-nav-btn art-nav-next" style="display:none;">
+        <span class="art-nav-label">PRÓXIMO →</span>
+        <span id="lblNextTitle" class="art-nav-title"></span>
       </a>
     </div>
     
