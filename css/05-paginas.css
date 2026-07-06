@@ -229,6 +229,11 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 .casa-cirrus-card .title { color: #fff; margin-bottom: 1.5rem; }
 .casa-cirrus-card .text-body { max-width: 400px; margin: 0 auto; }
 
+/* Ajuste responsivo para tablets (evita padding horizontal excessivo entre o mobile e o desktop) */
+@media (max-width: 1024px) {
+  .home-casa-cirrus { padding: 8rem 3rem; }
+}
+
 /* Ajuste responsivo para mobile (Celulares) */
 @media (max-width: 640px) { 
   .casa-cirrus-card { padding: 3rem 2rem; } 
@@ -274,8 +279,55 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 
 #cp-texto-aviao { font-size: 20vw; top: 15%; opacity: 0; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8); position: absolute; width: 100%; text-align: center; line-height: 1; }
 #cp-texto-modelo { font-size: 15vw; top: 40%; opacity: 0; scale: 1.1; color: transparent; -webkit-text-stroke: 1.5px white; position: absolute; width: 100%; text-align: center; line-height: 1; margin-bottom: 10px; }
-#cp-card-glass { position: absolute; bottom: 5%; width: 90%; max-width: 900px; padding: 2.5rem; border-radius: 24px; background: rgba(10, 10, 10, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid rgba(255, 255, 255, 0.25); border-left: 1px solid rgba(255, 255, 255, 0.15); border-right: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 10px 20px rgba(255, 255, 255, 0.02); color: white; pointer-events: auto; overflow: hidden; opacity: 0; transform: translateY(100px); }
-#cp-card-glass::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='752.86 739.9 1059.07 767.06' preserveAspectRatio='none'%3E%3Cpath d='M432.98,708.96s66.85,156.3,214.84,499.64c133.88,310.58,347.94,333.57,432.83,333.57h1177.89c33.92,0,34.37-46.19,0-46.19-552.39,0-895.83-299.82-1085.3-601.86-65.64-104.64-206.59-185.16-324.02-185.16-436.59,0-416.23,0-416.23,0h0Z' fill='%23dc0000' fill-opacity='0.12' stroke='%23dc0000' stroke-width='2.5'/%3E%3C/svg%3E"); background-size: 100% 100%; background-repeat: no-repeat; }
+/* ================================================================
+   AJUSTE DO CARD PARA RECEBER O GRADIENTE ANIMADO
+   ================================================================ */
+
+#cp-card-glass { 
+  position: absolute; bottom: 5%; width: 90%; max-width: 900px; padding: 2.5rem; border-radius: 24px; 
+  background: rgba(10, 10, 10, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
+  border-top: 1px solid rgba(255, 255, 255, 0.25); border-left: 1px solid rgba(255, 255, 255, 0.15); 
+  border-right: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 10px 20px rgba(255, 255, 255, 0.02); 
+  color: white; pointer-events: auto; 
+  
+  /* O 'overflow: hidden;' FOI REMOVIDO DAQUI para o gradiente poder vazar livremente */
+  
+  opacity: 0; transform: translateY(100px); 
+}
+
+#cp-card-glass::before { 
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; 
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='752.86 739.9 1059.07 767.06' preserveAspectRatio='none'%3E%3Cpath d='M432.98,708.96s66.85,156.3,214.84,499.64c133.88,310.58,347.94,333.57,432.83,333.57h1177.89c33.92,0,34.37-46.19,0-46.19-552.39,0-895.83-299.82-1085.3-601.86-65.64-104.64-206.59-185.16-324.02-185.16-436.59,0-416.23,0-416.23,0h0Z' fill='%23dc0000' fill-opacity='0.12' stroke='%23dc0000' stroke-width='2.5'/%3E%3C/svg%3E"); 
+  background-size: 100% 100%; background-repeat: no-repeat; 
+  
+  /* REGRAS ADICIONADAS: Mantém a onda vermelha presa e arredondada dentro do card */
+  border-radius: inherit; 
+  overflow: hidden;
+}
+
+/* ================================================================
+   A MÁGICA: O GRADIENTE QUE SOBE JUNTO COM O CARD
+   ================================================================ */
+#cp-card-glass::after {
+  content: '';
+  position: absolute;
+  /* Posicionamento milimétrico: 
+     O gradiente desce além do card e estica de fora a fora na tela inteira */
+  bottom: -20vh; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 60vh; /* Altura generosa para garantir que a névoa do gradiente cubra o corte seco */
+  
+  background-image: url('../images/gradiente_Rodape.png');
+  background-size: 100% 100%;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  
+  z-index: -2; /* Fica estrategicamente posicionado nas costas de tudo */
+  pointer-events: none;
+}
 .cp-card-content { display: flex; justify-content: space-between; gap: 40px; }
 .cp-card-left { flex: 1; display: flex; flex-direction: column; gap: 15px; }
 .cp-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: max-content; }
@@ -371,6 +423,9 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   position: sticky;
   top: calc(var(--header-h) + 2rem);
 }
+@media(max-width: 1023px) {
+  .det-commercial-info { position: static; top: auto; }
+}
 .det-title { font-size: clamp(2rem, 3vw, 2.5rem); margin: 0.5rem 0 1.5rem; line-height: 1.1; }
 .det-title span { font-weight: 400; }
 
@@ -423,6 +478,11 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   padding: 2.5rem; position: relative;
   transform: translateY(20px); transition: transform 0.3s ease;
   box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+@media(max-width: 480px) {
+  .modal { padding: 1.5rem; border-radius: 12px; }
 }
 .overlay.open .modal { 
   transform: translateY(0); 
@@ -569,41 +629,35 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 /* Regra para a imagem interna posicionada no topo */
 .home-dark-extra-section .extra-img {
   display: block;
-  margin: 0 auto -7rem auto; /* Zera em cima e joga 4rem embaixo para empurrar o texto com elegância */
+  margin: 0 auto 4rem auto; /* Zera em cima e joga 4rem embaixo para empurrar o texto com elegância */
   width: 100%; 
   height: auto;
 }
 
 
-/* --- GRID DE CARDS DE SEGURANÇA (BENTO GRID GLASSMORPHISM) --- */
+/* --- GRID DE CARDS DE SEGURANÇA (GLASSMORPHISM) --- */
 .home-dark-extra-section .safety-glass-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.5rem;
-  margin-top: 5rem;
-}
-
-@media (min-width: 768px) {
-  .home-dark-extra-section .safety-glass-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-  }
+  margin-top: 5rem; /* Cria um respiro grande entre o texto e os cards */
 }
 
 .home-dark-extra-section .safety-glass-card {
+  flex: 1 1 300px;
+  max-width: 380px; 
+  
   /* Efeito Vidro Premium */
   background: rgba(20, 20, 20, 0.4);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  border-radius: 16px;
   
-  display: flex;
-  flex-direction: column;
+  padding: 2.5rem 2rem;
   text-align: left; 
   transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-  overflow: hidden;
-  padding: 0; /* Zera o padding antigo para usar o padding interno do conteúdo */
 }
 
 .home-dark-extra-section .safety-glass-card:hover {
@@ -612,28 +666,13 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   background: rgba(30, 30, 30, 0.6);
 }
 
-.home-dark-extra-section .safety-card-content {
-  padding: 3rem 3rem 1.5rem 3rem;
-  flex: 1; /* Faz o texto empurrar a foto para o rodapé */
-  display: flex;
-  flex-direction: column;
-  
-  /* GARANTE QUE O TEXTO FICA POR CIMA DA IMAGEM */
-  position: relative;
-  z-index: 2;
-}
-
-.home-dark-extra-section .safety-card-content .eyebrow {
-  margin-bottom: 0.75rem;
-}
-
 .home-dark-extra-section .safety-glass-card h3 {
   color: #ffffff;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   margin-top: 0;
   margin-bottom: 1rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
 }
 
 .home-dark-extra-section .safety-glass-card p {
@@ -641,59 +680,6 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   font-size: var(--text-sm);
   line-height: 1.6;
   margin: 0;
-  margin-bottom: 2rem;
-}
-
-/* Link CTA Interno */
-.home-dark-extra-section .safety-link {
-  margin-top: 0; /* Tiramos o 'auto' para ele não ser empurrado para cima da imagem */
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-.home-dark-extra-section .safety-link:hover {
-  opacity: 0.7;
-}
-.home-dark-extra-section .safety-link svg {
-  width: 1.25em;
-  height: 1.25em;
-}
-
-/* Caixa e Imagem Base */
-.home-dark-extra-section .safety-card-img {
-  width: 100%;
-  padding: 0 3rem 3rem 3rem; 
-  
-  /* REDUZA A INVASÃO DA IMAGEM AQUI */
-  margin-top: -1rem; /* Mudei de -3rem para -1rem para dar mais espaço ao botão */
-  
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 1;
-}
-
-.home-dark-extra-section .safety-card-img img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Ajustes Responsivos para Celulares */
-@media (max-width: 640px) {
-  .home-dark-extra-section .safety-card-content {
-    padding: 2.5rem 2rem 1.5rem 2rem;
-  }
-  .home-dark-extra-section .safety-card-img {
-    padding: 0 2rem 2.5rem 2rem;
-  }
 }
 
 /* ================================================================
