@@ -316,6 +316,15 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   
   opacity: 0; transform: translateY(100px); 
 }
+/* Card mais compacto no mobile: menos padding e textos menores para o
+   conteúdo inteiro caber sem cortar em cima/embaixo dentro do container de 100vh */
+@media (max-width: 768px) {
+  #cp-card-glass { padding: 1.5rem; bottom: 1.25rem; width: 92%; border-radius: 18px; }
+  .cp-stat .h-display { font-size: 1.3rem; }
+  .cp-card-right { gap: .85rem; }
+  .cp-buttons { gap: .6rem; }
+  .cp-description-fixed { margin-top: 6px; margin-bottom: 0; }
+}
 
 #cp-card-glass::before { 
   content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; 
@@ -349,15 +358,36 @@ body.home-page { padding-top: 0; min-height: 100vh; }
   z-index: -2; /* Fica estrategicamente posicionado nas costas de tudo */
   pointer-events: none;
 }
-.cp-card-content { display: flex; justify-content: space-between; gap: 40px; }
-.cp-card-left { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-.cp-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: max-content; }
-.cp-card-right { flex: 0.8; display: flex; flex-direction: column; justify-content: center; gap: 25px; }
+.cp-card-content {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  grid-template-areas:
+    "left    right"
+    "buttons right";
+  column-gap: 40px;
+  row-gap: 15px;
+  align-items: start;
+}
+.cp-card-left { grid-area: left; display: flex; flex-direction: column; gap: 15px; }
+.cp-buttons { grid-area: buttons; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: max-content; }
+.cp-card-right { grid-area: right; display: flex; flex-direction: column; justify-content: center; gap: 25px; align-self: center; }
 .cp-stat { display: flex; flex-direction: column; }
 .cp-stat .h-display { font-size: 1.8rem; color: #fff; }
 .cp-text-body-fixed { font-weight: 500; }
 .cp-description-fixed { margin-top: 10px; margin-bottom: 20px; }
-@media (max-width: 768px) { .cp-card-content { flex-direction: column; } }
+@media (max-width: 768px) {
+  .cp-card-content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "left"
+      "right"
+      "buttons";
+    row-gap: 1.25rem;
+  }
+  .cp-card-right { align-self: stretch; gap: 1rem; }
+  .cp-buttons { max-width: 100%; }
+  .cp-buttons .btn { width: 100%; }
+}
 
 
 /* ================================================================
