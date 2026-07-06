@@ -165,6 +165,7 @@
     toggle.addEventListener("click", () => {
       open = !open;
       mobileNav.classList.toggle("open", open);
+      toggle.classList.toggle("active", open);
       toggle.innerHTML   = open ? ICON_CLOSE : ICON_MENU;
       toggle.setAttribute("aria-expanded", String(open));
       mobileNav.setAttribute("aria-hidden", String(!open));
