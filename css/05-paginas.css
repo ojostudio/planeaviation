@@ -938,7 +938,7 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 }
 
 /* ================================================================
-   SWIPE NATIVO À PROVA DE FALHAS (OUTRAS OPÇÕES - MOBILE)
+   SWIPE NATIVO ALINHADO (OUTRAS OPÇÕES - MOBILE)
    ================================================================ */
 
 /* Trava a tela para não "dançar" para os lados */
@@ -960,11 +960,11 @@ html, body {
     gap: 1.25rem !important;
     padding-bottom: 2rem !important;
     
-    /* Truque Premium: Alinhamento milimétrico com o título no mobile (1rem) */
-    width: 100vw !important;
-    margin-left: -1rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
+    /* Removemos o vazamento! Agora ele ocupa 100% da caixa e herda o alinhamento do título */
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 1.5rem !important; /* Respiro apenas no último card */
   }
 
   /* Esconde a barra de rolagem no iPhone e Chrome Android */
@@ -972,7 +972,7 @@ html, body {
     display: none;
   }
 
-  /* Ocupa 85% da tela para deixar a isca do próximo card à mostra */
+  /* Ocupa 85% do espaço interno para deixar a isca do próximo card à mostra */
   #otherGrid > a {
     flex: 0 0 85% !important;
     scroll-snap-align: start;
