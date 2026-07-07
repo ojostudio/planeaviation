@@ -306,3 +306,17 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
   margin: 0 !important;
   display: block !important;
 }
+
+/* ================================================================
+   AJUSTE DE LEITURA DO MENU MOBILE (AUMENTO SUTIL DE FONTE)
+   ================================================================ */
+@media (max-width: 1023px) {
+  /* Alvo nos links do menu mobile para aumentar levemente o tamanho */
+  .m-nav a, 
+  .mobile-menu a, 
+  #mobileNav a, 
+  .nav-mobile a,
+  .site-header nav a {
+    font-size: 1.125rem !important; /* Aumenta para aprox. 18px - tamanho perfeito para toque e leitura */
+  }
+}
