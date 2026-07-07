@@ -908,9 +908,31 @@ body.home-page { padding-top: 0; min-height: 100vh; }
    INVERSÃO DE ORDEM NO MOBILE (PÁGINA DETALHE DA AERONAVE)
    ================================================================ */
 @media (max-width: 1023px) {
-  /* Força o card comercial (Título, Preço e Botões) a pular para o 
-     topo da tela no celular, antes da galeria e do bloco "Sobre" */
+  /* Abre a "sacola" da coluna da esquerda para o grid gerenciar os filhos diretamente */
+  .det-grid > div:first-child {
+    display: contents !important;
+  }
+
+  /* 1. As fotos principais ficam no topo absoluto */
+  .gal-main {
+    order: 1 !important;
+  }
+  
+  /* 2. As miniaturas vêm logo abaixo da foto principal */
+  .thumbs {
+    order: 2 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* 3. O Card Comercial (Nome, Preço e Botões) entra logo abaixo das fotos! */
   .det-commercial-info {
-    order: -1 !important;
+    order: 3 !important; 
+    position: static !important; /* Desativa o efeito sticky que só faz sentido no PC */
+    margin-bottom: 2rem !important; /* Respiro elegante antes do próximo bloco */
+  }
+
+  /* 4. O bloco "Sobre esta aeronave" e Ficha Técnica vão para o final */
+  .det-desc-box {
+    order: 4 !important; 
   }
 }
