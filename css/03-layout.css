@@ -289,3 +289,20 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
   .f-social-desktop { display: flex !important; }
   .f-social-mobile { display: none !important; }
 }
+
+/* ================================================================
+   CORREÇÃO DO ALINHAMENTO DAS REDES SOCIAIS (MOBILE)
+   ================================================================ */
+/* Blinda os links sociais para não herdarem as margens e o 'display: block' dos textos de contato */
+.f-contact .f-social-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 0 !important; /* Mata a margem fantasma que desalinha as bolinhas */
+}
+
+/* Garante que o ícone fique perfeitamente no centro geométrico da bolinha */
+.f-contact .f-social-link svg {
+  margin: 0 !important;
+  display: block !important;
+}
