@@ -254,3 +254,24 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
 }
 @media(min-width:640px) { .f-bottom { flex-direction: row; } }
 .f-bottom p { font-size: var(--font-size-xs); color: hsl(var(--background)/.3); }
+
+
+/* ================================================================
+   FOOTER MOBILE: NAVEGAÇÃO E CONTATO LADO A LADO
+   ================================================================ */
+@media (max-width: 639px) {
+  .f-grid {
+    grid-template-columns: 1fr 1fr !important; /* Força duas colunas iguais no mobile */
+    gap: 2rem 1rem !important; /* Ajusta o espaçamento (vertical 2rem, horizontal 1rem) */
+  }
+  
+  /* O 1º item (Logo e Redes Sociais) e o 4º item (Newsletter e Selo Cirrus) 
+     são forçados a esticar e ocupar a linha inteira */
+  .f-grid > div:nth-child(1),
+  .f-grid > div:nth-child(4) {
+    grid-column: 1 / -1 !important;
+  }
+  
+  /* Como o 1º e 4º ocupam tudo, o 2º (Navegação) e o 3º (Contato) 
+     se encaixam naturalmente lado a lado nos 50% de espaço que sobram no meio! */
+}
