@@ -938,38 +938,45 @@ body.home-page { padding-top: 0; min-height: 100vh; }
 }
 
 /* ================================================================
-   TRAVA DE TELA E SWIPE NATIVO (OUTRAS OPÇÕES - MOBILE)
+   SWIPE NATIVO À PROVA DE FALHAS (OUTRAS OPÇÕES - MOBILE)
    ================================================================ */
 
-/* 1. Blindagem contra o site "dançar" para os lados */
+/* Trava a tela para não "dançar" para os lados */
 html, body {
   overflow-x: hidden !important;
   width: 100%;
 }
 
 @media (max-width: 768px) {
-  /* 2. Transforma o grid que vem após o cabeçalho "Outras Opções" em um carrossel fluido */
-  .other-section-head + .ac-grid {
+  /* Foca cirurgicamente no ID exclusivo da página de detalhe da aeronave */
+  #otherGrid {
     display: flex !important;
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch; /* Ativa a rolagem macia no iOS */
-    scrollbar-width: none; /* Esconde barra no Firefox */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 1.25rem !important;
-    padding-bottom: 2rem !important; /* Respiro pro dedo */
+    padding-bottom: 2rem !important;
+    
+    /* Truque Premium: Faz o carrossel ignorar o limite do container 
+       e encostar nas bordas do vidro do celular */
+    width: 100vw !important;
+    margin-left: -1.5rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
   }
 
-  /* Esconde a barra de rolagem no Chrome/Safari/iOS */
-  .other-section-head + .ac-grid::-webkit-scrollbar {
+  /* Esconde a barra de rolagem no iPhone e Chrome Android */
+  #otherGrid::-webkit-scrollbar {
     display: none;
   }
 
-  /* 3. Ajusta o tamanho dos cards e aplica o "imã" de rolagem */
-  .other-section-head + .ac-grid > * {
-    flex: 0 0 85% !important; /* Ocupa 85% da tela, deixando a beiradinha do próximo visível */
+  /* Ocupa 85% da tela para deixar a isca do próximo card à mostra */
+  #otherGrid > a {
+    flex: 0 0 85% !important;
     scroll-snap-align: start;
-    height: auto; 
+    height: auto;
   }
 }
