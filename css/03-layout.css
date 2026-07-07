@@ -320,3 +320,34 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
     font-size: 1.125rem !important; /* Aumenta para aprox. 18px - tamanho perfeito para toque e leitura */
   }
 }
+
+/* ================================================================
+   AJUSTE DO SELETOR DE IDIOMAS E RESPIRO (MENU MOBILE)
+   ================================================================ */
+@media (max-width: 1023px) {
+  /* 1. Transforma o dropdown flutuante em um bloco expansível que empurra o botão */
+  .lang-dropdown, 
+  .lang-menu, 
+  .language-selector ul,
+  .lang-list {
+    position: relative !important;
+    top: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(128, 128, 128, 0.2) !important;
+    border-radius: 8px !important;
+  }
+
+  /* 2. Dá um respiro generoso no fundo do menu mobile para garantir que nada seja cortado */
+  .m-nav, 
+  .mobile-menu, 
+  .mobile-nav,
+  #mobileNav {
+    padding-bottom: 4rem !important;
+    overflow-y: auto !important;
+  }
+}
