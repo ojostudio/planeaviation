@@ -816,3 +816,90 @@ body.home-page { padding-top: 0; min-height: 100vh; }
     scroll-snap-align: start;
   }
 }
+
+/* ================================================================
+   BARRA DE FILTROS ANIMADA (AERONAVES DISPONÍVEIS)
+   ================================================================ */
+.filter-wrapper {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1.5rem;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Botão de Filtro Moderno */
+.filter-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+.filter-toggle-btn .chevron {
+  width: 1.2em;
+  height: 1.2em;
+  transition: transform 0.3s ease;
+}
+
+/* Animação da setinha quando aberto */
+.filter-toggle-btn.open .chevron {
+  transform: rotate(180deg);
+}
+
+/* Contador de Aeronaves */
+.filter-count {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+/* O Segredo da Animação Suave (Accordion Moderno) */
+.filter-panel {
+  display: grid;
+  grid-template-rows: 0fr; /* Começa com altura zero */
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-panel.open {
+  grid-template-rows: 1fr; /* Expande revelando o conteúdo */
+}
+
+.filter-panel-inner {
+  overflow: hidden; /* Esconde os elementos vazados durante a animação */
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding-top: 2rem; /* Espaço de respiro quando o painel abre */
+}
+
+/* No computador, alinha os filtros perfeitamente lado a lado */
+@media (min-width: 640px) {
+  .filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

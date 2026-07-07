@@ -21,24 +21,41 @@
 
   <section style="padding-bottom:5rem">
     <div class="container">
-      <div class="ac-filters-bar" id="filtersBar" style="display:none">
-        <div class="ac-filters-label">
-          <svg style="width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
-          <span data-i18n="ac_filters">Filtros</span>
+      
+      <div class="filter-wrapper" id="filtersBar" style="display:none">
+        
+        <div class="filter-header">
+          <button id="filterToggleBtn" class="filter-toggle-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1em; height: 1em;"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+            <span data-i18n="ac_filters">Filtros</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          
+          <div class="filter-count" id="count"></div>
         </div>
-        <div class="ac-fgroup">
-          <span data-i18n="ac_model">Modelo:</span>
-          <select id="fModelo"></select>
+        
+        <div class="filter-panel" id="filterPanel">
+          <div class="filter-panel-inner">
+            <div class="filter-grid">
+              
+              <div class="form-group" style="margin-bottom: 0;">
+                <label data-i18n="ac_model">Modelo:</label>
+                <select id="fModelo"></select>
+              </div>
+              
+              <div class="form-group" style="margin-bottom: 0;">
+                <label data-i18n="ac_condition">Condição:</label>
+                <select id="fCondicao"></select>
+              </div>
+              
+              <div class="form-group" style="margin-bottom: 0;">
+                <label data-i18n="ac_year">Ano:</label>
+                <select id="fAno"></select>
+              </div>
+
+            </div>
+          </div>
         </div>
-        <div class="ac-fgroup">
-          <span data-i18n="ac_condition">Condição:</span>
-          <select id="fCondicao"></select>
-        </div>
-        <div class="ac-fgroup">
-          <span data-i18n="ac_year">Ano:</span>
-          <select id="fAno"></select>
-        </div>
-        <span class="ac-count" id="count"></span>
       </div>
 
       <div class="ac-grid" id="grid"></div>
@@ -60,6 +77,17 @@ const elAno     = document.getElementById("fAno");
 const elGrid    = document.getElementById("grid");
 const elCount   = document.getElementById("count");
 const filtersBar= document.getElementById("filtersBar");
+
+// Gatilhos de Animação do Novo Painel de Filtros
+const filterBtn = document.getElementById("filterToggleBtn");
+const filterPanel = document.getElementById("filterPanel");
+
+if (filterBtn && filterPanel) {
+  filterBtn.addEventListener("click", () => {
+    filterBtn.classList.toggle("open");
+    filterPanel.classList.toggle("open");
+  });
+}
 
 function t(k){ return window.PA_I18N ? PA_I18N.t(k) : k; }
 function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
@@ -130,7 +158,7 @@ function sellBandHTML(){
 
 function buildFilters(){
   if(!allListings.length){ filtersBar.style.display = "none"; return; }
-  filtersBar.style.display = "";
+  filtersBar.style.display = "block"; /* Ajustado de '' para block */
   
   const all = t("ac_all");
   const cirrusModels = [...new Set(allListings.filter(l => l.fabricante === "Cirrus" || !l.fabricante).map(l => l.modeloBase || l.model.split(' ')[0]))].sort();
