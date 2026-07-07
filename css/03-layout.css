@@ -275,3 +275,17 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
   /* Como o 1º e 4º ocupam tudo, o 2º (Navegação) e o 3º (Contato) 
      se encaixam naturalmente lado a lado nos 50% de espaço que sobram no meio! */
 }
+
+/* ================================================================
+   CONTROLE DE EXIBIÇÃO DAS REDES SOCIAIS (DESKTOP X MOBILE)
+   ================================================================ */
+
+/* Por padrão (Celular), o bloco do topo esconde e o de baixo aparece */
+.f-social-desktop { display: none !important; }
+.f-social-mobile { display: flex !important; }
+
+/* Em telas maiores que 640px (Tablet/PC), inverte: mostra no topo e esconde embaixo */
+@media (min-width: 640px) {
+  .f-social-desktop { display: flex !important; }
+  .f-social-mobile { display: none !important; }
+}

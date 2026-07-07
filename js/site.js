@@ -85,7 +85,7 @@
     { key:"f_sell",        href:"contato.html?motivo=vender" },
   ];
 
-  /* ---- FOOTER ---- */
+/* ---- FOOTER ---- */
   const footer = `
 <footer class="site" role="contentinfo">
   <div class="container">
@@ -94,8 +94,7 @@
         <div class="f-logo f-logo-lg">
           <a href="index.html" aria-label="Plane Aviation">${LOGO_LIGHT}</a>
         </div>
-        <!-- Redes sociais -->
-        <div class="f-social">
+        <div class="f-social f-social-desktop">
           <a href="https://www.instagram.com/_planeaviation/" target="_blank" rel="noopener" class="f-social-link" aria-label="Instagram">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
           </a>
@@ -110,11 +109,7 @@
       <div class="f-col">
         <h4 data-i18n="f_nav">${t("f_nav")}</h4>
         <nav>
-          ${FOOTER_LINKS.map(l => {
-            const external = /^https?:\/\//.test(l.href);
-            const attrs = external ? ` target="_blank" rel="noopener"` : "";
-            return `<a href="${l.href}"${attrs} data-i18n="${l.key}">${t(l.key)}</a>`;
-          }).join("")}
+          ${FOOTER_LINKS.map(l => `<a href="${l.href}" data-i18n="${l.key}">${t(l.key)}</a>`).join("")}
           <a href="contato.html" class="last" data-i18n="f_consultant">${t("f_consultant")}</a>
         </nav>
       </div>
@@ -128,6 +123,18 @@
         </a>
         <a href="mailto:contato@planeaviation.com.br">contato@planeaviation.com.br</a>
         <a href="https://wa.me/551145826144" target="_blank" rel="noopener noreferrer">+55 11 4582-6144</a>
+        
+        <div class="f-social f-social-mobile">
+          <a href="https://www.instagram.com/_planeaviation/" target="_blank" rel="noopener" class="f-social-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/plane-aviation/" target="_blank" rel="noopener" class="f-social-link" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@CirrusaircraftBrasil" target="_blank" rel="noopener" class="f-social-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z"/><polygon points="10 15 15 12 10 9"/></svg>
+          </a>
+        </div>
       </div>
       <div class="f-col f-news">
         <h4 data-i18n="f_newsletter">${t("f_newsletter")}</h4>
@@ -137,7 +144,8 @@
           <button id="footerNewsBtn" data-i18n="f_newsletter_btn">${t("f_newsletter_btn")}</button>
         </div>
         <div class="f-cirrus-block">
-          <img src="images/cirrus-badge.svg" alt="Cirrus Authorized Partner" class="f-cirrus-seal">
+          <img src="images/cirrus-badge.svg" alt="Cirrus Authorized" class="f-cirrus-seal">
+          <span data-i18n="f_partner">${t("f_partner")}</span>
           <p class="f-desc" data-i18n="f_desc">${t("f_desc")}</p>
         </div>
       </div>
