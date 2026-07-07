@@ -903,3 +903,14 @@ body.home-page { padding-top: 0; min-height: 100vh; }
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ================================================================
+   INVERSÃO DE ORDEM NO MOBILE (PÁGINA DETALHE DA AERONAVE)
+   ================================================================ */
+@media (max-width: 1023px) {
+  /* Força o card comercial (Título, Preço e Botões) a pular para o 
+     topo da tela no celular, antes da galeria e do bloco "Sobre" */
+  .det-commercial-info {
+    order: -1 !important;
+  }
+}
