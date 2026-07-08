@@ -540,6 +540,7 @@
         </div>
       </div>
     </div>
+    <div id="acMsg" class="msg" style="margin:0 0 .75rem"></div>
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-outline btn-sm" id="acTranslateBtn">Revisar Traduções →</button>
@@ -665,6 +666,7 @@
       </div>
       <div class="fld"><label>Ordem de exibição</label><input id="ptOrder" type="number" placeholder="1"></div>
     </div>
+    <div id="ptMsg" class="msg" style="margin:0 0 .75rem"></div>
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-solid btn-sm" id="ptSave">Salvar Parceiro</button>
@@ -698,6 +700,7 @@
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-solid btn-sm" id="artSave">Salvar Artigo</button>
     </div>
+    <div id="artMsg" class="msg" style="margin:.75rem 0 0"></div>
   </div>
 </div>
 
@@ -719,6 +722,7 @@
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-solid btn-sm" id="podSave">Salvar Podcast</button>
     </div>
+    <div id="podMsg" class="msg" style="margin:.75rem 0 0"></div>
   </div>
 </div>
 
@@ -739,6 +743,7 @@
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-solid btn-sm" id="vidSave">Salvar Vídeo</button>
     </div>
+    <div id="vidMsg" class="msg" style="margin:.75rem 0 0"></div>
   </div>
 </div>
 
@@ -756,8 +761,16 @@
   let editImages = [];
   let editTranslations = {};
 
-  function msg(el, text, type){ el.textContent=text; el.className="msg show "+(type||""); }
-  function clearMsg(el){ el.className="msg"; }
+  function msg(el, text, type){
+    if (!el) return;
+    el.textContent = text;
+    el.className = "msg show " + (type || "");
+    if (el._msgTimer) clearTimeout(el._msgTimer);
+    if (type === "ok") {
+      el._msgTimer = setTimeout(() => { el.className = "msg"; el.textContent = ""; }, 4000);
+    }
+  }
+  function clearMsg(el){ if(el){ el.className="msg"; el.textContent=""; if(el._msgTimer) clearTimeout(el._msgTimer); } }
 
   auth.onAuthStateChanged(async (user) => {
     if (!user) { $("view-loading").style.display="none"; showFlex("view-login"); return; }
@@ -1375,8 +1388,10 @@
     try{
       if(id) await db.collection("aircraft").doc(id).update(data);
       else { data.createdAt=ts(); data.createdBy=me.email; await db.collection("aircraft").add(data); }
-      $("ovAircraft").classList.remove("open"); loadAircraft();
-    }catch(e){ alert("Erro ao salvar: "+e.message); }
+      msg($("acMsg"), id ? "Aeronave atualizada com sucesso!" : "Aeronave cadastrada com sucesso!", "ok");
+      loadAircraft();
+      setTimeout(() => $("ovAircraft").classList.remove("open"), 1200);
+    }catch(e){ msg($("acMsg"), "Erro ao salvar: " + e.message, "err"); }
   }
 
   /* ============================================================
@@ -1499,19 +1514,23 @@
   }
 
   /* Comprime e converte para WebP, exatamente como nas imagens de aeronave,
-     mas com dimensão máxima maior (1920px) e qualidade mais alta (0.82)
-     já que são imagens de fundo de tela cheia. */
+     mas com dimensão máxima maior (2400px) e qualidade mais alta (0.92)
+     já que são imagens de fundo de tela cheia. Não redimensiona se a imagem
+     já estiver dentro dos limites — só converte o formato. */
   function cfgCompressToWebP(file){
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 1920;
+        const MAX = 2400;
         let w = img.width, h = img.height;
-        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-        if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+        // Só redimensiona se realmente ultrapassar o limite
+        if (w > MAX || h > MAX) {
+          if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+          else        { w = Math.round(w * MAX / h); h = MAX; }
+        }
         const c = document.createElement("canvas"); c.width = w; c.height = h;
         c.getContext("2d").drawImage(img, 0, 0, w, h);
-        const webpUrl = c.toDataURL("image/webp", 0.82);
+        const webpUrl = c.toDataURL("image/webp", 0.92);
         resolve(webpUrl);
       };
       img.onerror = reject;
@@ -1627,12 +1646,14 @@
       updatedAt:ts(), 
       updatedBy:me.email 
     };
-    if(!data.title) return alert("O título é obrigatório.");
+    if(!data.title) return msg($("ptMsg"), "O título é obrigatório.", "err");
     try {
       if($("ptId").value) await db.collection("partners").doc($("ptId").value).update(data); 
       else await db.collection("partners").add({ ...data, createdAt:ts(), createdBy:me.email });
-      $("ovPartner").classList.remove("open"); loadPartners();
-    } catch (e) { alert(e.message); }
+      msg($("ptMsg"), "Parceiro salvo com sucesso!", "ok");
+      loadPartners();
+      setTimeout(() => $("ovPartner").classList.remove("open"), 1200);
+    } catch (e) { msg($("ptMsg"), e.message, "err"); }
   }
 
   /* ---------------- HELPERS DE UPLOAD ---------------- */
@@ -1743,13 +1764,15 @@
   }
 
   async function saveArticle() {
-    if(!$("artTitle").value.trim()) return alert("O título é obrigatório.");
+    if(!$("artTitle").value.trim()) return msg($("artMsg"), "O título é obrigatório.", "err");
     const data = { title: $("artTitle").value.trim(), category: $("artCategory").value.trim(), excerpt: $("artExcerpt").value.trim(), content: $("artContent").value.trim(), imageUrl: artCoverUrl, updatedAt: ts() };
     try {
       if($("artId").value) await db.collection("articles").doc($("artId").value).update(data);
       else await db.collection("articles").add({ ...data, createdAt: ts(), createdBy: me.email });
-      $("ovArticle").classList.remove("open"); loadArticles();
-    } catch(e) { alert(e.message); }
+      msg($("artMsg"), "Artigo salvo com sucesso!", "ok");
+      loadArticles();
+      setTimeout(() => $("ovArticle").classList.remove("open"), 1200);
+    } catch(e) { msg($("artMsg"), e.message, "err"); }
   }
 
   // --- CRUD Podcasts ---
@@ -1781,13 +1804,15 @@
     $("ovPodcast").classList.add("open");
   }
   async function savePodcast() {
-    if(!$("podTitle").value.trim() || !$("podLink").value.trim() || !$("podVideoDate").value) return alert("Título, Link e Data do YouTube são obrigatórios.");
+    if(!$("podTitle").value.trim() || !$("podLink").value.trim() || !$("podVideoDate").value) return msg($("podMsg"), "Título, Link e Data do YouTube são obrigatórios.", "err");
     const data = { title: $("podTitle").value.trim(), videoDate: $("podVideoDate").value, duration: $("podDur").value.trim(), desc: $("podDesc").value.trim(), youtubeUrl: $("podLink").value.trim(), updatedAt: ts() };
     try {
       if($("podId").value) await db.collection("podcasts").doc($("podId").value).update(data);
       else await db.collection("podcasts").add({ ...data, createdAt: ts(), createdBy: me.email });
-      $("ovPodcast").classList.remove("open"); loadPodcasts();
-    } catch(e) { alert(e.message); }
+      msg($("podMsg"), "Podcast salvo com sucesso!", "ok");
+      loadPodcasts();
+      setTimeout(() => $("ovPodcast").classList.remove("open"), 1200);
+    } catch(e) { msg($("podMsg"), e.message, "err"); }
   }
     
   /* ============================================================
@@ -1926,13 +1951,15 @@
     $("ovVideo").classList.add("open");
   }
   async function saveVideo() {
-    if(!$("vidTitle").value.trim() || !$("vidLink").value.trim() || !$("vidVideoDate").value) return alert("Título, Link e Data do YouTube são obrigatórios.");
+    if(!$("vidTitle").value.trim() || !$("vidLink").value.trim() || !$("vidVideoDate").value) return msg($("vidMsg"), "Título, Link e Data do YouTube são obrigatórios.", "err");
     const data = { title: $("vidTitle").value.trim(), videoDate: $("vidVideoDate").value, duration: $("vidDur").value.trim(), desc: $("vidDesc").value.trim(), youtubeUrl: $("vidLink").value.trim(), updatedAt: ts() };
     try {
       if($("vidId").value) await db.collection("videos").doc($("vidId").value).update(data);
       else await db.collection("videos").add({ ...data, createdAt: ts(), createdBy: me.email });
-      $("ovVideo").classList.remove("open"); loadVideos();
-    } catch(e) { alert(e.message); }
+      msg($("vidMsg"), "Vídeo salvo com sucesso!", "ok");
+      loadVideos();
+      setTimeout(() => $("ovVideo").classList.remove("open"), 1200);
+    } catch(e) { msg($("vidMsg"), e.message, "err"); }
   }
 
 })();
