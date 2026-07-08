@@ -6,10 +6,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plane Aviation — Representante exclusiva Cirrus no Brasil</title>
+<meta name="description" content="Representante exclusiva Cirrus Aircraft no Brasil. Vision Jet e SR Series com consultoria completa, desembaraço legal e fiscal, e hangaragem premium para quem busca aviação executiva de alta performance.">
+<link rel="canonical" href="https://www.planeaviation.net.br/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Plane Aviation">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://www.planeaviation.net.br/">
+<meta property="og:title" content="Plane Aviation — Representante exclusiva Cirrus no Brasil">
+<meta property="og:description" content="Representante exclusiva Cirrus Aircraft no Brasil. Vision Jet e SR Series com consultoria completa, desembaraço legal e fiscal, e hangaragem premium para quem busca aviação executiva de alta performance.">
+<meta property="og:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Plane Aviation — Representante exclusiva Cirrus no Brasil">
+<meta name="twitter:description" content="Representante exclusiva Cirrus Aircraft no Brasil. Vision Jet e SR Series com consultoria completa, desembaraço legal e fiscal, e hangaragem premium para quem busca aviação executiva de alta performance.">
+<meta name="twitter:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Plane Aviation",
+  "url": "https://www.planeaviation.net.br/",
+  "logo": "https://www.planeaviation.net.br/images/og-cover.jpg",
+  "description": "Representante exclusiva Cirrus Aircraft no Brasil. Vision Jet e SR Series com consultoria completa, desembaraço legal e fiscal, e hangaragem premium.",
+  "sameAs": [
+    "https://www.instagram.com/_planeaviation/",
+    "https://www.linkedin.com/company/plane-aviation/",
+    "https://www.youtube.com/@CirrusaircraftBrasil"
+  ]
+}
+</script>
 </head>
 <body class="home-page">
 <div id="site-header"></div>
@@ -303,6 +334,7 @@ CONFIGURADOR
 <div id="site-footer"></div>
 
 <script src="js/i18n.js" defer></script>
+<script src="js/seo-links.js" defer></script>
 <script src="js/site.js" defer></script>
 <script src="js/scroll-institucional.js" defer></script>
 <script src="js/paralaxe-cirrus.js" defer></script>
@@ -337,7 +369,7 @@ CONFIGURADOR
     const price = (a.sobConsulta || !a.priceNum) ? t("ac_consult") : (a.currency==="BRL" ? "R$"+Number(a.priceNum).toLocaleString("pt-BR") : "USD "+Number(a.priceNum).toLocaleString("en-US"));
     const tagClass = (a.tag && a.tag.toLowerCase().includes('importa')) ? 'white' : '';
 
-    return `<a href="aeronave.html?id=${id}" class="ac-card">
+    return `<a href="${PA_LINKS.aircraftUrl(id)}" class="ac-card">
       <div class="ac-card-img">
         ${media}
         ${a.tag ? `<div class="ac-card-badge-tab nano-tag ${tagClass}">${a.tag}</div>` : ""}
@@ -418,6 +450,7 @@ CONFIGURADOR
 
   async function loadHighlights(){
     const grid = document.getElementById("invGrid");
+    await PA_LINKS.loadAircraftMap();
     if (window.PA && PA.configured) {
       try {
         const snap = await PA.db.collection("aircraft").where("featured","==",true).limit(16).get();

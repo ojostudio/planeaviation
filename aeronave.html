@@ -4,11 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aeronave | Plane Aviation</title>
+<meta name="description" content="Detalhes, especificações e condições desta aeronave Cirrus disponível na Plane Aviation, representante exclusiva da marca no Brasil.">
+<link rel="canonical" href="https://www.planeaviation.net.br/aeronave.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Plane Aviation">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://www.planeaviation.net.br/aeronave.html">
+<meta property="og:title" content="Aeronave Cirrus | Plane Aviation">
+<meta property="og:description" content="Detalhes, especificações e condições desta aeronave Cirrus disponível na Plane Aviation, representante exclusiva da marca no Brasil.">
+<meta property="og:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Aeronave Cirrus | Plane Aviation">
+<meta name="twitter:description" content="Detalhes, especificações e condições desta aeronave Cirrus disponível na Plane Aviation, representante exclusiva da marca no Brasil.">
+<meta name="twitter:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="js/i18n.js" defer></script>
+<script src="js/seo-links.js" defer></script>
 <script src="js/site.js" defer></script>
 </head>
 <body class="bg-radial-dark">
@@ -157,7 +174,19 @@ function getLang(){ return window.PA_I18N ? PA_I18N.getLang() : "pt"; }
 function getLocalized(p,f){ const l=getLang(); return l==="pt"?p[f]||"":(p.translations?.[l]?.[f]||p[f]||""); }
 function getLocalizedArray(p,f){ const l=getLang(); return l==="pt"?p[f]||[]:(p.translations?.[l]?.[f]||p[f]||[]); }
 
-const pageId = new URLSearchParams(location.search).get("id");
+const pageId = window.__AIRCRAFT_ID__ || new URLSearchParams(location.search).get("id");
+
+// Link antigo (aeronave.html?id=X) acessado diretamente: se já existir uma
+// página própria gerada para essa aeronave, manda o visitante pra lá (URL
+// bonita, com preview/OG corretos). Se ainda não existir (aeronave muito
+// recente, ou o gerador ainda não rodou), a página continua funcionando
+// normalmente aqui mesmo — não quebra nada.
+if (!window.__AIRCRAFT_ID__ && pageId) {
+  fetch("aeronaves/index.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(map => { if (map && map[pageId]) location.replace(`aeronaves/${map[pageId]}/`); })
+    .catch(() => {});
+}
 let P = null, activeImg = 0;
 
 document.addEventListener("pa:langchange", () => { if(P) renderPage(P); });
@@ -193,6 +222,50 @@ function fmtPrice(p){
 }
 function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
 
+// Atualiza meta description/OG e injeta dados estruturados (Vehicle) assim que a
+// aeronave carrega. Ajuda o Google (que executa JS) a entender a página melhor
+// desde já — a geração de página estática por aeronave (URL própria, sem depender
+// de JS) é a etapa seguinte do trabalho de SEO.
+function updateSeoTags(p, loc_desc, loc_cond){
+  const title = `${p.model}${p.year ? " "+p.year : ""} | Plane Aviation`;
+  const desc = (loc_desc || `${p.model}${p.year ? ", "+p.year : ""}${loc_cond ? " — "+loc_cond : ""}. Aeronave Cirrus disponível na Plane Aviation, representante exclusiva da marca no Brasil.`).slice(0, 300);
+  const img = (p.images && p.images[0]) || "https://www.planeaviation.net.br/images/og-cover.jpg";
+
+  document.querySelector('meta[name="description"]')?.setAttribute("content", desc);
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+  document.querySelector('meta[property="og:description"]')?.setAttribute("content", desc);
+  document.querySelector('meta[property="og:image"]')?.setAttribute("content", img);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", desc);
+  document.querySelector('meta[name="twitter:image"]')?.setAttribute("content", img);
+
+  let ld = document.getElementById("aircraft-jsonld");
+  if (!ld) {
+    ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.id = "aircraft-jsonld";
+    document.head.appendChild(ld);
+  }
+  ld.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": p.model,
+    "description": desc,
+    "image": p.images || [],
+    "brand": { "@type": "Brand", "name": "Cirrus Aircraft" },
+    "itemCondition": /novo|new/i.test(loc_cond||"") ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
+    ...(p.priceNum ? {
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": p.currency || "USD",
+        "price": p.priceNum,
+        "availability": "https://schema.org/InStock",
+        "url": location.href
+      }
+    } : {})
+  });
+}
+
 function renderPage(p){
   P = p;
   if(!P._init){ activeImg=0; P._init=true; paintMain(); paintThumbs(); }
@@ -206,6 +279,7 @@ function renderPage(p){
   document.getElementById("crumbModel").textContent = p.model + (p.year ? " — "+p.year : "");
   document.getElementById("condLoc").textContent = [loc_cond, loc_loc].filter(Boolean).join(" · ");
   document.title = `${p.model} | Plane Aviation`;
+  updateSeoTags(p, loc_desc, loc_cond);
 
   const parts = p.model.match(/^(.*?)(\s[A-Z0-9+]+)?$/);
   const main = parts?.[1] || p.model;
@@ -260,7 +334,7 @@ function otherCardHTML(id, a){
   const price = (a.sobConsulta||!a.priceNum) ? t("ac_consult") : (a.currency==="BRL"?"R$":"USD ")+Number(a.priceNum).toLocaleString(a.currency==="BRL"?"pt-BR":"en-US");
   const meta = [a.year, a.hoursNum!=null?Number(a.hoursNum).toLocaleString("pt-BR")+"h":null].filter(Boolean).join(" · ");
   const img = (a.images&&a.images[0]) ? `<img src="${a.images[0]}" alt="${a.model}">` : `<div class="ph-dark">[Foto]</div>`;
-  return `<a href="aeronave.html?id=${id}" class="ac-card">
+  return `<a href="${PA_LINKS.aircraftUrl(id)}" class="ac-card">
     <div class="ac-card-img">
       ${img}
       ${a.tag?`<div class="ac-card-badge-tab nano-tag">${a.tag}</div>`:""}
@@ -276,6 +350,7 @@ function otherCardHTML(id, a){
 }
 
 async function init(){
+  await PA_LINKS.loadAircraftMap();
   if(!window.PA || !PA.configured || !pageId){ notFound(); return; }
   try {
     const doc = await PA.db.collection("aircraft").doc(pageId).get();

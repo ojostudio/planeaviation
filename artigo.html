@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Artigo | Plane Aviation</title>
+<meta name="description" content="Conteúdo Plane Aviation sobre aviação executiva, mercado Cirrus e a experiência completa de posse de uma aeronave.">
+<link rel="canonical" href="https://www.planeaviation.net.br/artigo.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Plane Aviation">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://www.planeaviation.net.br/artigo.html">
+<meta property="og:title" content="Artigo | Plane Aviation">
+<meta property="og:description" content="Conteúdo Plane Aviation sobre aviação executiva, mercado Cirrus e a experiência completa de posse de uma aeronave.">
+<meta property="og:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Artigo | Plane Aviation">
+<meta name="twitter:description" content="Conteúdo Plane Aviation sobre aviação executiva, mercado Cirrus e a experiência completa de posse de uma aeronave.">
+<meta name="twitter:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
 <link rel="stylesheet" href="styles.css">
 <style>
   #site-header { display: block; height: 4rem; }
@@ -31,6 +47,7 @@
   }
 </style>
 <script src="js/i18n.js" defer></script>
+<script src="js/seo-links.js" defer></script>
 <script src="js/site.js" defer></script>
 </head>
 <body>
@@ -68,8 +85,50 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
+// Atualiza meta description/OG e injeta dados estruturados (Article) assim que o
+// artigo carrega — mesma lógica aplicada em aeronave.html.
+function updateArticleSeo(art, dateObj){
+  const desc = (art.excerpt || (art.content || "").slice(0, 200).replace(/\n/g, " ")).trim();
+  const img = art.imageUrl || "https://www.planeaviation.net.br/images/og-cover.jpg";
+
+  document.querySelector('meta[name="description"]')?.setAttribute("content", desc);
+  document.querySelector('meta[property="og:type"]')?.setAttribute("content", "article");
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content", `${art.title} | Plane Aviation`);
+  document.querySelector('meta[property="og:description"]')?.setAttribute("content", desc);
+  document.querySelector('meta[property="og:image"]')?.setAttribute("content", img);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", `${art.title} | Plane Aviation`);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", desc);
+  document.querySelector('meta[name="twitter:image"]')?.setAttribute("content", img);
+
+  let ld = document.getElementById("article-jsonld");
+  if (!ld) {
+    ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.id = "article-jsonld";
+    document.head.appendChild(ld);
+  }
+  ld.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": art.title,
+    "description": desc,
+    "image": img ? [img] : [],
+    "datePublished": dateObj ? dateObj.toISOString() : undefined,
+    "author": { "@type": "Organization", "name": "Plane Aviation" },
+    "publisher": { "@type": "Organization", "name": "Plane Aviation" }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
-  const pageId = new URLSearchParams(location.search).get("id");
+  const pageId = window.__ARTICLE_ID__ || new URLSearchParams(location.search).get("id");
+
+  if (!window.__ARTICLE_ID__ && pageId) {
+    fetch("artigos/index.json", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(map => { if (map && map[pageId]) location.replace(`artigos/${map[pageId]}/`); })
+      .catch(() => {});
+  }
+  await PA_LINKS.loadArticleMap();
   if(!window.PA || !PA.configured || !pageId) {
     document.getElementById("artLoading").textContent = "Artigo não encontrado.";
     return;
@@ -99,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nextSnap = await PA.db.collection("articles").where("createdAt", ">", art.createdAt).orderBy("createdAt", "asc").limit(1).get();
     if(!nextSnap.empty) {
       const nextDoc = nextSnap.docs[0];
-      document.getElementById("btnNextArt").href = `artigo.html?id=${nextDoc.id}`;
+      document.getElementById("btnNextArt").href = PA_LINKS.articleUrl(nextDoc.id);
       document.getElementById("lblNextTitle").textContent = nextDoc.data().title;
       document.getElementById("btnNextArt").style.display = "block";
     }
@@ -108,12 +167,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const prevSnap = await PA.db.collection("articles").where("createdAt", "<", art.createdAt).orderBy("createdAt", "desc").limit(1).get();
     if(!prevSnap.empty) {
       const prevDoc = prevSnap.docs[0];
-      document.getElementById("btnPrevArt").href = `artigo.html?id=${prevDoc.id}`;
+      document.getElementById("btnPrevArt").href = PA_LINKS.articleUrl(prevDoc.id);
       document.getElementById("lblPrevTitle").textContent = prevDoc.data().title;
       document.getElementById("btnPrevArt").style.display = "block";
     }
     
     document.title = `${art.title} | Plane Aviation`;
+    updateArticleSeo(art, dateObj);
     document.getElementById("artLoading").style.display = "none";
     document.getElementById("artContainer").style.display = "block";
   } catch(e) {

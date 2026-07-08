@@ -1,0 +1,46 @@
+name: Gerar páginas de SEO (aeronaves e artigos)
+
+# Quando roda:
+#  - a cada 6 horas, automaticamente (pega aeronaves/artigos novos, editados ou arquivados)
+#  - manualmente, a qualquer momento, pelo botão "Run workflow" aqui na aba Actions do GitHub
+#  - sempre que o próprio site (HTML/CSS/JS) for atualizado no branch main
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "aeronave.html"
+      - "artigo.html"
+      - "scripts/generate-static-pages.mjs"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Gerar páginas estáticas (aeronaves, artigos, sitemap.xml)
+        run: node scripts/generate-static-pages.mjs
+
+      - name: Commitar e publicar, se algo mudou
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add aeronaves artigos sitemap.xml
+          if git diff --cached --quiet; then
+            echo "Nada mudou (nenhuma aeronave/artigo novo, editado ou removido) — nada para commitar."
+          else
+            git commit -m "chore: atualiza páginas de SEO (aeronaves/artigos) [automático]"
+            git push
+          fi
