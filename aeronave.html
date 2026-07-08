@@ -25,8 +25,36 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="js/i18n.js" defer></script>
-<script src="js/seo-links.js" defer></script>
+
 <script src="js/site.js" defer></script>
+<script>
+/* seo-links: resolve URL bonita de aeronave/artigo via manifesto gerado,
+   com fallback automático pro link antigo se o manifesto ainda não existir. */
+window.PA_LINKS = (function () {
+  var aircraftMap = null, articleMap = null;
+  function loadAircraftMap() {
+    if (aircraftMap) return Promise.resolve(aircraftMap);
+    return fetch("aeronaves/index.json", { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : {}; })
+      .catch(function(){ return {}; })
+      .then(function(m){ aircraftMap = m; return m; });
+  }
+  function loadArticleMap() {
+    if (articleMap) return Promise.resolve(articleMap);
+    return fetch("artigos/index.json", { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : {}; })
+      .catch(function(){ return {}; })
+      .then(function(m){ articleMap = m; return m; });
+  }
+  function aircraftUrl(id) {
+    return aircraftMap && aircraftMap[id] ? "aeronaves/" + aircraftMap[id] + "/" : "aeronave.html?id=" + id;
+  }
+  function articleUrl(id) {
+    return articleMap && articleMap[id] ? "artigos/" + articleMap[id] + "/" : "artigo.html?id=" + id;
+  }
+  return { loadAircraftMap: loadAircraftMap, loadArticleMap: loadArticleMap, aircraftUrl: aircraftUrl, articleUrl: articleUrl };
+})();
+</script>
 </head>
 <body class="bg-radial-dark">
 <div id="site-header"></div>

@@ -41,6 +41,34 @@
   ]
 }
 </script>
+<script>
+/* seo-links: resolve URL bonita de aeronave/artigo via manifesto gerado,
+   com fallback automático pro link antigo se o manifesto ainda não existir. */
+window.PA_LINKS = (function () {
+  var aircraftMap = null, articleMap = null;
+  function loadAircraftMap() {
+    if (aircraftMap) return Promise.resolve(aircraftMap);
+    return fetch("aeronaves/index.json", { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : {}; })
+      .catch(function(){ return {}; })
+      .then(function(m){ aircraftMap = m; return m; });
+  }
+  function loadArticleMap() {
+    if (articleMap) return Promise.resolve(articleMap);
+    return fetch("artigos/index.json", { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : {}; })
+      .catch(function(){ return {}; })
+      .then(function(m){ articleMap = m; return m; });
+  }
+  function aircraftUrl(id) {
+    return aircraftMap && aircraftMap[id] ? "aeronaves/" + aircraftMap[id] + "/" : "aeronave.html?id=" + id;
+  }
+  function articleUrl(id) {
+    return articleMap && articleMap[id] ? "artigos/" + articleMap[id] + "/" : "artigo.html?id=" + id;
+  }
+  return { loadAircraftMap: loadAircraftMap, loadArticleMap: loadArticleMap, aircraftUrl: aircraftUrl, articleUrl: articleUrl };
+})();
+</script>
 </head>
 <body class="home-page">
 <div id="site-header"></div>
@@ -334,7 +362,7 @@ CONFIGURADOR
 <div id="site-footer"></div>
 
 <script src="js/i18n.js" defer></script>
-<script src="js/seo-links.js" defer></script>
+
 <script src="js/site.js" defer></script>
 <script src="js/scroll-institucional.js" defer></script>
 <script src="js/paralaxe-cirrus.js" defer></script>
