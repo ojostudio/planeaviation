@@ -212,12 +212,12 @@
   <div class="container" style="padding-top:2rem;padding-bottom:4rem">
     <div class="tabs">
       <button class="tab active" data-tab="aircraft">Aeronaves à venda</button>
-      <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
       <button class="tab admin-only" data-tab="config">Conteúdo</button>
-      <button class="tab" data-tab="partners">Parceiros</button>
       <button class="tab" data-tab="news">News & Insights</button>
+      <button class="tab" data-tab="partners">Parceiros</button>
       <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab" data-tab="newsletter">Newsletter</button>
+      <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
     </div>
 
     <div class="panel" id="panel-leads">
@@ -296,7 +296,16 @@
           </div>
           <div class="fld"><label>Texto do Botão</label><input id="cfgBtnText1"></div>
           <div class="fld"><label>Link do Botão</label><input id="cfgBtnUrl1"></div>
-          <div class="fld"><label>URL da Imagem (Fundo)</label><input id="cfgHeroImage1" type="url"></div>
+          <div class="fld">
+            <label>Imagem de Fundo</label>
+            <div class="up-zone" id="cfgUpZone1" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
+              Clique para selecionar ou arraste uma imagem aqui
+              <input type="file" id="cfgFile1" accept="image/*" style="display:none">
+            </div>
+            <div class="prog" id="cfgProg1" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
+            <div id="cfgThumb1" style="margin-bottom:.5rem"></div>
+            <input id="cfgHeroImage1" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
+          </div>
           <div class="fld"><label>URL do Vídeo MP4 (Substitui a Imagem)</label><input id="cfgHeroVideo1" type="url"></div>
         </div>
 
@@ -309,7 +318,16 @@
           </div>
           <div class="fld"><label>Texto do Botão</label><input id="cfgBtnText2"></div>
           <div class="fld"><label>Link do Botão</label><input id="cfgBtnUrl2"></div>
-          <div class="fld"><label>URL da Imagem (Fundo)</label><input id="cfgHeroImage2" type="url"></div>
+          <div class="fld">
+            <label>Imagem de Fundo</label>
+            <div class="up-zone" id="cfgUpZone2" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
+              Clique para selecionar ou arraste uma imagem aqui
+              <input type="file" id="cfgFile2" accept="image/*" style="display:none">
+            </div>
+            <div class="prog" id="cfgProg2" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
+            <div id="cfgThumb2" style="margin-bottom:.5rem"></div>
+            <input id="cfgHeroImage2" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
+          </div>
           <div class="fld"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo2" type="url"></div>
         </div>
 
@@ -322,7 +340,16 @@
           </div>
           <div class="fld"><label>Texto do Botão</label><input id="cfgBtnText3"></div>
           <div class="fld"><label>Link do Botão</label><input id="cfgBtnUrl3"></div>
-          <div class="fld"><label>URL da Imagem (Fundo)</label><input id="cfgHeroImage3" type="url"></div>
+          <div class="fld">
+            <label>Imagem de Fundo</label>
+            <div class="up-zone" id="cfgUpZone3" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
+              Clique para selecionar ou arraste uma imagem aqui
+              <input type="file" id="cfgFile3" accept="image/*" style="display:none">
+            </div>
+            <div class="prog" id="cfgProg3" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
+            <div id="cfgThumb3" style="margin-bottom:.5rem"></div>
+            <input id="cfgHeroImage3" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
+          </div>
           <div class="fld"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo3" type="url"></div>
         </div>
 
@@ -1446,15 +1473,100 @@
     try {
       const doc = await db.collection("siteConfig").doc("home").get(); if(!doc.exists) return; const d = doc.data();
       if (d.slides && d.slides.length) {
-        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; } });
+        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; if(slide.imgUrl) cfgShowThumb(num, slide.imgUrl); } });
       } else {
         // Fallback antigo
         $("cfgHeroTag1").value = d.heroTag??""; $("cfgHeroTitle1").value = d.heroTitle??""; $("cfgBtnText1").value = d.btnText??""; $("cfgBtnUrl1").value = d.btnUrl??""; $("cfgHeroImage1").value = d.heroImageUrl??""; $("cfgHeroVideo1").value = d.heroVideoUrl??"";
+        if(d.heroImageUrl) cfgShowThumb(1, d.heroImageUrl);
       }
     } catch(e){}
   }
 
+  function cfgShowThumb(num, url){
+    const el = $(`cfgThumb${num}`);
+    if(!el || !url) return;
+    el.innerHTML = `<div style="position:relative;display:inline-block;margin-top:.25rem">
+      <img src="${url}" style="height:72px;border-radius:6px;border:1px solid hsl(var(--border));object-fit:cover;display:block">
+      <button onclick="cfgClearThumb(${num})" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:hsl(var(--foreground));color:hsl(var(--background));border:none;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+    </div>`;
+  }
+
+  function cfgClearThumb(num){
+    const el = $(`cfgThumb${num}`);
+    if(el) el.innerHTML = "";
+    const inp = $(`cfgHeroImage${num}`);
+    if(inp) inp.value = "";
+  }
+
+  /* Comprime e converte para WebP, exatamente como nas imagens de aeronave,
+     mas com dimensão máxima maior (1920px) e qualidade mais alta (0.82)
+     já que são imagens de fundo de tela cheia. */
+  function cfgCompressToWebP(file){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1920;
+        let w = img.width, h = img.height;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+        const c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        const webpUrl = c.toDataURL("image/webp", 0.82);
+        resolve(webpUrl);
+      };
+      img.onerror = reject;
+      const r = new FileReader(); r.onload = () => img.src = r.result; r.onerror = reject; r.readAsDataURL(file);
+    });
+  }
+
+  async function cfgHandleFile(num, file){
+    if (!file || !file.type.startsWith("image/")) return;
+    const progEl = $(`cfgProg${num}`);
+    progEl.style.display = "block";
+    const bar = progEl.querySelector(".bar");
+    bar.style.width = "30%";
+    try {
+      const webpUrl = await cfgCompressToWebP(file);
+      bar.style.width = "80%";
+
+      if (PA.IMAGE_MODE === "storage" && storage) {
+        // Modo Storage: faz upload real pro Firebase e salva a URL pública
+        const path = `siteConfig/hero-${num}-${Date.now()}.webp`;
+        const blob = await (await fetch(webpUrl)).blob();
+        const task = storage.ref(path).put(blob, { contentType: "image/webp" });
+        await new Promise((res, rej) => {
+          task.on("state_changed",
+            s => { bar.style.width = Math.round(20 + (s.bytesTransferred / s.totalBytes) * 60) + "%"; },
+            err => { alert(err.message); rej(); },
+            async () => { const publicUrl = await task.snapshot.ref.getDownloadURL(); $(`cfgHeroImage${num}`).value = publicUrl; cfgShowThumb(num, publicUrl); res(); }
+          );
+        });
+      } else {
+        // Modo inline: salva o data URL diretamente (igual ao cadastro de aeronaves)
+        $(`cfgHeroImage${num}`).value = webpUrl;
+        cfgShowThumb(num, webpUrl);
+      }
+      bar.style.width = "100%";
+    } catch(e) {
+      alert("Erro ao processar imagem: " + e.message);
+    }
+    setTimeout(() => { progEl.style.display = "none"; bar.style.width = "0%"; }, 400);
+  }
+
   function wireConfigPanel(){
+    // Wiring das zonas de upload dos 3 banners
+    [1, 2, 3].forEach(num => {
+      const zone = $(`cfgUpZone${num}`);
+      const fileInput = $(`cfgFile${num}`);
+      zone.addEventListener("click", e => { if (e.target.tagName !== "INPUT") fileInput.click(); });
+      fileInput.addEventListener("change", e => { if (e.target.files[0]) cfgHandleFile(num, e.target.files[0]); fileInput.value = ""; });
+      zone.addEventListener("dragover", e => { e.preventDefault(); zone.style.borderColor = "hsl(var(--foreground))"; });
+      zone.addEventListener("dragleave", () => { zone.style.borderColor = ""; });
+      zone.addEventListener("drop", e => { e.preventDefault(); zone.style.borderColor = ""; const f = e.dataTransfer.files[0]; if(f) cfgHandleFile(num, f); });
+      // Se o usuário colar uma URL manualmente, mostra o preview
+      $(`cfgHeroImage${num}`).addEventListener("change", e => { if(e.target.value) cfgShowThumb(num, e.target.value); });
+    });
+
     $("cfgSave").onclick = async () => {
       const slides = [];
       for(let num=1; num<=3; num++) {
