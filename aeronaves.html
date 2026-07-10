@@ -4,54 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aeronaves Disponíveis | Plane Aviation</title>
-<meta name="description" content="Confira o estoque atualizado de aeronaves Cirrus disponíveis na Plane Aviation: Vision Jet e SR Series novas e seminovas, com condições, especificações e valores.">
-<link rel="canonical" href="https://www.planeaviation.net.br/aeronaves.html">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Plane Aviation">
-<meta property="og:locale" content="pt_BR">
-<meta property="og:url" content="https://www.planeaviation.net.br/aeronaves.html">
-<meta property="og:title" content="Aeronaves Disponíveis | Plane Aviation">
-<meta property="og:description" content="Confira o estoque atualizado de aeronaves Cirrus disponíveis na Plane Aviation: Vision Jet e SR Series novas e seminovas, com condições, especificações e valores.">
-<meta property="og:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Aeronaves Disponíveis | Plane Aviation">
-<meta name="twitter:description" content="Confira o estoque atualizado de aeronaves Cirrus disponíveis na Plane Aviation: Vision Jet e SR Series novas e seminovas, com condições, especificações e valores.">
-<meta name="twitter:image" content="https://www.planeaviation.net.br/images/og-cover.jpg">
 <link rel="stylesheet" href="styles.css">
 <script src="js/i18n.js" defer></script>
-
 <script src="js/site.js" defer></script>
-<script>
-/* seo-links: resolve URL bonita de aeronave/artigo via manifesto gerado,
-   com fallback automático pro link antigo se o manifesto ainda não existir. */
-window.PA_LINKS = (function () {
-  var aircraftMap = null, articleMap = null;
-  function loadAircraftMap() {
-    if (aircraftMap) return Promise.resolve(aircraftMap);
-    return fetch("aeronaves/index.json", { cache: "no-store" })
-      .then(function(r){ return r.ok ? r.json() : {}; })
-      .catch(function(){ return {}; })
-      .then(function(m){ aircraftMap = m; return m; });
-  }
-  function loadArticleMap() {
-    if (articleMap) return Promise.resolve(articleMap);
-    return fetch("artigos/index.json", { cache: "no-store" })
-      .then(function(r){ return r.ok ? r.json() : {}; })
-      .catch(function(){ return {}; })
-      .then(function(m){ articleMap = m; return m; });
-  }
-  function aircraftUrl(id) {
-    return aircraftMap && aircraftMap[id] ? "aeronaves/" + aircraftMap[id] + "/" : "aeronave.html?id=" + id;
-  }
-  function articleUrl(id) {
-    return articleMap && articleMap[id] ? "artigos/" + articleMap[id] + "/" : "artigo.html?id=" + id;
-  }
-  return { loadAircraftMap: loadAircraftMap, loadArticleMap: loadArticleMap, aircraftUrl: aircraftUrl, articleUrl: articleUrl };
-})();
-</script>
 </head>
 <body class="bg-radial-dark">
 <div id="site-header"></div>
@@ -173,7 +128,7 @@ function cardHTML(item){
   const titleSub  = titleParts && titleParts[2] ? titleParts[2] : "";
   const tagClass = (item.tag && item.tag.toLowerCase().includes('importa')) ? 'white' : '';
 
-  return `<a href="${PA_LINKS.aircraftUrl(item.id)}" class="ac-card">
+  return `<a href="aeronave.html?id=${item.id}" class="ac-card">
     <div class="ac-card-img">
       ${media}
       ${item.tag ? `<div class="ac-card-badge-tab nano-tag ${tagClass}">${item.tag}</div>` : ""}
@@ -258,7 +213,6 @@ function render(){
 document.addEventListener("pa:langchange", () => { buildFilters(); render(); });
 
 async function init(){
-  await PA_LINKS.loadAircraftMap();
   if(window.PA && PA.configured){
     try {
       const snap = await PA.db.collection("aircraft").get();
