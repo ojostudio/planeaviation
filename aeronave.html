@@ -469,7 +469,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const originalText = btnPdf.innerHTML;
       btnPdf.innerHTML = "GERANDO PDF...";
       btnPdf.disabled = true;
-
       try {
         await generatePDF(P);
       } catch (err) {
@@ -483,14 +482,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ============================================================
-     GERAÇÃO DE PDF — completamente independente do dispositivo.
+     GERAÇÃO DE PDF — independente de dispositivo.
 
-     Estratégia: montar HTML com dimensões fixas de uma folha A4
-     (794 × 1123 px @ 96dpi), converter todas as imagens para
-     base64 antes de renderizar (elimina problemas de CORS e de
-     imagens que "somem" no mobile), e passar o HTML pronto para
-     o html2pdf. O resultado é sempre idêntico, seja no desktop
-     ou num iPhone.
+     Estratégia: em vez de passar HTML puro pro html2pdf
+     (que usa o viewport do celular para calcular larguras),
+     injetamos um container real no DOM com largura fixa de
+     794px, posicionado fora da tela. O html2canvas fotografa
+     esse elemento real — sempre 794px, sempre igual, seja num
+     iPhone ou num monitor 4K. Depois removemos o container.
+
+     Imagens são convertidas para base64 antes de renderizar
+     para eliminar problemas de CORS em qualquer dispositivo.
      ============================================================ */
   async function imgToBase64(url) {
     try {
@@ -503,12 +505,11 @@ document.addEventListener("DOMContentLoaded", () => {
         r.readAsDataURL(blob);
       });
     } catch(e) {
-      return url; // fallback pra URL original se fetch falhar
+      return url;
     }
   }
 
   async function generatePDF(p) {
-    // ---- Logo (inline SVG → data URI) ----
     const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95"><g>
       <path fill="#000" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/>
       <path fill="#000" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/>
@@ -528,117 +529,142 @@ document.addEventListener("DOMContentLoaded", () => {
     </svg>`;
     const logoDataUri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(logoSvg);
 
-    // ---- Pré-carregar imagens como base64 ----
     const images = p.images && p.images.length ? p.images : [];
     const b64Images = await Promise.all(images.map(u => imgToBase64(u)));
 
-    // ---- Helpers ----
     const priceStr = fmtPrice(p) || "Sob Consulta";
     const metaParts = [p.condition, p.year ? String(p.year) : null, p.codigoInterno ? "Cód: " + p.codigoInterno : null].filter(Boolean);
 
-    // ---- Specs ----
     const validSpecs = (p.specs || []).filter(s => s[0] || s[1]);
     const specsHTML = validSpecs.length ? `
       <div style="margin-bottom:22px">
-        <h3 style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#000;border-bottom:2px solid #eee;padding-bottom:5px;margin-bottom:10px;font-weight:700;">Ficha Técnica</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 30px">
-          ${validSpecs.map(s => `
-            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:11px">
-              <span style="color:#666">${s[0]||""}</span>
-              <span style="font-weight:700;color:#000">${s[1]||""}</span>
-            </div>`).join("")}
-        </div>
+        <h3 style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#000;border-bottom:2px solid #eee;padding-bottom:5px;margin-bottom:10px;font-weight:700">Ficha Técnica</h3>
+        <table style="width:100%;border-collapse:collapse">
+          ${validSpecs.map((s,i) => `
+          <tr style="background:${i%2===0?'#fafafa':'#fff'}">
+            <td style="padding:5px 8px;font-size:11px;color:#555;width:50%;border-bottom:1px solid #f0f0f0">${s[0]||""}</td>
+            <td style="padding:5px 8px;font-size:11px;font-weight:700;color:#000;border-bottom:1px solid #f0f0f0">${s[1]||""}</td>
+          </tr>`).join("")}
+        </table>
       </div>` : "";
 
-    // ---- Descrição ----
     const descHTML = p.description ? `
       <div style="margin-bottom:22px">
-        <h3 style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#000;border-bottom:2px solid #eee;padding-bottom:5px;margin-bottom:10px;font-weight:700;">Sobre a aeronave</h3>
-        <p style="font-size:11px;line-height:1.65;color:#444;text-align:justify;margin:0">${p.description}</p>
+        <h3 style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#000;border-bottom:2px solid #eee;padding-bottom:5px;margin-bottom:10px;font-weight:700">Sobre a aeronave</h3>
+        <p style="font-size:11px;line-height:1.65;color:#444;margin:0">${p.description}</p>
       </div>` : "";
 
-    // ---- Horas (célula / motor / hélice) ----
     const horasItems = [
-      p.hoursNum   ? { label: "Célula",  val: fmtHoras(p.hoursNum)   } : null,
-      p.motorHours ? { label: "Motor",   val: fmtHoras(p.motorHours) } : null,
-      p.heliceHours? { label: "Hélice",  val: fmtHoras(p.heliceHours)} : null,
+      p.hoursNum    ? {label:"Célula", val:fmtHoras(p.hoursNum)}    : null,
+      p.motorHours  ? {label:"Motor",  val:fmtHoras(p.motorHours)}  : null,
+      p.heliceHours ? {label:"Hélice", val:fmtHoras(p.heliceHours)} : null,
     ].filter(Boolean);
     const horasHTML = horasItems.length ? `
       <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-        ${horasItems.map(h => `
+        ${horasItems.map(h=>`
           <div style="background:#f7f7f7;border:1px solid #eee;padding:8px 14px;border-radius:6px;font-size:11px">
             <span style="color:#555">${h.label}:</span>&nbsp;<b style="color:#000">${h.val}</b>
           </div>`).join("")}
       </div>` : "";
 
-    // ---- Imagem principal ----
     const mainImgHTML = b64Images[0] ? `
-      <div style="width:100%;height:300px;border-radius:10px;margin-bottom:18px;border:1px solid #e8e8e8;overflow:hidden">
-        <img src="${b64Images[0]}" style="width:100%;height:100%;object-fit:cover;display:block" />
+      <div style="width:100%;height:310px;border-radius:10px;margin-bottom:18px;border:1px solid #e8e8e8;overflow:hidden">
+        <img src="${b64Images[0]}" style="width:100%;height:100%;object-fit:cover;display:block">
       </div>` : "";
 
-    // ---- Rodapé padrão ----
     const footer = `
-      <div style="text-align:center;border-top:1px solid #eee;padding-top:12px;margin-top:auto">
+      <div style="text-align:center;border-top:1px solid #eee;padding-top:12px;margin-top:24px">
         <p style="font-size:10px;margin:0;color:#666"><b>Plane Aviation</b> — Ficha de Apresentação Comercial | contato@planeaviation.com.br</p>
       </div>`;
 
-    // ---- Página 1 ----
-    const page1 = `
-      <div style="width:794px;min-height:1123px;padding:32px 40px;background:#fff;color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;box-sizing:border-box;display:flex;flex-direction:column">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid #d32f2f">
-          <img src="${logoDataUri}" style="height:34px" alt="Plane Aviation" />
-          <span style="font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase">Ficha Comercial</span>
-        </div>
+    /* --- Monta o HTML das páginas com width:714px (794px menos 40px de cada lado) --- */
+    const page1Inner = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #d32f2f">
+        <img src="${logoDataUri}" style="height:36px" alt="Plane Aviation">
+        <span style="font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase">Ficha Comercial</span>
+      </div>
+      ${mainImgHTML}
+      <div style="margin-bottom:18px">
+        <div style="font-size:10px;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">${metaParts.join(" · ")}</div>
+        <div style="font-size:30px;font-style:italic;text-transform:uppercase;color:#000;font-weight:800;line-height:1;margin-bottom:6px">${p.model}</div>
+        <div style="font-size:20px;font-weight:700;color:#d32f2f">${priceStr}</div>
+      </div>
+      ${horasHTML}
+      ${specsHTML}
+      ${descHTML}
+      ${footer}`;
 
-        ${mainImgHTML}
-
-        <div style="margin-bottom:18px">
-          <div style="font-size:10px;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px">${metaParts.join(" · ")}</div>
-          <h1 style="margin:0 0 6px;font-size:28px;font-style:italic;text-transform:uppercase;color:#000;font-weight:800;line-height:1">${p.model}</h1>
-          <div style="font-size:20px;font-weight:700;color:#d32f2f">${priceStr}</div>
-        </div>
-
-        ${horasHTML}
-        ${specsHTML}
-        ${descHTML}
-        ${footer}
-      </div>`;
-
-    // ---- Página 2: galeria em mosaico (só se houver imagens extras) ----
-    let page2 = "";
+    let page2Inner = "";
     if (b64Images.length > 1) {
-      const extraImgs = b64Images.slice(1);
-      const mosaicItems = extraImgs.map(src => `
-        <div style="width:340px;height:220px;border-radius:8px;overflow:hidden;border:1px solid #e8e8e8;flex-shrink:0">
-          <img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block" />
+      const cols = b64Images.length === 2 ? 1 : 2;
+      const imgW = cols === 1 ? "100%" : "calc(50% - 8px)";
+      const mosaic = b64Images.slice(1).map(src => `
+        <div style="width:${imgW};height:220px;border-radius:8px;overflow:hidden;border:1px solid #e8e8e8;display:inline-block;vertical-align:top">
+          <img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block">
         </div>`).join("");
-
-      page2 = `
-        <div class="html2pdf__page-break"></div>
-        <div style="width:794px;min-height:1123px;padding:32px 40px;background:#fff;color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;box-sizing:border-box;display:flex;flex-direction:column">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #d32f2f">
-            <img src="${logoDataUri}" style="height:34px" alt="Plane Aviation" />
-            <span style="font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase">${p.model} — Galeria de Imagens</span>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:flex-start">
-            ${mosaicItems}
-          </div>
-          ${footer}
-        </div>`;
+      page2Inner = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #d32f2f">
+          <img src="${logoDataUri}" style="height:36px" alt="Plane Aviation">
+          <span style="font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase">${p.model} — Galeria</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px">${mosaic}</div>
+        ${footer}`;
     }
 
-    const fullHTML = `<div style="background:#fff">${page1}${page2}</div>`;
+    /* --- Container pai: posicionado fora da tela, largura fixa 794px ---
+       Isso garante que o html2canvas sempre fotografia 794px de conteúdo,
+       independente do viewport (desktop ou mobile). */
+    const PDF_W = 794;
+    const PDF_PAD = 40;
+
+    function makePage(innerHTML) {
+      const page = document.createElement("div");
+      page.style.cssText = `
+        width:${PDF_W}px; min-height:1123px; padding:${PDF_PAD}px;
+        background:#fff; color:#1a1a1a;
+        font-family:Arial,Helvetica,sans-serif;
+        box-sizing:border-box; overflow:hidden;`;
+      page.innerHTML = innerHTML;
+      return page;
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = `
+      position:fixed; left:-9999px; top:0;
+      width:${PDF_W}px; background:#fff;
+      font-family:Arial,Helvetica,sans-serif;`;
+    document.body.appendChild(wrapper);
+
+    const pg1 = makePage(page1Inner);
+    wrapper.appendChild(pg1);
+
+    // Aguarda imagens renderizarem
+    await new Promise(r => setTimeout(r, 300));
 
     const opt = {
       margin:      0,
       filename:    `Plane-Aviation-${p.model.replace(/\s+/g,"-")}.pdf`,
-      image:       { type: "jpeg", quality: 0.96 },
-      html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: "#ffffff", width: 794, windowWidth: 794 },
+      image:       { type: "jpeg", quality: 0.97 },
+      html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: "#ffffff", logging: false },
       jsPDF:       { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
-    await html2pdf().set(opt).from(fullHTML).save();
+    const pdf = html2pdf().set(opt);
+
+    if (page2Inner) {
+      const pg2 = makePage(page2Inner);
+      // Gera as duas páginas separadas e as une
+      const canvas1 = await html2pdf().set(opt).from(pg1).outputImg();
+      const pg2el   = makePage(page2Inner);
+      wrapper.appendChild(pg2el);
+      await new Promise(r => setTimeout(r, 200));
+      await html2pdf().set({...opt, filename: `Plane-Aviation-${p.model.replace(/\s+/g,"-")}.pdf`})
+        .from(wrapper).save();
+    } else {
+      await html2pdf().set(opt).from(pg1).save();
+    }
+
+    document.body.removeChild(wrapper);
   }
 
   init();
