@@ -90,7 +90,7 @@ window.PA_LINKS = (function () {
         <h1 class="hero-title" id="heroTitle"></h1>
         
         <div class="hero-cta">
-          <a href="#" class="btn btn-solid btn-hero" id="heroBtn">
+          <a href="#" class="btn btn-solid btn-hero" id="heroBtn" style="visibility:hidden">
             <span id="heroBtnText"></span>
             <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
@@ -527,7 +527,9 @@ CONFIGURADOR
       document.getElementById("heroTitle").innerHTML = formatarTituloDuplo(slide.title || "");
       
       document.getElementById("heroBtnText").textContent = slide.btnText || "Saber Mais";
-      document.getElementById("heroBtn").href = slide.btnUrl || "contato.html";
+      const btn = document.getElementById("heroBtn");
+      btn.href = slide.btnUrl || "contato.html";
+      btn.style.visibility = "visible";
 
       if(slide.videoUrl) {
         hBg.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"><source src="${slide.videoUrl}" type="video/mp4"></video>`;
