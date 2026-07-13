@@ -560,7 +560,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <img src="${img}" style="width:100%;height:100%;object-fit:cover;display:block;">
         </div>`).join('');
       galleryHTML = `
-        <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:100%; min-height:1040px; box-sizing:border-box;">
+        <div class="html2pdf__page-break"></div>
+        <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:800px; min-height:1040px; box-sizing:border-box;">
           <h2 style="font-size:18px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:8px; margin-bottom:20px; font-weight:700;">Galeria de Imagens</h2>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
             ${extraImages}
@@ -596,35 +597,59 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>`;
 
-    // Constrói o container invisível na tela
+    // IMPORTANTE: o container NÃO pode ficar em coordenadas negativas (ex: left:-9999px).
+    // O html2canvas precisa rolar a janela até a posição do elemento para capturá-lo, e
+    // navegadores travam o scroll em 0 (não rolam para valores negativos). Isso faz a
+    // captura sair em branco, especialmente em telas menores (mobile), mas pode falhar
+    // em qualquer dispositivo dependendo do navegador.
+    //
+    // Solução: manter o container DENTRO da área visível (top:0, left:0) e cobrir a tela
+    // com um overlay branco por cima, para o usuário não ver a "montagem" do PDF.
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed; inset:0; width:100vw; height:100vh; background:#ffffff; z-index:999998;";
+    overlay.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:'Inter',sans-serif;color:#555;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Gerando PDF...</div>`;
+
     const container = document.createElement("div");
-    container.style.cssText = "position:absolute; left:0; top:0; width:800px; background:#fff; z-index:-9999;";
+    container.style.cssText = "position:fixed; left:0; top:0; width:800px; background:#fff; z-index:999999; overflow:visible;";
     container.innerHTML = page1HTML + galleryHTML;
+
+    document.body.appendChild(overlay);
     document.body.appendChild(container);
 
-    // Aguarda todas as imagens do container terminarem de desenhar
+    // Aguarda todas as imagens do container terminarem de carregar
     await Promise.all([...container.querySelectorAll("img")].map(img =>
       img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
     ));
 
-    // Configuração do PDF forçando o renderizador a agir como um monitor largo
+    // Aguarda um tick de renderização para o browser pintar o layout antes do canvas
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    // Configuração do PDF com largura fixa de 800px em desktop e mobile
     const opt = {
       margin:       0,
       filename:     `Plane-Aviation-${P.model.replace(/\s+/g, '-')}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { 
-        scale: 2, 
-        useCORS: true, 
+      html2canvas:  {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
         backgroundColor: '#ffffff',
         windowWidth: 800,
-        width: 800
-      }, 
+        width: 800,
+        scrollX: 0,
+        scrollY: 0,
+        logging: false
+      },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // Gera o arquivo e limpa a tela
-    await html2pdf().set(opt).from(container).save();
-    document.body.removeChild(container);
+    // Gera o arquivo e limpa o DOM (container + overlay)
+    try {
+      await html2pdf().set(opt).from(container).save();
+    } finally {
+      document.body.removeChild(container);
+      document.body.removeChild(overlay);
+    }
   }
 
   init();
