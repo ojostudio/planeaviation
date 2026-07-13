@@ -23,7 +23,6 @@
 <link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="js/i18n.js" defer></script>
 
 <script src="js/site.js" defer></script>
@@ -560,8 +559,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <img src="${img}" style="width:100%;height:100%;object-fit:cover;display:block;">
         </div>`).join('');
       galleryHTML = `
-        <div class="html2pdf__page-break"></div>
-        <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:800px; min-height:1040px; box-sizing:border-box;">
+        
+        <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:100%; min-height:297mm; box-sizing:border-box;">
           <h2 style="font-size:18px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:8px; margin-bottom:20px; font-weight:700;">Galeria de Imagens</h2>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
             ${extraImages}
@@ -573,7 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const page1HTML = `
-      <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:800px; min-height:1040px; box-sizing:border-box; display:flex; flex-direction:column;">
+      <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:100%; min-height:297mm; box-sizing:border-box; display:flex; flex-direction:column;">
         <div>
           <div style="text-align:left; margin-bottom:20px; border-bottom:2px solid #d32f2f; padding-bottom:12px;">
             <img src="${logoDataUri}" style="height:38px;" alt="Plane Aviation">
@@ -597,58 +596,60 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>`;
 
-    // IMPORTANTE: o container NÃO pode ficar em coordenadas negativas (ex: left:-9999px).
-    // O html2canvas precisa rolar a janela até a posição do elemento para capturá-lo, e
-    // navegadores travam o scroll em 0 (não rolam para valores negativos). Isso faz a
-    // captura sair em branco, especialmente em telas menores (mobile), mas pode falhar
-    // em qualquer dispositivo dependendo do navegador.
-    //
-    // Solução: manter o container DENTRO da área visível (top:0, left:0) e cobrir a tela
-    // com um overlay branco por cima, para o usuário não ver a "montagem" do PDF.
-    const overlay = document.createElement("div");
-    overlay.style.cssText = "position:fixed; inset:0; width:100vw; height:100vh; background:#ffffff; z-index:999998;";
-    overlay.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:'Inter',sans-serif;color:#555;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Gerando PDF...</div>`;
+    // Monta um documento HTML completo, próprio para impressão (@page/@media print),
+    // dentro de um iframe oculto, e aciona a impressão nativa do navegador.
+    // Isso elimina totalmente a dependência do html2pdf/html2canvas, que estava
+    // causando PDFs em branco de forma intermitente em desktop e mobile.
+    const printDocHTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Plane-Aviation-${(P.model || '').replace(/\s+/g, '-')}</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:#fff; font-family:'Inter',Arial,sans-serif; }
+  .pdf-page { width:210mm; min-height:297mm; page-break-after:always; }
+  .pdf-page:last-child { page-break-after:auto; }
+  img { max-width:100%; }
+</style>
+</head>
+<body>
+  <div class="pdf-page">${page1HTML}</div>
+  ${galleryHTML ? `<div class="pdf-page">${galleryHTML}</div>` : ''}
+</body>
+</html>`;
 
-    const container = document.createElement("div");
-    container.style.cssText = "position:fixed; left:0; top:0; width:800px; background:#fff; z-index:999999; overflow:visible;";
-    container.innerHTML = page1HTML + galleryHTML;
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed; right:0; bottom:0; width:0; height:0; border:0; visibility:hidden;";
+    document.body.appendChild(iframe);
 
-    document.body.appendChild(overlay);
-    document.body.appendChild(container);
+    const idoc = iframe.contentWindow.document;
+    idoc.open();
+    idoc.write(printDocHTML);
+    idoc.close();
 
-    // Aguarda todas as imagens do container terminarem de carregar
-    await Promise.all([...container.querySelectorAll("img")].map(img =>
-      img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
-    ));
+    // Aguarda todas as imagens dentro do iframe terminarem de carregar
+    await new Promise(resolve => {
+      const check = () => {
+        const imgs = [...idoc.querySelectorAll("img")];
+        if (imgs.every(img => img.complete)) return resolve();
+        setTimeout(check, 100);
+      };
+      check();
+    });
 
-    // Aguarda um tick de renderização para o browser pintar o layout antes do canvas
+    // Aguarda o layout ser pintado antes de abrir a caixa de impressão
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-    // Configuração do PDF com largura fixa de 800px em desktop e mobile
-    const opt = {
-      margin:       0,
-      filename:     `Plane-Aviation-${P.model.replace(/\s+/g, '-')}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        windowWidth: 800,
-        width: 800,
-        scrollX: 0,
-        scrollY: 0,
-        logging: false
-      },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Gera o arquivo e limpa o DOM (container + overlay)
     try {
-      await html2pdf().set(opt).from(container).save();
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
     } finally {
-      document.body.removeChild(container);
-      document.body.removeChild(overlay);
+      // Dá um tempo para o navegador abrir a caixa de diálogo de impressão antes de remover o iframe
+      setTimeout(() => {
+        if (iframe.parentNode) document.body.removeChild(iframe);
+      }, 1000);
     }
   }
 
