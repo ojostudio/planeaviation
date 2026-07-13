@@ -182,6 +182,7 @@ window.PA_LINKS = (function () {
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
 // aeronave.html — script principal
@@ -495,7 +496,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function generatePDF(P) {
-    const logoSvgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95" width="230" height="55"><g>
+    const { jsPDF } = window.jspdf;
+
+    // --- Logo (SVG rasterizado em PNG via canvas, pois o jsPDF core não lê SVG) ---
+    const logoSvgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95" width="1920" height="460"><g>
       <path fill="#000000" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/>
       <path fill="#000000" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/>
       <path fill="#000000" d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/>
@@ -512,145 +516,211 @@ document.addEventListener("DOMContentLoaded", () => {
       </g>
       <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/>
     </svg>`;
-    const logoDataUri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(logoSvgStr);
 
-    // Pré-carrega imagens como base64 para evitar problemas de CORS no mobile
+    // Rasteriza um SVG (string) em um data URI PNG, usando canvas.
+    async function svgToPng(svgStr, pxW, pxH) {
+      const svgUri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+      const img = new Image();
+      await new Promise((ok, fail) => { img.onload = ok; img.onerror = fail; img.src = svgUri; });
+      const canvas = document.createElement("canvas");
+      canvas.width = pxW; canvas.height = pxH;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, pxW, pxH);
+      return canvas.toDataURL("image/png");
+    }
+
+    // Recorta/preenche uma imagem (dataURL ou URL) em um retângulo alvo, imitando
+    // "object-fit: cover", devolvendo um JPEG pronto para o jsPDF.
+    async function coverCropToJpeg(src, outW, outH) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      await new Promise((ok, fail) => { img.onload = ok; img.onerror = fail; img.src = src; });
+      const canvas = document.createElement("canvas");
+      canvas.width = outW; canvas.height = outH;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#f5f5f5";
+      ctx.fillRect(0, 0, outW, outH);
+      const srcRatio = img.width / img.height;
+      const outRatio = outW / outH;
+      let sx, sy, sw, sh;
+      if (srcRatio > outRatio) {
+        sh = img.height; sw = sh * outRatio; sx = (img.width - sw) / 2; sy = 0;
+      } else {
+        sw = img.width; sh = sw / outRatio; sx = 0; sy = (img.height - sh) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+      return canvas.toDataURL("image/jpeg", 0.9);
+    }
+
+    // Pré-carrega as fotos como base64 (evita problemas de CORS ao desenhar no canvas)
     const rawImages = P.images && P.images.length ? P.images : [];
     const images = await Promise.all(rawImages.map(u => imgToBase64(u)));
 
     const priceStr = fmtPrice(P) || "Sob Consulta";
-
     const validSpecs = (P.specs || []).filter(s => s[0] || s[1]);
-    let specsSectionHTML = '';
-    if (validSpecs.length > 0) {
-      const specsRowsHTML = validSpecs.map(s => `
-        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e0e0e0; font-size:12px;">
-          <span style="color:#555555">${s[0] || ''}</span>
-          <span style="font-weight:600; color:#000000">${s[1] || ''}</span>
-        </div>`).join('');
-      specsSectionHTML = `
-        <div style="margin-bottom:25px;">
-          <h3 style="font-size:15px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:6px; margin-bottom:12px; font-weight:700;">Ficha Técnica</h3>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 35px;">
-            ${specsRowsHTML}
-          </div>
-        </div>`;
+
+    // --- Documento PDF ---
+    const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+    const pageW = 210, pageH = 297, margin = 18, contentW = pageW - margin * 2;
+    let y = margin;
+
+    const RED = [211, 47, 47];
+    const BLACK = [17, 17, 17];
+    const GRAY = [102, 102, 102];
+    const LGRAY = [224, 224, 224];
+
+    // Logo
+    const logoPng = await svgToPng(logoSvgStr, 1920, 460);
+    const logoWmm = 46, logoHmm = logoWmm * (460 / 1920);
+    doc.addImage(logoPng, "PNG", margin, y, logoWmm, logoHmm);
+    y += logoHmm + 5;
+    doc.setDrawColor(...RED); doc.setLineWidth(0.6);
+    doc.line(margin, y, pageW - margin, y);
+    y += 9;
+
+    // Foto principal
+    if (images[0]) {
+      const pxW = 1400, pxH = 620; // proporção ~2.26:1, equivalente ao box de 320px de altura x 800px de largura usado antes
+      const cropped = await coverCropToJpeg(images[0], pxW, pxH);
+      const imgHmm = contentW * (pxH / pxW);
+      doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
+      doc.addImage(cropped, "JPEG", margin, y, contentW, imgHmm);
+      doc.rect(margin, y, contentW, imgHmm);
+      y += imgHmm + 8;
     }
 
-    let descriptionSectionHTML = '';
-    if (P.description && P.description.trim() !== '') {
-      descriptionSectionHTML = `
-        <div style="margin-bottom:25px;">
-          <h3 style="font-size:15px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:6px; margin-bottom:12px; font-weight:700;">Sobre a aeronave</h3>
-          <p style="font-size:12px; line-height:1.6; color:#444; text-align:justify; margin:0;">${P.description}</p>
-        </div>`;
+    // Condição / ano / código
+    doc.setFont(undefined, "normal"); doc.setFontSize(8.5); doc.setTextColor(...GRAY);
+    doc.text(`${P.condition || ""}  ·  ${P.year || ""}  ·  Cód: ${P.codigoInterno || ""}`, margin, y);
+    y += 7;
+
+    // Modelo
+    doc.setFont(undefined, "bold"); doc.setFontSize(24); doc.setTextColor(0, 0, 0);
+    doc.text((P.model || "").toUpperCase(), margin, y);
+    y += 9;
+
+    // Preço
+    doc.setFont(undefined, "bold"); doc.setFontSize(17); doc.setTextColor(...RED);
+    doc.text(priceStr, margin, y);
+    y += 10;
+
+    // Pílulas de horas (Célula / Motor / Hélice)
+    const pills = [];
+    if (P.hoursNum != null)   pills.push(["Célula:", fmtHoras(P.hoursNum)]);
+    if (P.motorHours != null) pills.push(["Motor:", fmtHoras(P.motorHours)]);
+    if (P.heliceHours != null)pills.push(["Hélice:", fmtHoras(P.heliceHours)]);
+    if (pills.length) {
+      let px = margin;
+      const pillH = 9;
+      doc.setFontSize(9);
+      pills.forEach(([label, val]) => {
+        doc.setFont(undefined, "normal"); const labelW = doc.getTextWidth(label + " ");
+        doc.setFont(undefined, "bold"); const valW = doc.getTextWidth(val);
+        const pillW = labelW + valW + 8;
+        doc.setFillColor(249, 249, 249); doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
+        doc.roundedRect(px, y - pillH + 2.5, pillW, pillH, 1.2, 1.2, "FD");
+        doc.setFont(undefined, "normal"); doc.setTextColor(...GRAY);
+        doc.text(label, px + 4, y);
+        doc.setFont(undefined, "bold"); doc.setTextColor(0, 0, 0);
+        doc.text(val, px + 4 + labelW, y);
+        px += pillW + 5;
+      });
+      y += 12;
     }
 
-    const mainImg = images[0]
-      ? `<div style="width:100%; height:320px; border-radius:12px; margin-bottom:20px; border:1px solid #e0e0e0; overflow:hidden;">
-           <img src="${images[0]}" style="width:100%;height:100%;object-fit:cover;display:block;">
-         </div>`
-      : '';
+    // Seção de título auxiliar (linha divisória + rótulo)
+    function sectionTitle(label) {
+      doc.setFont(undefined, "bold"); doc.setFontSize(11); doc.setTextColor(0, 0, 0);
+      doc.text(label.toUpperCase(), margin, y);
+      y += 2.5;
+      doc.setDrawColor(...LGRAY); doc.setLineWidth(0.4);
+      doc.line(margin, y, pageW - margin, y);
+      y += 7;
+    }
 
-    let galleryHTML = '';
+    // Checa se cabe na página atual; caso contrário, abre nova página
+    function ensureSpace(neededMm) {
+      if (y + neededMm > pageH - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    }
+
+    // Ficha técnica (duas colunas)
+    if (validSpecs.length) {
+      ensureSpace(20);
+      sectionTitle("Ficha Técnica");
+      const colW = contentW / 2 - 5;
+      const rowH = 6.4;
+      doc.setFontSize(9.5);
+      validSpecs.forEach((s, i) => {
+        const col = i % 2, row = Math.floor(i / 2);
+        ensureSpace(rowH + 4);
+        const cx = margin + col * (colW + 10);
+        const cy = y + row * rowH;
+        doc.setFont(undefined, "normal"); doc.setTextColor(...GRAY);
+        doc.text(s[0] || "", cx, cy);
+        doc.setFont(undefined, "bold"); doc.setTextColor(0, 0, 0);
+        doc.text(s[1] || "", cx + colW, cy, { align: "right" });
+        doc.setDrawColor(224, 224, 224); doc.setLineWidth(0.15);
+        doc.line(cx, cy + 1.6, cx + colW, cy + 1.6);
+      });
+      y += Math.ceil(validSpecs.length / 2) * rowH + 6;
+    }
+
+    // Descrição
+    if (P.description && P.description.trim() !== "") {
+      ensureSpace(20);
+      sectionTitle("Sobre a Aeronave");
+      doc.setFont(undefined, "normal"); doc.setFontSize(9.5); doc.setTextColor(68, 68, 68);
+      const lines = doc.splitTextToSize(P.description, contentW);
+      lines.forEach(line => {
+        ensureSpace(5.5);
+        doc.text(line, margin, y);
+        y += 5;
+      });
+      y += 6;
+    }
+
+    // Rodapé de contato na última página da folha de rosto
+    doc.setDrawColor(...LGRAY); doc.setLineWidth(0.3);
+    doc.line(margin, pageH - margin - 8, pageW - margin, pageH - margin - 8);
+    doc.setFont(undefined, "normal"); doc.setFontSize(8.5); doc.setTextColor(85, 85, 85);
+    doc.text("Fale com um consultor: +55 (11) 99999-0000  |  contato@planeaviation.com.br", pageW / 2, pageH - margin - 3, { align: "center" });
+
+    // Galeria de imagens extras (página seguinte)
     if (images.length > 1) {
-      const extraImages = images.slice(1).map(img => `
-        <div style="width:100%; height:250px; overflow:hidden; border-radius:8px; border:1px solid #e0e0e0;">
-          <img src="${img}" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </div>`).join('');
-      galleryHTML = `
-        
-        <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:100%; min-height:297mm; box-sizing:border-box;">
-          <h2 style="font-size:18px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:8px; margin-bottom:20px; font-weight:700;">Galeria de Imagens</h2>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-            ${extraImages}
-          </div>
-          <div style="text-align:center; border-top:1px solid #eee; padding-top:15px; margin-top:35px;">
-            <p style="font-size:11px; margin:0; color:#666;"><b>Plane Aviation</b> — Ficha de Apresentação Comercial</p>
-          </div>
-        </div>`;
+      doc.addPage();
+      y = margin;
+      doc.setFont(undefined, "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
+      doc.text("GALERIA DE IMAGENS", margin, y);
+      y += 3;
+      doc.setDrawColor(...LGRAY); doc.setLineWidth(0.4);
+      doc.line(margin, y, pageW - margin, y);
+      y += 8;
+
+      const gap = 6;
+      const cellW = (contentW - gap) / 2;
+      const cellH = 55;
+      const extra = images.slice(1);
+      for (let i = 0; i < extra.length; i++) {
+        const col = i % 2, row = Math.floor(i / 2);
+        if (col === 0 && row > 0 && (y + cellH) > pageH - margin) {
+          doc.addPage(); y = margin;
+        }
+        const cx = margin + col * (cellW + gap);
+        const cy = y + (row % 100) * (cellH + gap);
+        const cropped = await coverCropToJpeg(extra[i], 700, 500);
+        doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
+        doc.addImage(cropped, "JPEG", cx, cy, cellW, cellH);
+        doc.rect(cx, cy, cellW, cellH);
+      }
+
+      doc.setFont(undefined, "normal"); doc.setFontSize(8); doc.setTextColor(102, 102, 102);
+      doc.text("Plane Aviation — Ficha de Apresentação Comercial", pageW / 2, pageH - margin, { align: "center" });
     }
 
-    const page1HTML = `
-      <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family:'Inter',sans-serif; width:100%; min-height:297mm; box-sizing:border-box; display:flex; flex-direction:column;">
-        <div>
-          <div style="text-align:left; margin-bottom:20px; border-bottom:2px solid #d32f2f; padding-bottom:12px;">
-            <img src="${logoDataUri}" style="height:38px;" alt="Plane Aviation">
-          </div>
-          ${mainImg}
-          <div style="margin-bottom:20px;">
-            <div style="font-size:10px; color:#666; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">${P.condition || ''} · ${P.year || ''} · Cód: ${P.codigoInterno || ''}</div>
-            <h1 style="margin:0 0 6px; font-size:32px; font-style:italic; text-transform:uppercase; color:#000; font-weight:800; line-height:1;">${P.model}</h1>
-            <div style="font-size:22px; font-weight:bold; color:#d32f2f;">${priceStr}</div>
-          </div>
-          <div style="display:flex; gap:15px; margin-bottom:25px;">
-            ${P.hoursNum   ? `<div style="background:#f9f9f9;border:1px solid #eee;padding:10px 15px;border-radius:6px;font-size:12px;"><span style="color:#555">Célula:</span> <b style="color:#000">${fmtHoras(P.hoursNum)}</b></div>` : ''}
-            ${P.motorHours ? `<div style="background:#f9f9f9;border:1px solid #eee;padding:10px 15px;border-radius:6px;font-size:12px;"><span style="color:#555">Motor:</span> <b style="color:#000">${fmtHoras(P.motorHours)}</b></div>` : ''}
-            ${P.heliceHours? `<div style="background:#f9f9f9;border:1px solid #eee;padding:10px 15px;border-radius:6px;font-size:12px;"><span style="color:#555">Hélice:</span> <b style="color:#000">${fmtHoras(P.heliceHours)}</b></div>` : ''}
-          </div>
-          ${specsSectionHTML}
-          ${descriptionSectionHTML}
-        </div>
-        <div style="text-align:center; border-top:1px solid #eee; padding-top:15px; margin-top:auto;">
-          <p style="font-size:11px; margin:0; color:#555;"><b>Fale com um consultor:</b> +55 (11) 99999-0000 | contato@planeaviation.com.br</p>
-        </div>
-      </div>`;
-
-    // Monta um documento HTML completo, próprio para impressão (@page/@media print),
-    // dentro de um iframe oculto, e aciona a impressão nativa do navegador.
-    // Isso elimina totalmente a dependência do html2pdf/html2canvas, que estava
-    // causando PDFs em branco de forma intermitente em desktop e mobile.
-    const printDocHTML = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Plane-Aviation-${(P.model || '').replace(/\s+/g, '-')}</title>
-<style>
-  @page { size: A4; margin: 0; }
-  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
-  html, body { margin:0; padding:0; background:#fff; font-family:'Inter',Arial,sans-serif; }
-  .pdf-page { width:210mm; min-height:297mm; page-break-after:always; }
-  .pdf-page:last-child { page-break-after:auto; }
-  img { max-width:100%; }
-</style>
-</head>
-<body>
-  <div class="pdf-page">${page1HTML}</div>
-  ${galleryHTML ? `<div class="pdf-page">${galleryHTML}</div>` : ''}
-</body>
-</html>`;
-
-    const iframe = document.createElement("iframe");
-    iframe.style.cssText = "position:fixed; right:0; bottom:0; width:0; height:0; border:0; visibility:hidden;";
-    document.body.appendChild(iframe);
-
-    const idoc = iframe.contentWindow.document;
-    idoc.open();
-    idoc.write(printDocHTML);
-    idoc.close();
-
-    // Aguarda todas as imagens dentro do iframe terminarem de carregar
-    await new Promise(resolve => {
-      const check = () => {
-        const imgs = [...idoc.querySelectorAll("img")];
-        if (imgs.every(img => img.complete)) return resolve();
-        setTimeout(check, 100);
-      };
-      check();
-    });
-
-    // Aguarda o layout ser pintado antes de abrir a caixa de impressão
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-    try {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-    } finally {
-      // Dá um tempo para o navegador abrir a caixa de diálogo de impressão antes de remover o iframe
-      setTimeout(() => {
-        if (iframe.parentNode) document.body.removeChild(iframe);
-      }, 1000);
-    }
+    doc.save(`Plane-Aviation-${(P.model || "aeronave").replace(/\s+/g, "-")}.pdf`);
   }
 
   init();
