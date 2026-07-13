@@ -786,15 +786,37 @@
 
   $("loginBtn").onclick = async () => {
     clearMsg($("loginMsg"));
-    try { await auth.signInWithEmailAndPassword($("loginEmail").value.trim(), $("loginPass").value); }
-    catch(e){ msg($("loginMsg"), e.message, "err"); }
+    try { 
+      await auth.signInWithEmailAndPassword($("loginEmail").value.trim(), $("loginPass").value); 
+    }
+    catch(e) { 
+      // Mostra a mensagem genérica de erro
+      msg($("loginMsg"), "Usuário ou senha incorretos.", "err"); 
+      // Limpa a mensagem após 3 segundos
+      setTimeout(() => clearMsg($("loginMsg")), 3000);
+    }
   };
+
   $("forgotBtn").onclick = async () => {
     const email = $("loginEmail").value.trim();
-    if(!email) return msg($("loginMsg"),"Digite seu e-mail acima primeiro.","err");
-    try { await auth.sendPasswordResetEmail(email); msg($("loginMsg"),"Enviamos um link de redefinição para seu e-mail.","ok"); }
-    catch(e){ msg($("loginMsg"), e.message, "err"); }
+    if(!email) {
+      msg($("loginMsg"), "Digite seu e-mail acima primeiro.", "err");
+      setTimeout(() => clearMsg($("loginMsg")), 3000);
+      return;
+    }
+    
+    try { 
+      await auth.sendPasswordResetEmail(email); 
+      // Mensagem genérica também no sucesso para não confirmar se o e-mail existe
+      msg($("loginMsg"), "Se o e-mail for válido, um link de redefinição foi enviado.", "ok"); 
+      setTimeout(() => clearMsg($("loginMsg")), 4000); // Dá 4 segundinhos para a pessoa ler
+    }
+    catch(e) { 
+      msg($("loginMsg"), "Erro ao tentar enviar o link. Tente novamente mais tarde.", "err"); 
+      setTimeout(() => clearMsg($("loginMsg")), 3000);
+    }
   };
+
   $("logoutBtn").onclick = () => auth.signOut();
   $("denyLogout").onclick = () => auth.signOut();
 
