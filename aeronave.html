@@ -611,24 +611,38 @@ document.addEventListener("DOMContentLoaded", () => {
       img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
     ));
 
-    const opt = {
+    // Voltamos a configuração original da biblioteca
+      const opt = {
         margin:       0,
         filename:     `Plane-Aviation-${P.model.replace(/\s+/g, '-')}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-          scale: 2, 
-          useCORS: true, 
-          backgroundColor: '#ffffff',
-          windowWidth: 1024 /* A MÁGICA: Força o gerador a agir como se estivesse em um PC */
-        }, 
+        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-    try {
-      await html2pdf().set(opt).from(container).save();
-    } finally {
-      document.body.removeChild(container);
-    }
+      // O TRUQUE INFALÍVEL: Cria um elemento invisível, mas físico, na tela com 800px
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px'; // Joga para fora do monitor/celular
+      tempDiv.style.top = '0';
+      tempDiv.style.width = '800px';  // Força a largura exata do PDF
+      tempDiv.innerHTML = pdfHTML;
+      
+      // Adiciona na página
+      document.body.appendChild(tempDiv);
+
+      try {
+        // Tira a foto do elemento físico em vez do texto
+        await html2pdf().set(opt).from(tempDiv).save();
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao gerar PDF.");
+      } finally {
+        // Remove a sujeira da tela e reseta o botão
+        document.body.removeChild(tempDiv);
+        btnPdf.innerHTML = originalText;
+        btnPdf.disabled = false;
+      }
   }
 
   init();
