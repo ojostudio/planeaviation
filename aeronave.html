@@ -611,7 +611,125 @@ document.addEventListener("DOMContentLoaded", () => {
       img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
     ));
 
-    // A configuração blindada: forçando a largura exata tanto no canvas quanto no arquivo
+    const btnPdf = document.getElementById("btnDownloadPDF");
+  if(btnPdf) {
+    btnPdf.addEventListener("click", async () => {
+      if(!P) return;
+
+      const originalText = btnPdf.innerHTML;
+      btnPdf.innerHTML = "GERANDO PDF...";
+      btnPdf.disabled = true;
+
+      const logoSvgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95" width="230" height="55"><g>
+        <path fill="#000000" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/>
+        <path fill="#000000" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/>
+        <path fill="#000000" d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/>
+        <path fill="#000000" d="M509.92,267.53 h51.25 l54.12,106.23 l21.19,-106.23 h50.39 l-37.51,188.41 h-48.68 l-55.26,-114.53 l-23.19,114.53 h-50.11 l37.8,-188.41 Z"/>
+        <path fill="#000000" d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/>
+        <path fill="#000000" d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/>
+        <path fill="#000000" d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/>
+        <path fill="#000000" d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/>
+        <path fill="#000000" d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/>
+        <path fill="#000000" d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/>
+        <path fill="#000000" d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/>
+        <path fill="#000000" d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94ZM1555.99,362.6c-2.29,11.07-2.29,21.47,0,31.21,2.29,9.73,6.31,18.23,12.03,25.49,5.73,7.25,12.98,12.98,21.76,17.18,8.78,4.2,18.61,6.3,29.49,6.3s21.62-2.14,32.21-6.44c10.59-4.29,20.28-10.07,29.06-17.32,8.78-7.25,16.27-15.84,22.48-25.77,6.2-9.93,10.45-20.43,12.74-31.5,2.29-11.26,2.34-21.76.14-31.5s-6.16-18.28-11.88-25.63c-5.73-7.35-12.99-13.13-21.76-17.32-8.78-4.19-18.61-6.3-29.49-6.3s-21.91,2.15-32.5,6.45c-10.59,4.29-20.28,10.12-29.06,17.47-8.78,7.35-16.27,15.99-22.48,25.91-6.2,9.93-10.45,20.52-12.74,31.79Z"/>
+        <path fill="#171717" d="M1772.25,267.53 h18.33 l79.59,161.21 l32.36,-161.21 h17.47 l-37.51,188.41 h-18.32 l-79.6,-161.49 l-32.35,161.49 h-17.75 l37.79,-188.41Z"/>
+        </g>
+        <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/>
+      </svg>`;
+      const logoDataUri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(logoSvgStr);
+
+      const priceStr = fmtPrice(P) || "Sob Consulta";
+      
+      const validSpecs = (P.specs || []).filter(s => s[0] || s[1]);
+      let specsSectionHTML = '';
+      
+      if (validSpecs.length > 0) {
+        const specsRowsHTML = validSpecs.map(s => `
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e0e0e0; font-size:12px;">
+            <span style="color:#555555">${s[0] || ''}</span>
+            <span style="font-weight:600; color:#000000">${s[1] || ''}</span>
+          </div>
+        `).join('');
+
+        specsSectionHTML = `
+          <div style="margin-bottom:25px;">
+            <h3 style="font-size:15px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:6px; margin-bottom:12px; font-weight:700;">Ficha Técnica</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 35px;">
+              ${specsRowsHTML}
+            </div>
+          </div>
+        `;
+      }
+
+      let descriptionSectionHTML = '';
+      if (P.description && P.description.trim() !== '') {
+        descriptionSectionHTML = `
+          <div style="margin-bottom:25px;">
+            <h3 style="font-size:15px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:6px; margin-bottom:12px; font-weight:700;">Sobre a aeronave</h3>
+            <p style="font-size:12px; line-height:1.6; color:#444; text-align:justify; margin:0;">${P.description}</p>
+          </div>
+        `;
+      }
+
+      const mainImg = P.images && P.images.length 
+        ? `<div style="width:100%; height:320px; border-radius:12px; margin-bottom:20px; border: 1px solid #e0e0e0; background-image:url('${P.images[0]}'); background-size:cover; background-position:center; background-repeat:no-repeat;"></div>` 
+        : '';
+
+      let galleryHTML = '';
+      if (P.images && P.images.length > 1) {
+        const extraImages = P.images.slice(1).map(img => `
+          <div style="width: 100%; height: 250px; background-image:url('${img}'); background-size:cover; background-position:center; background-repeat:no-repeat; border-radius:8px; border: 1px solid #e0e0e0;"></div>
+        `).join('');
+        
+        galleryHTML = `
+          <div class="html2pdf__page-break"></div>
+          <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family: 'Inter', sans-serif; width:800px; min-height:1040px; box-sizing:border-box;">
+            <h2 style="font-size:18px; text-transform:uppercase; color:#000; border-bottom:2px solid #eee; padding-bottom:8px; margin-bottom:20px; font-weight:700;">Galeria de Imagens</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              ${extraImages}
+            </div>
+            <div style="text-align:center; border-top:1px solid #eee; padding-top:15px; margin-top:35px;">
+              <p style="font-size:11px; margin:0; color:#666;"><b>Plane Aviation</b> — Ficha de Apresentação Comercial</p>
+            </div>
+          </div>
+        `;
+      }
+
+      // 1. AQUI ESTÁ O PDF HTML (QUE HAVIA SUMIDO)
+      const pdfHTML = `
+        <div style="padding:30px 40px; background-color:#ffffff; color:#1a1a1a; font-family: 'Inter', sans-serif; width:800px; min-height:1040px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:between;">
+          <div>
+            <div style="text-align:left; margin-bottom:20px; border-bottom: 2px solid #d32f2f; padding-bottom: 12px;">
+              <img src="${logoDataUri}" style="height:38px;" alt="Plane Aviation" />
+            </div>
+            
+            ${mainImg}
+            
+            <div style="margin-bottom:20px;">
+              <div style="font-size:10px; color:#666; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">${P.condition || ''} · ${P.year || ''} · Cód: ${P.codigoInterno || ''}</div>
+              <h1 style="margin:0 0 6px; font-size:32px; font-style:italic; text-transform:uppercase; color:#000; font-weight:800; line-height:1;">${P.model}</h1>
+              <div style="font-size:22px; font-weight:bold; color:#d32f2f;">${priceStr}</div>
+            </div>
+            
+            <div style="display:flex; gap:15px; margin-bottom:25px;">
+              ${P.hoursNum ? `<div style="background:#f9f9f9; border:1px solid #eee; padding:10px 15px; border-radius:6px; font-size:12px;"><span style="color:#555">Célula:</span> <b style="color:#000">${fmtHoras(P.hoursNum)}</b></div>` : ''}
+              ${P.motorHours ? `<div style="background:#f9f9f9; border:1px solid #eee; padding:10px 15px; border-radius:6px; font-size:12px;"><span style="color:#555">Motor:</span> <b style="color:#000">${fmtHoras(P.motorHours)}</b></div>` : ''}
+              ${P.heliceHours ? `<div style="background:#f9f9f9; border:1px solid #eee; padding:10px 15px; border-radius:6px; font-size:12px;"><span style="color:#555">Hélice:</span> <b style="color:#000">${fmtHoras(P.heliceHours)}</b></div>` : ''}
+            </div>
+            
+            ${specsSectionHTML}
+            ${descriptionSectionHTML}
+          </div>
+          
+          <div style="text-align:center; border-top:1px solid #eee; padding-top:15px; margin-top:auto;">
+            <p style="font-size:11px; margin:0; color:#555;"><b>Fale com um consultor:</b> +55 (11) 99999-0000 | contato@planeaviation.com.br</p>
+          </div>
+        </div>
+        ${galleryHTML}
+      `;
+
+      // 2. A CONFIGURAÇÃO BLINDADA
       const opt = {
         margin:       0,
         filename:     `Plane-Aviation-${P.model.replace(/\s+/g, '-')}.pdf`,
@@ -620,13 +738,13 @@ document.addEventListener("DOMContentLoaded", () => {
           scale: 2, 
           useCORS: true, 
           backgroundColor: '#ffffff',
-          windowWidth: 800, // Força a biblioteca a pensar que o celular tem 800px
-          width: 800        // Força a largura da foto a ter 800px cravados
+          windowWidth: 800,
+          width: 800
         }, 
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      // O TRUQUE: Cria o elemento na tela (left: 0), mas por trás do site (z-index: -9999)
+      // 3. O TRUQUE: Cria o elemento na tela, mas por trás do site
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = pdfHTML;
       tempDiv.style.width = '800px';
@@ -637,7 +755,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       document.body.appendChild(tempDiv);
 
-      // Espera 300 milissegundos para dar tempo do celular "desenhar" as fotos no fundo antes de gerar
+      // 4. Espera 300ms para a foto sair perfeita
       setTimeout(async () => {
         try {
           await html2pdf().set(opt).from(tempDiv).save();
@@ -645,11 +763,14 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error(err);
           alert("Erro ao gerar PDF.");
         } finally {
-          document.body.removeChild(tempDiv); // Apaga os rastros
+          document.body.removeChild(tempDiv);
           btnPdf.innerHTML = originalText;
           btnPdf.disabled = false;
         }
       }, 300);
+
+    });
+  }
   }
 
   init();
