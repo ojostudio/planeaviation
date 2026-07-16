@@ -668,7 +668,8 @@
     <div class="modal-body">
       <input type="hidden" id="ptId">
       <div class="fld"><label>Nome / Serviço (Título) *</label><input id="ptName" placeholder="Ex: Assistência Técnica Autorizada"></div>
-      <div class="fld"><label>Descrição Breve</label><textarea id="ptDesc" rows="3" style="resize:vertical" placeholder="Sobre o serviço..."></textarea></div>
+      <div class="fld"><label>Cidade</label><input id="ptCity" placeholder="Ex: Bauru, SP"></div>
+      <div class="fld"><label>Descrição Breve</label><textarea id="ptDesc" rows="3" style="resize:vertical;white-space:pre-wrap" placeholder="Sobre o serviço..."></textarea></div>
       <div class="grid2">
         <div class="fld"><label>Texto do Botão</label><input id="ptBtnText" placeholder="Ex: Acessar Site"></div>
         <div class="fld"><label>Link (URL)</label><input id="ptBtnUrl" placeholder="https://..."></div>
@@ -1641,7 +1642,7 @@
       rows.innerHTML = partnerDocs.map(p => { 
         const docId=p._id;
         return `<tr>
-          <td><b>${esc(p.title)}</b><br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(p.desc).slice(0,60)}...</span></td>
+          <td><b>${esc(p.title)}</b>${p.city?` <span style="font-size:11px;color:hsl(var(--muted-foreground))">— ${esc(p.city)}</span>`:""}<br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(p.desc).slice(0,60)}...</span></td>
           <td>Ordem: ${p.order||"0"}</td>
           <td><div class="act"><button class="icon-btn edit-pt" data-id="${docId}">Editar</button><button class="icon-btn danger del-pt" data-id="${docId}">Excluir</button></div></td>
         </tr>`; 
@@ -1660,6 +1661,7 @@
     p=p||{}; 
     $("ptId").value=id||""; 
     $("ptName").value=p.title||""; 
+    $("ptCity").value=p.city||""; 
     $("ptDesc").value=p.desc||""; 
     $("ptBtnText").value=p.btnText||""; 
     $("ptBtnUrl").value=p.url||""; 
@@ -1670,6 +1672,7 @@
   async function savePartner(){
     const data={ 
       title:$("ptName").value.trim(), 
+      city:$("ptCity").value.trim(), 
       desc:$("ptDesc").value.trim(), 
       btnText:$("ptBtnText").value.trim(), 
       url:$("ptBtnUrl").value.trim(), 
