@@ -675,6 +675,10 @@
         <div class="fld"><label>Link (URL)</label><input id="ptBtnUrl" placeholder="https://..."></div>
       </div>
       <div class="fld"><label>Ordem de exibição</label><input id="ptOrder" type="number" placeholder="1"></div>
+      <div class="fld" style="display:flex;align-items:center;gap:.5rem;margin-top:.25rem">
+        <input type="checkbox" id="ptCirrus" style="width:auto;margin:0">
+        <label for="ptCirrus" style="margin:0;cursor:pointer">Exibir selo "Autorizado Cirrus"</label>
+      </div>
     </div>
     <div id="ptMsg" class="msg" style="margin:0 0 .75rem"></div>
     <div class="modal-foot">
@@ -1642,7 +1646,7 @@
       rows.innerHTML = partnerDocs.map(p => { 
         const docId=p._id;
         return `<tr>
-          <td><b>${esc(p.title)}</b>${p.city?` <span style="font-size:11px;color:hsl(var(--muted-foreground))">— ${esc(p.city)}</span>`:""}<br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(p.desc).slice(0,60)}...</span></td>
+          <td><b>${esc(p.title)}</b>${p.city?` <span style="font-size:11px;color:hsl(var(--muted-foreground))">— ${esc(p.city)}</span>`:""}${p.cirrusAuthorized?` <span style="font-size:10px;font-weight:700;color:#DC0000;border:1px solid #DC0000;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:middle">CIRRUS</span>`:""}<br><span style="font-size:11px;color:hsl(var(--muted-foreground))">${esc(p.desc).slice(0,60)}...</span></td>
           <td>Ordem: ${p.order||"0"}</td>
           <td><div class="act"><button class="icon-btn edit-pt" data-id="${docId}">Editar</button><button class="icon-btn danger del-pt" data-id="${docId}">Excluir</button></div></td>
         </tr>`; 
@@ -1666,6 +1670,7 @@
     $("ptBtnText").value=p.btnText||""; 
     $("ptBtnUrl").value=p.url||""; 
     $("ptOrder").value=p.order||""; 
+    $("ptCirrus").checked=!!p.cirrusAuthorized; 
     $("ovPartner").classList.add("open"); 
   }
 
@@ -1677,6 +1682,7 @@
       btnText:$("ptBtnText").value.trim(), 
       url:$("ptBtnUrl").value.trim(), 
       order:Number($("ptOrder").value)||0, 
+      cirrusAuthorized:$("ptCirrus").checked, 
       updatedAt:ts(), 
       updatedBy:me.email 
     };
