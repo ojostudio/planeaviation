@@ -274,6 +274,16 @@
       letter-spacing: -0.02em;
     }
 
+    .partner-city {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: -0.5rem 0 0.75rem 0;
+    }
+
     .partner-desc {
       font-size: 0.875rem;
       color: rgba(0, 0, 0, 0.6);
@@ -469,6 +479,9 @@
   <script>
     const ARROW_SVG = '<svg viewBox="0 0 24.68 24.68" xmlns="http://www.w3.org/2000/svg" style="width:1.2em;height:1.2em;fill:currentColor;"><polygon points="0 0 0 2 21.26 2 0 23.26 1.42 24.67 22.68 3.41 22.68 24.68 24.68 24.68 24.68 0 0 0"/></svg>';
 
+    function escHtml(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+    function nl2br(s) { return escHtml(s).replace(/\r\n|\r|\n/g, "<br>"); }
+
     document.addEventListener("DOMContentLoaded", () => {
       loadCirrusFleet();
       loadPartners();
@@ -570,10 +583,11 @@
 
           html += `
             <div class="partner-card">
-              <h3 class="partner-title">${p.title}</h3>
-              <p class="partner-desc">${p.desc}</p>
+              <h3 class="partner-title">${escHtml(p.title)}</h3>
+              ${p.city ? `<span class="partner-city">${escHtml(p.city)}</span>` : ""}
+              <p class="partner-desc">${nl2br(p.desc)}</p>
               <a href="${safeUrl}" target="${safeUrl !== '#' ? '_blank' : '_self'}" class="partner-btn">
-                ${p.btnText || 'Acessar'} ${ARROW_SVG}
+                ${escHtml(p.btnText) || 'Acessar'} ${ARROW_SVG}
               </a>
             </div>
           `;
