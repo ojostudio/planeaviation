@@ -1420,8 +1420,60 @@
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
     
-    const data={ model, fabricante, modeloBase, versao, year:Number($("acYear").value)||null, codigoInterno, hoursNum:$("acHours").value?Number($("acHours").value):null, motorHours:$("acMotor").value?Number($("acMotor").value):null, heliceHours:$("acHelice").value?Number($("acHelice").value):null, condition:$("acCondition").value, location:$("acLocation").value.trim(), currency:$("acCurrency").value||"USD", priceNum:$("acPrice").value?Number($("acPrice").value):null, sobConsulta:!!$("acSobConsulta").checked, tag:$("acTag").value.trim(), tagSolid:true, description:$("acDesc").value.trim(), translations:withTranslations?trData:(editTranslations||{}), images:editImages, specs, features, prefixo:$("acPrefixo").value.trim(), proprietarioNome:$("acProprietarioNome").value.trim(), proprietarioTelefone:$("acProprietarioTel").value.trim(), notasInternas:$("acNotasInternas").value.trim(), updatedAt:ts(), updatedBy:me.email };
+    async function saveAircraft(withTranslations=false){
+    const fabricante = $("acFabricante").value;
+    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
+    const versao = $("acVersao").value.trim();
     
+    // Monta o nome completo automaticamente (Ex: "SR22T G7+")
+    const model = `${modeloBase} ${versao}`.trim();
+    
+    if(!model) return alert("Informe o modelo.");
+    const codigoInterno = $("acCodigo").value.trim(); if(!codigoInterno) return alert("Informe o código interno.");
+    const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
+    const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
+    
+    // Trava de segurança para impedir que arquivos ou valores nulos cheguem no banco de dados
+    const safeImages = editImages.filter(url => typeof url === 'string' && url.trim() !== '');
+    
+    const data={ 
+      model, fabricante, modeloBase, versao, 
+      year:Number($("acYear").value)||null, 
+      codigoInterno, 
+      hoursNum:$("acHours").value?Number($("acHours").value):null, 
+      motorHours:$("acMotor").value?Number($("acMotor").value):null, 
+      heliceHours:$("acHelice").value?Number($("acHelice").value):null, 
+      condition:$("acCondition").value, 
+      location:$("acLocation").value.trim(), 
+      currency:$("acCurrency").value||"USD", 
+      priceNum:$("acPrice").value?Number($("acPrice").value):null, 
+      sobConsulta:!!$("acSobConsulta").checked, 
+      tag:$("acTag").value.trim(), 
+      tagSolid:true, 
+      description:$("acDesc").value.trim(), 
+      translations:withTranslations?trData:(editTranslations||{}), 
+      images:safeImages, 
+      specs, 
+      features, 
+      prefixo:$("acPrefixo").value.trim(), 
+      proprietarioNome:$("acProprietarioNome").value.trim(), 
+      proprietarioTelefone:$("acProprietarioTel").value.trim(), 
+      notasInternas:$("acNotasInternas").value.trim(), 
+      updatedAt:ts(), 
+      updatedBy:me.email 
+    };
+    
+    const id=$("acId").value;
+    if (PA.IMAGE_MODE === "inline" && inlineBytes(safeImages) > 750 * 1024) return alert(`Limite de imagens excedido para modo sem Storage.`);
+    try{
+      if(id) await db.collection("aircraft").doc(id).update(data);
+      else { data.createdAt=ts(); data.createdBy=me.email; await db.collection("aircraft").add(data); }
+      msg($("acMsg"), id ? "Aeronave atualizada com sucesso!" : "Aeronave cadastrada com sucesso!", "ok");
+      loadAircraft();
+      setTimeout(() => $("ovAircraft").classList.remove("open"), 1200);
+    }catch(e){ msg($("acMsg"), "Erro ao salvar: " + e.message, "err"); }
+  }
+  
     const id=$("acId").value;
     if (PA.IMAGE_MODE === "inline" && inlineBytes(editImages) > 750 * 1024) return alert(`Limite de imagens excedido para modo sem Storage.`);
     try{
@@ -1677,10 +1729,25 @@
       for(let num=1; num<=3; num++) {
         const titleVal = $(`cfgHeroTitle${num}`).value.trim();
         if(titleVal || num === 1) { 
-          slides.push({ tag:$("cfgHeroTag"+num).value.trim(), title:titleVal || "O ACESSO DEFINITIVO", btnText:$("cfgBtnText"+num).value.trim(), btnUrl:$("cfgBtnUrl"+num).value.trim(), imgUrl:$("cfgHeroImage"+num).value.trim(), videoUrl: toVideoEmbed($("cfgHeroVideo"+num).value.trim()) || "", rawVideoUrl: $("cfgHeroVideo"+num).value.trim() });
+          // Trava de segurança: verifica se o campo existe antes de pegar o valor, evitando "undefined"
+          const videoEl = $(`cfgHeroVideo${num}`);
+          const imgEl = $(`cfgHeroImage${num}`);
+          
+          slides.push({ 
+            tag: $("cfgHeroTag"+num).value.trim(), 
+            title: titleVal || "O ACESSO DEFINITIVO", 
+            btnText: $("cfgBtnText"+num).value.trim(), 
+            btnUrl: $("cfgBtnUrl"+num).value.trim(), 
+            imgUrl: imgEl ? imgEl.value.trim() : "", 
+            videoUrl: videoEl ? videoEl.value.trim() : "" 
+          });
         }
       }
-      try { await db.collection("siteConfig").doc("home").set({ slides, updatedAt:ts(), updatedBy:me.email }, { merge:true }); msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); loadConfig(); } catch(e){ alert(e.message); }
+      try { 
+        await db.collection("siteConfig").doc("home").set({ slides, updatedAt:ts(), updatedBy:me.email }, { merge:true }); 
+        msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); 
+        loadConfig(); 
+      } catch(e){ alert(e.message); }
     };
   }
 
