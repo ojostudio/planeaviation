@@ -1407,6 +1407,35 @@
     $("ovAircraft").classList.add("open");
   }
 
+  // =================================================================
+  // SCANNER ABSOLUTO: Varre e destrói qualquer erro aninhado
+  // =================================================================
+  function cleanFirestoreData(data) {
+    if (data === null || data === undefined) return null;
+    if (typeof data !== 'object') return data;
+    
+    // Se for uma lista, esmaga todos os níveis (flat Infinity) e limpa os itens
+    if (Array.isArray(data)) {
+      return data.flat(Infinity)
+                 .map(item => cleanFirestoreData(item))
+                 .filter(item => item !== null && item !== undefined);
+    }
+    
+    const cleaned = {};
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        const val = cleanFirestoreData(data[key]);
+        if (val !== null && val !== undefined) {
+          cleaned[key] = val;
+        }
+      }
+    }
+    return cleaned;
+  }
+
+  // =================================================================
+  // FUNÇÃO DE SALVAR AERONAVE (BLINDADA)
+  // =================================================================
   async function saveAircraft(withTranslations=false){
     const fabricante = $("acFabricante").value;
     const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
@@ -1418,9 +1447,6 @@
     
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
-    
-    // ROLO COMPRESSOR: Garante que as imagens sejam uma lista plana e 100% texto puro
-    const safeImages = editImages.flat(Infinity).filter(url => typeof url === 'string' && url.trim() !== '');
     
     let data = { 
       model, fabricante, modeloBase, versao, 
@@ -1438,29 +1464,34 @@
       tagSolid: true, 
       description: $("acDesc").value.trim(), 
       translations: withTranslations ? trData : (editTranslations || {}), 
-      images: safeImages, 
-      specs: specs.flat(Infinity), 
-      features: features.flat(Infinity), 
+      images: editImages, 
+      specs: specs, 
+      features: features, 
       prefixo: $("acPrefixo").value.trim(), 
       proprietarioNome: $("acProprietarioNome").value.trim(), 
       proprietarioTelefone: $("acProprietarioTel").value.trim(), 
       notasInternas: $("acNotasInternas").value.trim()
     };
     
-    // Purificação final antes de enviar ao Firebase
-    data = JSON.parse(JSON.stringify(data));
-    data.updatedAt = ts();
-    data.updatedBy = me.email;
+    // A MÁGICA ACONTECE AQUI: O Scanner purifica os dados 100% antes do Firebase ver
+    let finalData = cleanFirestoreData(data);
+    finalData.updatedAt = ts();
+    finalData.updatedBy = me.email;
     
     const id = $("acId").value;
-    if (PA.IMAGE_MODE === "inline" && inlineBytes(safeImages) > 750 * 1024) return alert(`Limite de imagens excedido para modo sem Storage.`);
     try {
-      if (id) await db.collection("aircraft").doc(id).update(data);
-      else { data.createdAt = ts(); data.createdBy = me.email; await db.collection("aircraft").add(data); }
+      if (id) await db.collection("aircraft").doc(id).update(finalData);
+      else { 
+        finalData.createdAt = ts(); 
+        finalData.createdBy = me.email; 
+        await db.collection("aircraft").add(finalData); 
+      }
       msg($("acMsg"), id ? "Aeronave atualizada com sucesso!" : "Aeronave cadastrada com sucesso!", "ok");
       loadAircraft();
       setTimeout(() => $("ovAircraft").classList.remove("open"), 1200);
-    } catch(e) { msg($("acMsg"), "Erro ao salvar: " + e.message, "err"); }
+    } catch(e) { 
+      msg($("acMsg"), "Erro ao salvar: " + e.message, "err"); 
+    }
   }
 
   /* ============================================================
@@ -1721,11 +1752,11 @@
         }
       }
 
-      // ROLO COMPRESSOR: Esmaga qualquer array duplo e elimina fantasmas
-      slides = JSON.parse(JSON.stringify(slides)).flat(Infinity);
+      // Passa as configurações do Banner pelo Scanner Absoluto
+      const finalSlides = cleanFirestoreData(slides);
 
       try { 
-        await db.collection("siteConfig").doc("home").set({ slides: slides, updatedAt: ts(), updatedBy: me.email }, { merge: true }); 
+        await db.collection("siteConfig").doc("home").set({ slides: finalSlides, updatedAt: ts(), updatedBy: me.email }, { merge: true }); 
         msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); 
         loadConfig(); 
       } catch(e){ alert("Erro ao salvar: " + e.message); }
