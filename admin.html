@@ -290,7 +290,7 @@
 
     <div class="panel" id="panel-config">
       <div class="row-head">
-        <div><h2>Conteúdo Home Page</h2><p class="sub">Adicione ou substitua imagens, títulos, mídias e CTAs dos 3 banners rotativos principais.</p></div>
+        <div><h2>Conteúdo Home Page</h2><p class="sub">Adicione ou substitua imagens, títulos e CTAs dos 3 banners rotativos principais.</p></div>
         <button class="btn btn-solid btn-sm" id="cfgSave">Salvar Alterações</button>
       </div>
       <div id="cfgMsg" class="msg" style="margin-bottom:1rem"></div>
@@ -308,14 +308,15 @@
           <div class="fld">
             <label>Imagem de Fundo</label>
             <div class="up-zone" id="cfgUpZone1" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
-              <span id="cfgZoneText1">Clique para selecionar ou arraste uma imagem aqui</span>
+              Clique para selecionar ou arraste uma imagem aqui
               <input type="file" id="cfgFile1" accept="image/*" style="display:none">
             </div>
             <div class="prog" id="cfgProg1" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
             <div id="cfgThumb1" style="margin-bottom:.5rem"></div>
             <input id="cfgHeroImage1" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
           </div>
-          <div class="fld"><label>URL do Vídeo (MP4 direto ou YouTube)</label><input id="cfgHeroVideo1" type="url" placeholder="https://youtube.com/watch?v=... ou https://cdn.../video.mp4"></div>
+          <!-- O campo de vídeo continua aqui, mas escondido da interface para não quebrar a lógica -->
+          <div class="fld" style="display: none;"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo1" type="url"></div>
         </div>
 
         <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
@@ -330,14 +331,15 @@
           <div class="fld">
             <label>Imagem de Fundo</label>
             <div class="up-zone" id="cfgUpZone2" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
-              <span id="cfgZoneText2">Clique para selecionar ou arraste uma imagem aqui</span>
+              Clique para selecionar ou arraste uma imagem aqui
               <input type="file" id="cfgFile2" accept="image/*" style="display:none">
             </div>
             <div class="prog" id="cfgProg2" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
             <div id="cfgThumb2" style="margin-bottom:.5rem"></div>
             <input id="cfgHeroImage2" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
           </div>
-          <div class="fld"><label>URL do Vídeo (MP4 direto ou YouTube)</label><input id="cfgHeroVideo2" type="url" placeholder="https://youtube.com/watch?v=... ou https://cdn.../video.mp4"></div>
+          <!-- Escondido -->
+          <div class="fld" style="display: none;"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo2" type="url"></div>
         </div>
 
         <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
@@ -352,14 +354,15 @@
           <div class="fld">
             <label>Imagem de Fundo</label>
             <div class="up-zone" id="cfgUpZone3" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
-              <span id="cfgZoneText3">Clique para selecionar ou arraste uma imagem aqui</span>
+              Clique para selecionar ou arraste uma imagem aqui
               <input type="file" id="cfgFile3" accept="image/*" style="display:none">
             </div>
             <div class="prog" id="cfgProg3" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
             <div id="cfgThumb3" style="margin-bottom:.5rem"></div>
             <input id="cfgHeroImage3" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
           </div>
-          <div class="fld"><label>URL do Vídeo (MP4 direto ou YouTube)</label><input id="cfgHeroVideo3" type="url" placeholder="https://youtube.com/watch?v=... ou https://cdn.../video.mp4"></div>
+          <!-- Escondido -->
+          <div class="fld" style="display: none;"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo3" type="url"></div>
         </div>
 
       </div>
