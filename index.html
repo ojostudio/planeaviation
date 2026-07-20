@@ -540,8 +540,23 @@ CONFIGURADOR
       btn.href = slide.btnUrl || "contato.html";
       btn.style.visibility = "visible";
 
+      // 1. CORREÇÃO: Limpa a imagem anterior para não dar o efeito "fantasma"
+      hBg.style.backgroundImage = "none"; 
+
       if(slide.videoUrl) {
-        hBg.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"><source src="${slide.videoUrl}" type="video/mp4"></video>`;
+        const vUrl = slide.videoUrl;
+        
+        // 2. CORREÇÃO: Identifica se é YouTube e cria um iframe de tela cheia
+        if (vUrl.includes("youtube.com") || vUrl.includes("youtu.be")) {
+          let videoId = "";
+          if (vUrl.includes("youtu.be/")) videoId = vUrl.split("youtu.be/")[1].split("?")[0];
+          else if (vUrl.includes("v=")) videoId = vUrl.split("v=")[1].split("&")[0];
+          
+          hBg.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
+        } else {
+          // Se for um link de MP4 direto, continua funcionando perfeitamente
+          hBg.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"><source src="${vUrl}" type="video/mp4"></video>`;
+        }
       } else if(slide.imgUrl) {
         hBg.style.backgroundImage = `url('${slide.imgUrl}')`;
         hBg.style.backgroundSize = "cover";
