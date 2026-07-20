@@ -1752,7 +1752,6 @@
       for(let num=1; num<=3; num++) {
         const titleVal = $(`cfgHeroTitle${num}`).value.trim();
         if(titleVal || num === 1) { 
-          const videoEl = $(`cfgHeroVideo${num}`);
           const imgEl = $(`cfgHeroImage${num}`);
           
           slides.push({ 
@@ -1761,7 +1760,7 @@
             btnText: $("cfgBtnText"+num).value.trim(), 
             btnUrl: $("cfgBtnUrl"+num).value.trim(), 
             imgUrl: imgEl ? imgEl.value.trim() : "", 
-            videoUrl: videoEl ? videoEl.value.trim() : "" 
+            videoUrl: "" // A MÁGICA AQUI: Forçamos o vídeo a ficar sempre vazio!
           });
         }
       }
