@@ -516,11 +516,11 @@ CONFIGURADOR
     return texto;
   }
 
-  // 1. O SEGREDO DO PRÉ-CARREGAMENTO:
-  // Cria todos os vídeos e imagens de uma vez na memória, mas deixa invisíveis.
+  // 1. O SEGREDO DO PRÉ-CARREGAMENTO E DO ZOOM:
   function initHeroBackgrounds() {
     const hBg = document.getElementById("heroBg");
     hBg.innerHTML = ""; 
+    hBg.style.overflow = "hidden"; // Trava de segurança para não vazar tela
     
     heroSlides.forEach((slide, i) => {
       const bgItem = document.createElement("div");
@@ -528,8 +528,10 @@ CONFIGURADOR
       bgItem.style.position = "absolute";
       bgItem.style.inset = "0";
       bgItem.style.opacity = "0"; // Nasce invisível
-      bgItem.style.transition = "opacity 0.8s ease-in-out"; // Transição cinematográfica
+      bgItem.style.transition = "opacity 0.8s ease-in-out"; 
       bgItem.style.zIndex = "1";
+      bgItem.style.pointerEvents = "none"; // Blindagem dupla contra cliques no banner
+      bgItem.style.overflow = "hidden";
 
       if(slide.videoUrl) {
         const vUrl = slide.videoUrl;
@@ -538,10 +540,10 @@ CONFIGURADOR
         
         if (match && match[2].length === 11) {
           const videoId = match[2];
-          // playsinline=1 e iv_load_policy=3 ocultam anotações. pointer-events:none bloqueia o clique no player!
-          bgItem.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1&playsinline=1&iv_load_policy=3" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
+          // A MÁGICA: transform: ... scale(1.3) empurra a interface do YouTube para fora do monitor
+          bgItem.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&disablekb=1&modestbranding=1&playsinline=1&iv_load_policy=3" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.3); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
         } else {
-          bgItem.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"><source src="${vUrl}" type="video/mp4"></video>`;
+          bgItem.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;"><source src="${vUrl}" type="video/mp4"></video>`;
         }
       } else if(slide.imgUrl) {
         bgItem.style.backgroundImage = `url('${slide.imgUrl}')`;
