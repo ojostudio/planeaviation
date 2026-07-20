@@ -1418,7 +1418,9 @@
     
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features=[...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
-    const safeImages = editImages.filter(url => typeof url === 'string' && url.trim() !== '');
+    
+    // ROLO COMPRESSOR: Garante que as imagens sejam uma lista plana e 100% texto puro
+    const safeImages = editImages.flat(Infinity).filter(url => typeof url === 'string' && url.trim() !== '');
     
     let data = { 
       model, fabricante, modeloBase, versao, 
@@ -1437,17 +1439,16 @@
       description: $("acDesc").value.trim(), 
       translations: withTranslations ? trData : (editTranslations || {}), 
       images: safeImages, 
-      specs, 
-      features, 
+      specs: specs.flat(Infinity), 
+      features: features.flat(Infinity), 
       prefixo: $("acPrefixo").value.trim(), 
       proprietarioNome: $("acProprietarioNome").value.trim(), 
       proprietarioTelefone: $("acProprietarioTel").value.trim(), 
       notasInternas: $("acNotasInternas").value.trim()
     };
     
-    // OPÇÃO NUCLEAR: Converte tudo para texto e volta, eliminando qualquer arquivo/Undefined que tenha vazado
+    // Purificação final antes de enviar ao Firebase
     data = JSON.parse(JSON.stringify(data));
-    // Adicionamos os timestamps depois, pois o JSON.parse não gosta de carimbos de data do Firebase
     data.updatedAt = ts();
     data.updatedBy = me.email;
     
@@ -1720,14 +1721,14 @@
         }
       }
 
-      // OPÇÃO NUCLEAR: Destrói qualquer fantasma invisível no array
-      slides = JSON.parse(JSON.stringify(slides));
+      // ROLO COMPRESSOR: Esmaga qualquer array duplo e elimina fantasmas
+      slides = JSON.parse(JSON.stringify(slides)).flat(Infinity);
 
       try { 
         await db.collection("siteConfig").doc("home").set({ slides: slides, updatedAt: ts(), updatedBy: me.email }, { merge: true }); 
         msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); 
         loadConfig(); 
-      } catch(e){ alert(e.message); }
+      } catch(e){ alert("Erro ao salvar: " + e.message); }
     };
   }
 
