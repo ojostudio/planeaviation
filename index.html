@@ -516,32 +516,59 @@ CONFIGURADOR
     return texto;
   }
 
-  // 1. O SEGREDO DO PRÉ-CARREGAMENTO E DO ZOOM:
+  // 1. O SEGREDO DO PRÉ-CARREGAMENTO, ZOOM E TEMPO DE INÍCIO:
   function initHeroBackgrounds() {
     const hBg = document.getElementById("heroBg");
     hBg.innerHTML = ""; 
-    hBg.style.overflow = "hidden"; // Trava de segurança para não vazar tela
+    hBg.style.overflow = "hidden"; 
     
     heroSlides.forEach((slide, i) => {
       const bgItem = document.createElement("div");
       bgItem.id = `heroBgItem-${i}`;
       bgItem.style.position = "absolute";
       bgItem.style.inset = "0";
-      bgItem.style.opacity = "0"; // Nasce invisível
+      bgItem.style.opacity = "0"; 
       bgItem.style.transition = "opacity 0.8s ease-in-out"; 
       bgItem.style.zIndex = "1";
-      bgItem.style.pointerEvents = "none"; // Blindagem dupla contra cliques no banner
+      bgItem.style.pointerEvents = "none"; 
       bgItem.style.overflow = "hidden";
 
       if(slide.videoUrl) {
         const vUrl = slide.videoUrl;
-        const ytRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#\&\?]*).*/;
-        const match = vUrl.match(ytRegex);
-        
-        if (match && match[2].length === 11) {
-          const videoId = match[2];
-          // A MÁGICA: transform: ... scale(1.3) empurra a interface do YouTube para fora do monitor
-          bgItem.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&disablekb=1&modestbranding=1&playsinline=1&iv_load_policy=3" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.3); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
+        let videoId = "";
+        let startSeconds = 0;
+
+        // Tenta extrair o ID e o tempo do link do YouTube
+        try {
+          const ytRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#\&\?]*).*/;
+          const match = vUrl.match(ytRegex);
+          if (match && match[2].length === 11) {
+            videoId = match[2];
+            
+            // Garimpa se existe um "?t=" ou "&start=" no link
+            const timeMatch = vUrl.match(/[?&](t|start)=([^&]+)/);
+            if (timeMatch) {
+              const tVal = timeMatch[2];
+              // Se o link vier formatado como 4m20s
+              if (tVal.includes('m') || tVal.includes('s')) {
+                const m = tVal.match(/(\d+)m/);
+                const s = tVal.match(/(\d+)s/);
+                if (m) startSeconds += parseInt(m[1]) * 60;
+                if (s) startSeconds += parseInt(s[1]);
+              } else {
+                // Se o link vier apenas com os segundos diretos
+                startSeconds = parseInt(tVal);
+              }
+            }
+          }
+        } catch(e) {}
+
+        if (videoId) {
+          // Se encontrou um tempo de início, adiciona o parâmetro &start=
+          const startParam = startSeconds > 0 ? `&start=${startSeconds}` : "";
+          
+          // Zoom aumentado para 1.5x para expulsar qualquer interface teimosa da tela
+          bgItem.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}${startParam}&controls=0&rel=0&disablekb=1&modestbranding=1&playsinline=1&iv_load_policy=3" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.5); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
         } else {
           bgItem.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;"><source src="${vUrl}" type="video/mp4"></video>`;
         }
