@@ -1682,35 +1682,48 @@
 
   async function cfgHandleFile(num, file){
     if (!file || !file.type.startsWith("image/")) return;
+    
+    // Limite de segurança generoso: Aceita arquivos originais de até 25MB
+    if (file.size > 25 * 1024 * 1024) {
+      alert("A imagem selecionada é muito pesada. O limite máximo é de 25MB.");
+      return;
+    }
+
     const progEl = $(`cfgProg${num}`);
     progEl.style.display = "block";
     const bar = progEl.querySelector(".bar");
-    bar.style.width = "30%";
+    bar.style.width = "10%";
+    
     try {
+      // 1. Redimensiona e converte a imagem de 25MB para um WebP leve no navegador
       const webpUrl = await cfgCompressToWebP(file);
-      bar.style.width = "80%";
+      bar.style.width = "50%";
 
-      if (PA.IMAGE_MODE === "storage" && storage) {
-        // Modo Storage: faz upload real pro Firebase e salva a URL pública
-        const path = `siteConfig/hero-${num}-${Date.now()}.webp`;
-        const blob = await (await fetch(webpUrl)).blob();
-        const task = storage.ref(path).put(blob, { contentType: "image/webp" });
-        await new Promise((res, rej) => {
-          task.on("state_changed",
-            s => { bar.style.width = Math.round(20 + (s.bytesTransferred / s.totalBytes) * 60) + "%"; },
-            err => { alert(err.message); rej(); },
-            async () => { const publicUrl = await task.snapshot.ref.getDownloadURL(); $(`cfgHeroImage${num}`).value = publicUrl; cfgShowThumb(num, publicUrl); res(); }
-          );
-        });
-      } else {
-        // Modo inline: salva o data URL diretamente (igual ao cadastro de aeronaves)
-        $(`cfgHeroImage${num}`).value = webpUrl;
-        cfgShowThumb(num, webpUrl);
-      }
-      bar.style.width = "100%";
+      // 2. FORÇA O UPLOAD PARA O STORAGE (Proibido salvar Base64 no banco de dados)
+      if (!storage) throw new Error("Firebase Storage não está conectado!");
+
+      const path = `siteConfig/hero-${num}-${Date.now()}.webp`;
+      const blob = await (await fetch(webpUrl)).blob();
+      const task = storage.ref(path).put(blob, { contentType: "image/webp" });
+      
+      await new Promise((res, rej) => {
+        task.on("state_changed",
+          s => { bar.style.width = Math.round(50 + (s.bytesTransferred / s.totalBytes) * 50) + "%"; },
+          err => { alert(err.message); rej(); },
+          async () => { 
+            const publicUrl = await task.snapshot.ref.getDownloadURL(); 
+            // 3. Salva APENAS O LINK CURTO no formulário (Nunca mais estoura o 1MB do Firestore)
+            $(`cfgHeroImage${num}`).value = publicUrl; 
+            cfgShowThumb(num, publicUrl); 
+            res(); 
+          }
+        );
+      });
+      
     } catch(e) {
       alert("Erro ao processar imagem: " + e.message);
     }
+    
     setTimeout(() => { progEl.style.display = "none"; bar.style.width = "0%"; }, 400);
   }
 
