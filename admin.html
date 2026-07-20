@@ -1524,7 +1524,7 @@
     try {
       const doc = await db.collection("siteConfig").doc("home").get(); if(!doc.exists) return; const d = doc.data();
       if (d.slides && d.slides.length) {
-        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; if(slide.imgUrl) cfgShowThumb(num, slide.imgUrl); } });
+        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; if(slide.imgUrl) cfgShowThumb(num, slide.imgUrl); else cfgUpdateZoneLabel(num); } });
       } else {
         // Fallback antigo
         $("cfgHeroTag1").value = d.heroTag??""; $("cfgHeroTitle1").value = d.heroTitle??""; $("cfgBtnText1").value = d.btnText??""; $("cfgBtnUrl1").value = d.btnUrl??""; $("cfgHeroImage1").value = d.heroImageUrl??""; $("cfgHeroVideo1").value = d.heroVideoUrl??"";
@@ -1538,8 +1538,11 @@
     if(!el || !url) return;
     el.innerHTML = `<div style="position:relative;display:inline-block;margin-top:.25rem">
       <img src="${url}" style="height:72px;border-radius:6px;border:1px solid hsl(var(--border));object-fit:cover;display:block">
-      <button onclick="cfgClearThumb(${num})" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:hsl(var(--foreground));color:hsl(var(--background));border:none;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+      <button id="cfgClearBtn${num}" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:hsl(var(--foreground));color:hsl(var(--background));border:none;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
     </div>`;
+    // Wiring do X aqui, sem onclick inline (que não alcança funções dentro do IIFE)
+    document.getElementById(`cfgClearBtn${num}`).addEventListener("click", () => cfgClearThumb(num));
+    cfgUpdateZoneLabel(num);
   }
 
   function cfgClearThumb(num){
@@ -1547,6 +1550,31 @@
     if(el) el.innerHTML = "";
     const inp = $(`cfgHeroImage${num}`);
     if(inp) inp.value = "";
+    cfgUpdateZoneLabel(num);
+  }
+
+  /* Atualiza o label da zona de upload mostrando se vídeo está ativo */
+  function cfgUpdateZoneLabel(num){
+    const zone = $(`cfgUpZone${num}`);
+    const videoUrl = $(`cfgHeroVideo${num}`)?.value?.trim();
+    const imgUrl   = $(`cfgHeroImage${num}`)?.value?.trim();
+    if(!zone) return;
+    const fileInput = $(`cfgFile${num}`);
+    const hasVideo = !!videoUrl;
+    const hasImg   = !!imgUrl;
+    const baseStyle = "cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;";
+    if(hasVideo && hasImg){
+      zone.style.cssText = baseStyle + "border-color:#f59e0b;background:#fffbeb;";
+      zone.querySelector("span") && (zone.querySelector("span").textContent = "");
+      zone.childNodes[0].textContent = "⚠️ Vídeo ativo — imagem usada como fallback se o vídeo não carregar";
+    } else if(hasVideo && !hasImg){
+      zone.style.cssText = baseStyle + "border-color:#10b981;background:#f0fdf4;";
+      zone.childNodes[0].textContent = "🎬 Vídeo ativo — clique aqui para adicionar imagem de fallback";
+    } else {
+      zone.style.cssText = baseStyle;
+      zone.childNodes[0].textContent = "Clique para selecionar ou arraste uma imagem aqui";
+    }
+    if(fileInput) zone.appendChild(fileInput);
   }
 
   /* Comprime e converte para WebP, exatamente como nas imagens de aeronave,
@@ -1613,13 +1641,18 @@
     [1, 2, 3].forEach(num => {
       const zone = $(`cfgUpZone${num}`);
       const fileInput = $(`cfgFile${num}`);
-      zone.addEventListener("click", e => { if (e.target.tagName !== "INPUT") fileInput.click(); });
+      zone.addEventListener("click", e => { if (e.target.tagName !== "INPUT" && e.target.tagName !== "BUTTON") fileInput.click(); });
       fileInput.addEventListener("change", e => { if (e.target.files[0]) cfgHandleFile(num, e.target.files[0]); fileInput.value = ""; });
       zone.addEventListener("dragover", e => { e.preventDefault(); zone.style.borderColor = "hsl(var(--foreground))"; });
-      zone.addEventListener("dragleave", () => { zone.style.borderColor = ""; });
-      zone.addEventListener("drop", e => { e.preventDefault(); zone.style.borderColor = ""; const f = e.dataTransfer.files[0]; if(f) cfgHandleFile(num, f); });
-      // Se o usuário colar uma URL manualmente, mostra o preview
-      $(`cfgHeroImage${num}`).addEventListener("change", e => { if(e.target.value) cfgShowThumb(num, e.target.value); });
+      zone.addEventListener("dragleave", () => { cfgUpdateZoneLabel(num); });
+      zone.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if(f) cfgHandleFile(num, f); });
+      // Preview ao colar URL de imagem manualmente
+      $(`cfgHeroImage${num}`).addEventListener("input", e => {
+        if(e.target.value.trim()) cfgShowThumb(num, e.target.value.trim());
+        else cfgClearThumb(num);
+      });
+      // Atualiza label da zona quando vídeo é adicionado/removido
+      $(`cfgHeroVideo${num}`).addEventListener("input", () => cfgUpdateZoneLabel(num));
     });
 
     $("cfgSave").onclick = async () => {
