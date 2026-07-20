@@ -308,14 +308,14 @@
           <div class="fld">
             <label>Imagem de Fundo</label>
             <div class="up-zone" id="cfgUpZone1" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
-              Clique para selecionar ou arraste uma imagem aqui
+              <span id="cfgZoneText1">Clique para selecionar ou arraste uma imagem aqui</span>
               <input type="file" id="cfgFile1" accept="image/*" style="display:none">
             </div>
             <div class="prog" id="cfgProg1" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
             <div id="cfgThumb1" style="margin-bottom:.5rem"></div>
             <input id="cfgHeroImage1" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
           </div>
-          <div class="fld"><label>URL do Vídeo MP4 (Substitui a Imagem)</label><input id="cfgHeroVideo1" type="url"></div>
+          <div class="fld"><label>URL do Vídeo (MP4 direto ou YouTube)</label><input id="cfgHeroVideo1" type="url" placeholder="https://youtube.com/watch?v=... ou https://cdn.../video.mp4"></div>
         </div>
 
         <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
@@ -330,14 +330,14 @@
           <div class="fld">
             <label>Imagem de Fundo</label>
             <div class="up-zone" id="cfgUpZone2" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
-              Clique para selecionar ou arraste uma imagem aqui
+              <span id="cfgZoneText2">Clique para selecionar ou arraste uma imagem aqui</span>
               <input type="file" id="cfgFile2" accept="image/*" style="display:none">
             </div>
             <div class="prog" id="cfgProg2" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
             <div id="cfgThumb2" style="margin-bottom:.5rem"></div>
             <input id="cfgHeroImage2" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
           </div>
-          <div class="fld"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo2" type="url"></div>
+          <div class="fld"><label>URL do Vídeo (MP4 direto ou YouTube)</label><input id="cfgHeroVideo2" type="url" placeholder="https://youtube.com/watch?v=... ou https://cdn.../video.mp4"></div>
         </div>
 
         <div style="border: 1px solid hsl(var(--border)); border-radius: 8px; padding: 1.5rem; background: hsl(var(--card));">
@@ -352,14 +352,14 @@
           <div class="fld">
             <label>Imagem de Fundo</label>
             <div class="up-zone" id="cfgUpZone3" style="cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;">
-              Clique para selecionar ou arraste uma imagem aqui
+              <span id="cfgZoneText3">Clique para selecionar ou arraste uma imagem aqui</span>
               <input type="file" id="cfgFile3" accept="image/*" style="display:none">
             </div>
             <div class="prog" id="cfgProg3" style="height:4px;background:hsl(var(--muted));border-radius:2px;margin-bottom:.5rem;display:none"><div class="bar" style="height:100%;width:0%;background:hsl(var(--foreground));border-radius:2px;transition:width .2s"></div></div>
             <div id="cfgThumb3" style="margin-bottom:.5rem"></div>
             <input id="cfgHeroImage3" type="url" placeholder="ou cole uma URL diretamente aqui" style="font-size:11px">
           </div>
-          <div class="fld"><label>URL do Vídeo MP4</label><input id="cfgHeroVideo3" type="url"></div>
+          <div class="fld"><label>URL do Vídeo (MP4 direto ou YouTube)</label><input id="cfgHeroVideo3" type="url" placeholder="https://youtube.com/watch?v=... ou https://cdn.../video.mp4"></div>
         </div>
 
       </div>
@@ -1524,7 +1524,7 @@
     try {
       const doc = await db.collection("siteConfig").doc("home").get(); if(!doc.exists) return; const d = doc.data();
       if (d.slides && d.slides.length) {
-        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.videoUrl||""; if(slide.imgUrl) cfgShowThumb(num, slide.imgUrl); else cfgUpdateZoneLabel(num); } });
+        d.slides.forEach((slide, i) => { const num = i + 1; if(num <= 3) { $(`cfgHeroTag${num}`).value = slide.tag||""; $(`cfgHeroTitle${num}`).value = slide.title||""; $(`cfgBtnText${num}`).value = slide.btnText||""; $(`cfgBtnUrl${num}`).value = slide.btnUrl||""; $(`cfgHeroImage${num}`).value = slide.imgUrl||""; $(`cfgHeroVideo${num}`).value = slide.rawVideoUrl || slide.videoUrl||""; if(slide.imgUrl) cfgShowThumb(num, slide.imgUrl); else cfgUpdateZoneLabel(num); } });
       } else {
         // Fallback antigo
         $("cfgHeroTag1").value = d.heroTag??""; $("cfgHeroTitle1").value = d.heroTitle??""; $("cfgBtnText1").value = d.btnText??""; $("cfgBtnUrl1").value = d.btnUrl??""; $("cfgHeroImage1").value = d.heroImageUrl??""; $("cfgHeroVideo1").value = d.heroVideoUrl??"";
@@ -1553,28 +1553,42 @@
     cfgUpdateZoneLabel(num);
   }
 
+  /* Converte qualquer URL de vídeo do YouTube para o formato embed.
+     Se já for MP4 direto ou outro formato, retorna a URL sem alterar. */
+  function toVideoEmbed(url) {
+    if (!url) return null;
+    // youtube.com/watch?v=ID ou youtu.be/ID
+    const m = url.match(/(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (m) return `https://www.youtube.com/embed/${m[1]}?autoplay=1&mute=1&loop=1&playlist=${m[1]}&controls=0&showinfo=0&rel=0`;
+    return url; // MP4 ou outro — devolve sem alterar
+  }
+
+  /* Retorna true se a URL é YouTube (precisa de <iframe>) */
+  function isYouTube(url) {
+    return /youtube\.com|youtu\.be/.test(url || "");
+  }
+
   /* Atualiza o label da zona de upload mostrando se vídeo está ativo */
   function cfgUpdateZoneLabel(num){
-    const zone = $(`cfgUpZone${num}`);
+    const span  = document.getElementById(`cfgZoneText${num}`);
+    const zone  = $(`cfgUpZone${num}`);
     const videoUrl = $(`cfgHeroVideo${num}`)?.value?.trim();
     const imgUrl   = $(`cfgHeroImage${num}`)?.value?.trim();
-    if(!zone) return;
-    const fileInput = $(`cfgFile${num}`);
+    if(!zone || !span) return;
+    const baseStyle = "cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;";
     const hasVideo = !!videoUrl;
     const hasImg   = !!imgUrl;
-    const baseStyle = "cursor:pointer;border:2px dashed hsl(var(--border));border-radius:8px;padding:1.25rem;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:.5rem;";
+    const isYT     = isYouTube(videoUrl);
     if(hasVideo && hasImg){
       zone.style.cssText = baseStyle + "border-color:#f59e0b;background:#fffbeb;";
-      zone.querySelector("span") && (zone.querySelector("span").textContent = "");
-      zone.childNodes[0].textContent = "⚠️ Vídeo ativo — imagem usada como fallback se o vídeo não carregar";
+      span.textContent = `⚠️ ${isYT ? "YouTube" : "Vídeo"} ativo — imagem usada como fallback se o vídeo não carregar`;
     } else if(hasVideo && !hasImg){
       zone.style.cssText = baseStyle + "border-color:#10b981;background:#f0fdf4;";
-      zone.childNodes[0].textContent = "🎬 Vídeo ativo — clique aqui para adicionar imagem de fallback";
+      span.textContent = `🎬 ${isYT ? "YouTube" : "Vídeo"} ativo — clique aqui para adicionar imagem de fallback`;
     } else {
       zone.style.cssText = baseStyle;
-      zone.childNodes[0].textContent = "Clique para selecionar ou arraste uma imagem aqui";
+      span.textContent = "Clique para selecionar ou arraste uma imagem aqui";
     }
-    if(fileInput) zone.appendChild(fileInput);
   }
 
   /* Comprime e converte para WebP, exatamente como nas imagens de aeronave,
@@ -1660,7 +1674,7 @@
       for(let num=1; num<=3; num++) {
         const titleVal = $(`cfgHeroTitle${num}`).value.trim();
         if(titleVal || num === 1) { 
-          slides.push({ tag:$("cfgHeroTag"+num).value.trim(), title:titleVal || "O ACESSO DEFINITIVO", btnText:$("cfgBtnText"+num).value.trim(), btnUrl:$("cfgBtnUrl"+num).value.trim(), imgUrl:$("cfgHeroImage"+num).value.trim(), videoUrl:$("cfgHeroVideo"+num).value.trim() });
+          slides.push({ tag:$("cfgHeroTag"+num).value.trim(), title:titleVal || "O ACESSO DEFINITIVO", btnText:$("cfgBtnText"+num).value.trim(), btnUrl:$("cfgBtnUrl"+num).value.trim(), imgUrl:$("cfgHeroImage"+num).value.trim(), videoUrl: toVideoEmbed($("cfgHeroVideo"+num).value.trim()) || "", rawVideoUrl: $("cfgHeroVideo"+num).value.trim() });
         }
       }
       try { await db.collection("siteConfig").doc("home").set({ slides, updatedAt:ts(), updatedBy:me.email }, { merge:true }); msg($("cfgMsg"), "Conteúdo salvo com sucesso!", "ok"); loadConfig(); } catch(e){ alert(e.message); }
