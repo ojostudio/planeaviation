@@ -22,7 +22,7 @@
     { key:"nav_aircraft", href:"aeronaves.html" },
     { key:"nav_cirrus",   href:"universo-cirrus.html" },
     { key:"nav_services", href:"servicos.html" },
-    { key:"nav_about",    href:"sobre.html" },
+   /* { key:"nav_about",    href:"sobre.html" },*/
     { key:"nav_contact",  href:"contato.html" },
   ];
 
@@ -79,7 +79,7 @@
     { key:"nav_aircraft",  href:"aeronaves.html" },
     { key:"uc_title",      href:"universo-cirrus.html" },
     { key:"cfg_title",     href:"https://plane-configurator-kappa.vercel.app/" },
-    { key:"sobre_title",   href:"sobre.html" },
+    /*{ key:"sobre_title",   href:"sobre.html" },*/
     { key:"svc_title",     href:"servicos.html" },
     { key:"news_title",    href:"news.html" },
     { key:"f_sell",        href:"contato.html?motivo=vender" },
