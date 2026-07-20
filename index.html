@@ -505,27 +505,70 @@ CONFIGURADOR
   let heroSlides = [];
   let activeHeroIndex = 0;
   let heroAutoplayTimer = null;
-  const HERO_ROTATION_SPEED = 6000;
+  const HERO_ROTATION_SPEED = 7000; // Tempo aumentado para 7 segundos
 
- // Função que transforma a barra " | " em design de duas espessuras
   function formatarTituloDuplo(texto) {
     if (!texto) return "";
     if (texto.includes("|")) {
       const partes = texto.split("|");
       return `<span class="font-light">${partes[0].trim()}</span><br><span class="font-bold">${partes[1].trim()}</span>`;
     }
-    return texto; // Se não tiver a barra, carrega o texto normal sem quebrar o site
+    return texto;
+  }
+
+  // 1. O SEGREDO DO PRÉ-CARREGAMENTO:
+  // Cria todos os vídeos e imagens de uma vez na memória, mas deixa invisíveis.
+  function initHeroBackgrounds() {
+    const hBg = document.getElementById("heroBg");
+    hBg.innerHTML = ""; 
+    
+    heroSlides.forEach((slide, i) => {
+      const bgItem = document.createElement("div");
+      bgItem.id = `heroBgItem-${i}`;
+      bgItem.style.position = "absolute";
+      bgItem.style.inset = "0";
+      bgItem.style.opacity = "0"; // Nasce invisível
+      bgItem.style.transition = "opacity 0.8s ease-in-out"; // Transição cinematográfica
+      bgItem.style.zIndex = "1";
+
+      if(slide.videoUrl) {
+        const vUrl = slide.videoUrl;
+        const ytRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#\&\?]*).*/;
+        const match = vUrl.match(ytRegex);
+        
+        if (match && match[2].length === 11) {
+          const videoId = match[2];
+          // playsinline=1 e iv_load_policy=3 ocultam anotações. pointer-events:none bloqueia o clique no player!
+          bgItem.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1&playsinline=1&iv_load_policy=3" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
+        } else {
+          bgItem.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"><source src="${vUrl}" type="video/mp4"></video>`;
+        }
+      } else if(slide.imgUrl) {
+        bgItem.style.backgroundImage = `url('${slide.imgUrl}')`;
+        bgItem.style.backgroundSize = "cover";
+        bgItem.style.backgroundPosition = "center";
+      }
+      hBg.appendChild(bgItem);
+    });
   }
 
   function applyHeroSlide(index) {
     if (!heroSlides.length) return;
     const slide = heroSlides[index];
     const tBox = document.getElementById("heroTextBox");
-    const hBg = document.getElementById("heroBg");
 
     tBox.style.opacity = "0";
     tBox.style.transform = "translateY(10px)";
-    hBg.style.opacity = "0";
+
+    // 2. A TRANSIÇÃO INSTANTÂNEA:
+    // Apenas acende a luz (opacity 1) no vídeo que já estava rodando e escondido
+    heroSlides.forEach((_, i) => {
+      const bgItem = document.getElementById(`heroBgItem-${i}`);
+      if(bgItem) {
+        bgItem.style.opacity = (i === index) ? "1" : "0";
+        bgItem.style.zIndex = (i === index) ? "2" : "1";
+      }
+    });
 
     setTimeout(() => {
       const badge = document.getElementById("heroBadge");
@@ -539,33 +582,8 @@ CONFIGURADOR
       btn.href = slide.btnUrl || "contato.html";
       btn.style.visibility = "visible";
 
-      hBg.style.backgroundImage = "none"; 
-
-      if(slide.videoUrl) {
-        const vUrl = slide.videoUrl;
-        
-        // EXTRATOR UNIVERSAL DE ID DO YOUTUBE
-        const ytRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#\&\?]*).*/;
-        const match = vUrl.match(ytRegex);
-        
-        // Se bater com a regra e o ID tiver 11 caracteres, é YouTube na certa
-        if (match && match[2].length === 11) {
-          const videoId = match[2];
-          hBg.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1" style="position: absolute; inset: 0; width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
-        } else {
-          // Se não for YouTube, trata como um MP4 direto
-          hBg.innerHTML = `<video autoplay muted loop playsinline class="hero-bg-video" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"><source src="${vUrl}" type="video/mp4"></video>`;
-        }
-      } else if(slide.imgUrl) {
-        hBg.style.backgroundImage = `url('${slide.imgUrl}')`;
-        hBg.style.backgroundSize = "cover";
-        hBg.style.backgroundPosition = "center";
-        hBg.innerHTML = "";
-      }
-
       tBox.style.opacity = "1";
       tBox.style.transform = "translateY(0)";
-      hBg.style.opacity = "1";
 
       document.querySelectorAll("#heroSliderDots .slider-dot").forEach((dot, idx) => {
         dot.classList.toggle("active", idx === index);
@@ -623,6 +641,7 @@ CONFIGURADOR
       }
 
       activeHeroIndex = 0;
+      initHeroBackgrounds(); // Aciona o sistema de pré-carregamento logo ao abrir o site
       renderHeroDots();
       applyHeroSlide(activeHeroIndex);
       wireHeroSliderControls();
