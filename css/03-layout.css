@@ -83,13 +83,16 @@ body { padding-top: 0; }
   background: #fff; border-bottom: 1px solid transparent;
   z-index: 99; padding: 0 1.5rem;
   max-height: 0; overflow: hidden; opacity: 0;
-  transition: max-height .35s ease, opacity .25s ease, padding .35s ease, border-color .35s ease;
+  visibility: hidden; /* <-- BLINDAGEM ANTI-FANTASMA */
+  transition: max-height .35s ease, opacity .25s ease, padding .35s ease, border-color .35s ease, visibility 0s linear .35s;
 }
 .mobile-nav.open {
   max-height: 32rem;
   opacity: 1;
+  visibility: visible; /* <-- BLINDAGEM ANTI-FANTASMA */
   padding: 1rem 1.5rem;
   border-bottom-color: hsl(var(--border));
+  transition: max-height .35s ease, opacity .25s ease, padding .35s ease, border-color .35s ease, visibility 0s;
 }
 .mobile-nav nav  { display: flex; flex-direction: column; gap: .875rem; }
 .mobile-nav a    { font-size: .875rem; font-weight: 500; color: hsl(var(--muted-foreground)); }
@@ -342,11 +345,11 @@ footer.site .container { padding-top: 4rem; padding-bottom: 4rem; }
     border-radius: 8px !important;
   }
 
-  /* 2. Dá um respiro generoso no fundo do menu mobile para garantir que nada seja cortado */
-  .m-nav, 
-  .mobile-menu, 
-  .mobile-nav,
-  #mobileNav {
+  /* 2. Dá um respiro generoso no fundo do menu mobile APENAS QUANDO ESTIVER ABERTO */
+  .m-nav.open, 
+  .mobile-menu.open, 
+  .mobile-nav.open,
+  #mobileNav.open {
     padding-bottom: 4rem !important;
     overflow-y: auto !important;
   }
