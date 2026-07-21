@@ -208,7 +208,7 @@ CASA CIRRUS
   </section>
 
 <!-- ================================================================ 
-PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
+PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
 ================================================================ -->
 
 <style>
@@ -216,22 +216,22 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
   .sr-compare-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-    margin-top: 1.2rem;
-    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
     width: 100%;
   }
 
   .sr-compare-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 14px;
-    padding: 1.25rem;
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s ease;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
   }
 
   .sr-compare-card:hover {
@@ -240,31 +240,15 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
     transform: translateY(-4px);
   }
 
-  /* Destaque visual suave para o modelo G7+ */
-  .sr-compare-card.highlight {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  }
-
   .sr-card-head {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.75rem;
-    margin-bottom: 1rem;
-  }
-
-  .sr-card-tag {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.5);
-    display: block;
-    margin-bottom: 0.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
   }
 
   .sr-card-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
     letter-spacing: 1px;
     color: #fff;
     margin: 0;
@@ -273,8 +257,8 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
 
   .sr-specs-list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 0.75rem;
   }
 
   .sr-spec-item {
@@ -283,7 +267,7 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
   }
 
   .sr-spec-label {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     color: rgba(255, 255, 255, 0.5);
@@ -293,7 +277,8 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
     font-size: 0.95rem;
     font-weight: 700;
     color: #fff;
-    margin-top: 0.1rem;
+    margin-top: 0.2rem;
+    white-space: nowrap;
   }
 
   .sr-section-action {
@@ -306,7 +291,7 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
   @media (max-width: 1024px) {
     .sr-compare-grid {
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: 1.2rem;
     }
     .sr-specs-list {
       grid-template-columns: 1fr 1fr;
@@ -315,10 +300,10 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
 
   @media (max-width: 480px) {
     .sr-compare-card {
-      padding: 1rem;
+      padding: 1.2rem 1rem;
     }
     .sr-card-title {
-      font-size: 1.75rem;
+      font-size: 1.8rem;
     }
     .sr-spec-val {
       font-size: 0.88rem;
@@ -340,9 +325,9 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
       <div id="cp-card-glass">
         <div class="cp-card-content" style="flex-direction: column; align-items: stretch;">
           
+          <!-- TÍTULO CENTRALIZADO DA SEÇÃO -->
           <div style="text-align: center; margin-bottom: 0.5rem;">
-            <span class="eyebrow dark">LINHA CIRRUS AIRCRAFT</span>
-            <h2 class="h-display" style="font-size: 1.8rem; margin: 0.2rem 0;">COMPARATIVO LINHA SR</h2>
+            <h2 class="h-display" style="font-size: 2.2rem; margin: 0; color: #fff;">Conheça a linha SR</h2>
           </div>
 
           <!-- TABELA COMPARATIVA EM GRID -->
@@ -351,7 +336,6 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
             <!-- MODELO 1: SR20 -->
             <div class="sr-compare-card">
               <div class="sr-card-head">
-                <span class="sr-card-tag">ENTRADA NA LINHA</span>
                 <h3 class="sr-card-title h-display">SR20</h3>
               </div>
               <div class="sr-specs-list">
@@ -377,7 +361,6 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
             <!-- MODELO 2: SR22 -->
             <div class="sr-compare-card">
               <div class="sr-card-head">
-                <span class="sr-card-tag">ASPIRADO</span>
                 <h3 class="sr-card-title h-display">SR22</h3>
               </div>
               <div class="sr-specs-list">
@@ -401,9 +384,8 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
             </div>
 
             <!-- MODELO 3: SR22 G7+ -->
-            <div class="sr-compare-card highlight">
+            <div class="sr-compare-card">
               <div class="sr-card-head">
-                <span class="sr-card-tag">ALTA PERFORMANCE & TURBO</span>
                 <h3 class="sr-card-title h-display">SR22 G7+</h3>
               </div>
               <div class="sr-specs-list">
