@@ -212,12 +212,13 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
 ================================================================ -->
 
 <style>
-  /* CSS da Tabela / Cards Comparativos do Paralaxe */
+  /* CSS do Comparativo da Linha SR */
   .sr-compare-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
     margin-top: 1.2rem;
+    margin-bottom: 1.5rem;
     width: 100%;
   }
 
@@ -239,7 +240,7 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
     transform: translateY(-4px);
   }
 
-  /* Destaque para o modelo topo de linha */
+  /* Destaque visual suave para o modelo G7+ */
   .sr-compare-card.highlight {
     border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.06);
@@ -263,7 +264,6 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
   }
 
   .sr-card-title {
-    font-family: 'Bebas Neue', sans-serif;
     font-size: 2rem;
     letter-spacing: 1px;
     color: #fff;
@@ -275,19 +275,11 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.8rem 0.5rem;
-    margin-bottom: 1.25rem;
   }
 
   .sr-spec-item {
     display: flex;
     flex-direction: column;
-  }
-
-  .sr-spec-item.full-width {
-    grid-column: span 2;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
-    padding-top: 0.6rem;
-    margin-top: 0.2rem;
   }
 
   .sr-spec-label {
@@ -304,16 +296,10 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
     margin-top: 0.1rem;
   }
 
-  .sr-card-action {
-    margin-top: auto;
-  }
-
-  .sr-card-action .btn {
-    width: 100%;
-    padding: 0.6rem 0.8rem;
-    font-size: 0.75rem;
+  .sr-section-action {
+    display: flex;
     justify-content: center;
-    border-radius: 6px;
+    width: 100%;
   }
 
   /* Adaptação e Responsividade Mobile */
@@ -366,7 +352,7 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
             <div class="sr-compare-card">
               <div class="sr-card-head">
                 <span class="sr-card-tag">ENTRADA NA LINHA</span>
-                <h3 class="sr-card-title">SR20</h3>
+                <h3 class="sr-card-title h-display">SR20</h3>
               </div>
               <div class="sr-specs-list">
                 <div class="sr-spec-item">
@@ -386,19 +372,13 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
                   <span class="sr-spec-val">IO-390 (215 HP)</span>
                 </div>
               </div>
-              <div class="sr-card-action">
-                <a href="universo-cirrus.html#sr20" class="btn btn-outline-dark">
-                  VER DETALHES
-                  <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-                </a>
-              </div>
             </div>
 
             <!-- MODELO 2: SR22 -->
             <div class="sr-compare-card">
               <div class="sr-card-head">
                 <span class="sr-card-tag">ASPIRADO</span>
-                <h3 class="sr-card-title">SR22</h3>
+                <h3 class="sr-card-title h-display">SR22</h3>
               </div>
               <div class="sr-specs-list">
                 <div class="sr-spec-item">
@@ -418,19 +398,13 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
                   <span class="sr-spec-val">IO-550 (310 HP)</span>
                 </div>
               </div>
-              <div class="sr-card-action">
-                <a href="universo-cirrus.html#sr22" class="btn btn-outline-dark">
-                  VER DETALHES
-                  <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-                </a>
-              </div>
             </div>
 
             <!-- MODELO 3: SR22 G7+ -->
             <div class="sr-compare-card highlight">
               <div class="sr-card-head">
                 <span class="sr-card-tag">ALTA PERFORMANCE & TURBO</span>
-                <h3 class="sr-card-title">SR22 G7+</h3>
+                <h3 class="sr-card-title h-display">SR22 G7+</h3>
               </div>
               <div class="sr-specs-list">
                 <div class="sr-spec-item">
@@ -450,14 +424,16 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
                   <span class="sr-spec-val">TSIO-550 TURBO</span>
                 </div>
               </div>
-              <div class="sr-card-action">
-                <a href="universo-cirrus.html#sr22g7" class="btn btn-invert">
-                  CONHECER G7+
-                  <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-                </a>
-              </div>
             </div>
 
+          </div>
+
+          <!-- BOTÃO ÚNICO CENTRALIZADO -->
+          <div class="sr-section-action">
+            <a href="universo-cirrus.html" class="btn btn-invert">
+              SAIBA MAIS
+              <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
           </div>
 
         </div>
@@ -465,7 +441,6 @@ PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
     </div>
   </div>
 </section>
-
 <!-- ================================================================ 
 CONFIGURADOR
 ================================================================ -->
