@@ -78,7 +78,7 @@
   const FOOTER_LINKS = [
     { key:"nav_aircraft",  href:"aeronaves.html" },
     { key:"uc_title",      href:"universo-cirrus.html" },
-    { key:"cfg_title",     href:"https://plane-configurator-kappa.vercel.app/" },
+    { key:"cfg_title",     href:"https://configurator.cirrusaircraft.com/" },
     /*{ key:"sobre_title",   href:"sobre.html" },*/
     { key:"svc_title",     href:"servicos.html" },
     { key:"news_title",    href:"news.html" },
@@ -121,7 +121,7 @@
           Chácara Aeroporto, Jundiaí - SP<br>
           13212-010
         </a>
-        <a href="mailto:contato@planeaviation.com.br">contato@planeaviation.com.br</a>
+        <a href="mailto:info@planeaviation.com.br">info@planeaviation.com.br</a>
         <a href="https://wa.me/551145826144" target="_blank" rel="noopener noreferrer">+55 11 4582-6144</a>
         
         <div class="f-social f-social-mobile">
