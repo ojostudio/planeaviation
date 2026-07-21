@@ -216,21 +216,22 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3.5rem; /* Espaço entre Título, Colunas e Botão */
+    gap: 3.5rem;
     width: 100%;
     padding: 2rem 1rem;
+    box-sizing: border-box;
   }
   .sr-comparativo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4rem; /* Muito respiro entre os 3 modelos para o texto não apertar */
+    gap: 4rem;
     width: 100%;
     text-align: left;
   }
   .sr-modelo-col {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* Espaço entre o título do modelo e as especificações */
+    gap: 1.5rem;
   }
   .sr-modelo-col h3 {
     margin: 0;
@@ -239,26 +240,57 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
     font-size: 2.2rem;
     color: #fff;
   }
-  .sr-modelo-col .cp-stat {
+  
+  /* Container que agrupa as infos de cada avião */
+  .sr-specs-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  
+  .cp-stat {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
-  .sr-modelo-col .cp-stat .label {
+  .cp-stat .label {
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 1px;
   }
-  .sr-modelo-col .cp-stat .h-display {
+  .cp-stat .h-display {
     font-size: 1.35rem;
     color: #fff;
     margin: 0;
   }
+
+  /* =========================================
+     OTIMIZAÇÃO PARA MOBILE (SMARTPHONES)
+     ========================================= */
   @media (max-width: 900px) {
+    .sr-comparativo-wrapper {
+      gap: 2.5rem; /* Reduz o espaço geral para caber na tela */
+      padding: 1.5rem 0.5rem;
+    }
     .sr-comparativo-grid {
-      grid-template-columns: 1fr;
-      gap: 3rem;
+      grid-template-columns: 1fr; /* Um modelo por linha */
+      gap: 3rem; 
+    }
+    .sr-modelo-col h3 {
+      text-align: center; /* Centraliza o título do modelo no celular */
+      font-size: 2rem;
+      padding-bottom: 0.8rem;
+    }
+    /* O Segredo do Mobile: Transforma as 4 informações em um grid de 2x2 */
+    .sr-specs-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 1rem;
+      text-align: center; /* Centraliza os textos pro grid ficar simétrico */
+    }
+    .cp-stat .h-display {
+      font-size: 1.15rem; /* Ajuste fino pra evitar quebra de linha em telas pequenas */
     }
   }
 </style>
@@ -278,78 +310,86 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
       <div id="cp-card-glass">
         <div class="cp-card-content sr-comparativo-wrapper">
           
-          <!-- 1. TÍTULO AO CENTRO NO TOPO -->
-          <h2 class="h-display" style="margin: 0; font-size: 2.6rem; color: #fff; text-align: center; font-style: italic; font-weight: bold; text-transform: uppercase;">CONHEÇA A LINHA SR</h2>
+          <!-- 1. TÍTULO AO CENTRO COM AS DUAS ESPESSURAS DA FONTE (GRIFT) -->
+          <h2 class="h-display" style="margin: 0; font-size: 2.6rem; color: #fff; text-align: center; font-style: italic; text-transform: uppercase; line-height: 1.1;">
+            <span class="light">CONHEÇA A</span> <span class="bold">LINHA SR</span>
+          </h2>
 
-          <!-- 2. TRÊS COMPARATIVOS ABAIXO BEM ESPAÇADOS -->
+          <!-- 2. TRÊS COMPARATIVOS COM ESTRUTURA PARA MOBILE -->
           <div class="sr-comparativo-grid">
             
             <!-- SR20 -->
             <div class="sr-modelo-col">
               <h3 class="h-display">SR20</h3>
-              <div class="cp-stat">
-                <span class="label">Velocidade</span>
-                <span class="h-display">155 KTAS</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Alcance</span>
-                <span class="h-display">709 NM</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Altitude Máx.</span>
-                <span class="h-display">17.500 FT</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Motor</span>
-                <span class="h-display">IO-390 (215 HP)</span>
+              <div class="sr-specs-group">
+                <div class="cp-stat">
+                  <span class="label">Velocidade</span>
+                  <span class="h-display">155 KTAS</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Alcance</span>
+                  <span class="h-display">709 NM</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Altitude Máx.</span>
+                  <span class="h-display">17.500 FT</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Motor</span>
+                  <span class="h-display">IO-390 (215 HP)</span>
+                </div>
               </div>
             </div>
 
             <!-- SR22 -->
             <div class="sr-modelo-col">
               <h3 class="h-display">SR22</h3>
-              <div class="cp-stat">
-                <span class="label">Velocidade</span>
-                <span class="h-display">183 KTAS</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Alcance</span>
-                <span class="h-display">1.169 NM</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Altitude Máx.</span>
-                <span class="h-display">17.500 FT</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Motor</span>
-                <span class="h-display">IO-550 (310 HP)</span>
+              <div class="sr-specs-group">
+                <div class="cp-stat">
+                  <span class="label">Velocidade</span>
+                  <span class="h-display">183 KTAS</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Alcance</span>
+                  <span class="h-display">1.169 NM</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Altitude Máx.</span>
+                  <span class="h-display">17.500 FT</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Motor</span>
+                  <span class="h-display">IO-550 (310 HP)</span>
+                </div>
               </div>
             </div>
 
             <!-- SR22 G7+ -->
             <div class="sr-modelo-col">
               <h3 class="h-display">SR22 G7+</h3>
-              <div class="cp-stat">
-                <span class="label">Velocidade</span>
-                <span class="h-display">213 KTAS</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Alcance</span>
-                <span class="h-display">1.021 NM</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Altitude Máx.</span>
-                <span class="h-display">25.000 FT</span>
-              </div>
-              <div class="cp-stat">
-                <span class="label">Motor</span>
-                <span class="h-display">TSIO-550 TURBO</span>
+              <div class="sr-specs-group">
+                <div class="cp-stat">
+                  <span class="label">Velocidade</span>
+                  <span class="h-display">213 KTAS</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Alcance</span>
+                  <span class="h-display">1.021 NM</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Altitude Máx.</span>
+                  <span class="h-display">25.000 FT</span>
+                </div>
+                <div class="cp-stat">
+                  <span class="label">Motor</span>
+                  <span class="h-display">TSIO-550 TURBO</span>
+                </div>
               </div>
             </div>
 
           </div>
 
-          <!-- 3. BOTÃO CENTRALIZADO ABAIXO -->
+          <!-- 3. BOTÃO CENTRALIZADO -->
           <a href="universo-cirrus.html" class="btn btn-invert">
             SAIBA MAIS
             <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
