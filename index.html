@@ -208,88 +208,144 @@ CASA CIRRUS
   </section>
 
 <!-- ================================================================ 
-PARALAXE
+PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22T)
 ================================================================ -->
 
-  <section class="cp-section">
-    <div class="cp-container">
-      <div class="cp-camada cp-fundo">
-        <h1 class="cp-title" id="cp-texto-aviao">CIRRUS</h1>
-      </div>
-      <div class="cp-camada cp-canvas-container">
-        <canvas id="cp-aviao-canvas"></canvas>
-      </div>
-      <div class="cp-camada cp-frente">
-        <h1 class="cp-title" id="cp-texto-modelo">SR22 G7+</h1>
-        <div id="cp-card-glass">
-          <div class="cp-card-content">
-            <div class="cp-card-left">
-              <span class="eyebrow dark">CIRRUS</span>
-              <h2 class="h-display">SR22 G7+</h2>
-              <p class="text-body cp-text-body-fixed">Estilo, praticidade e conforto.<br>A aeronave pessoal mais moderna e segura do mundo.</p>
-              <p class="muted text-sm cp-description-fixed">O carro-chefe da linha SR com motor turbo normalizado, ideal para voos em cruzeiro de longa distância com máxima performance.</p>
-            </div>
-            <div class="cp-card-right">
-              <div class="cp-stat"><span class="label">velocidade máxima</span><span class="h-display">214 ktas</span></div>
-              <div class="cp-stat"><span class="label">alcance</span><span class="h-display">1.100 nm</span></div>
-              <div class="cp-stat"><span class="label">altitude máxima</span><span class="h-display">25.000 ft</span></div>
-              <div class="cp-stat"><span class="label">motor</span><span class="h-display">IO 550 turbo</span></div>
-            </div>
-            <div class="cp-buttons">
-               <a href="universo-cirrus.html" class="btn btn-invert">
-                CONHEÇA O SR22 G7+
-               <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-              </a>
-               <a href="https://configurator.cirrusaircraft.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
-                CONFIGURADOR
-              <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-               </a>
-            </div>
+<style>
+  .cp-tabs-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 0.8rem;
+  }
+  .cp-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .cp-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+  .cp-tab-btn.active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+  }
+</style>
+
+<section class="cp-section">
+  <div class="cp-container">
+    <div class="cp-camada cp-fundo">
+      <h1 class="cp-title" id="cp-texto-aviao">CIRRUS</h1>
+    </div>
+    <div class="cp-camada cp-canvas-container">
+      <canvas id="cp-aviao-canvas"></canvas>
+    </div>
+    <div class="cp-camada cp-frente">
+      <h1 class="cp-title" id="cp-texto-modelo">SERIES SR</h1>
+      <div id="cp-card-glass">
+        <div class="cp-card-content">
+          
+          <!-- SELEÇÃO DE MODELOS (ABAS) -->
+          <div class="cp-tabs-wrapper">
+            <button class="cp-tab-btn" onclick="updateSrCard('sr20', this)">SR20 G7</button>
+            <button class="cp-tab-btn active" onclick="updateSrCard('sr22', this)">SR22 G7</button>
+            <button class="cp-tab-btn" onclick="updateSrCard('sr22t', this)">SR22T G7</button>
+          </div>
+
+          <div class="cp-card-left">
+            <span class="eyebrow dark">CIRRUS AIRCRAFT</span>
+            <h2 class="h-display" id="srCardTitle">SR22 G7</h2>
+            <p class="text-body cp-text-body-fixed" id="srCardSub">Estilo, praticidade e conforto.<br>A aeronave pessoal mais vendida do mundo.</p>
+            <p class="muted text-sm cp-description-fixed" id="srCardDesc">O ícone da aviação geral com motor aspirado de alta performance, equilibrando velocidade, alcance e custos operacionais.</p>
+          </div>
+
+          <div class="cp-card-right">
+            <div class="cp-stat"><span class="label">velocidade máxima</span><span class="h-display" id="srStatVel">183 ktas</span></div>
+            <div class="cp-stat"><span class="label">alcance máximo</span><span class="h-display" id="srStatAlc">1.169 nm</span></div>
+            <div class="cp-stat"><span class="label">altitude máxima</span><span class="h-display" id="srStatAlt">17.500 ft</span></div>
+            <div class="cp-stat"><span class="label">motorização</span><span class="h-display" id="srStatMotor">IO 550 (310 HP)</span></div>
+          </div>
+
+          <div class="cp-buttons">
+             <a href="universo-cirrus.html" class="btn btn-invert" id="srBtnDetails">
+              VER NO UNIVERSO CIRRUS
+             <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
+             <a href="https://configurator.cirrusaircraft.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
+              CONFIGURADOR
+            <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+             </a>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-<section class="home-dark-extra-section">
-    <div class="container">
-      
-      <img src="images/vision-black.webp" alt="Visão Cirrus" class="extra-img">
+<script>
+  const SR_DATA = {
+    sr20: {
+      title: "SR20 G7",
+      sub: "Eficiência, tecnologia e aprendizado.<br>A porta de entrada para o Universo Cirrus.",
+      desc: "Ideal para quem está ingressando na aviação executiva ou busca máxima eficiência operacional com o motor Lycoming de 215 HP.",
+      vel: "155 ktas",
+      alc: "709 nm",
+      alt: "17.500 ft",
+      motor: "IO 390 (215 HP)",
+      link: "universo-cirrus.html#sr20"
+    },
+    sr22: {
+      title: "SR22 G7",
+      sub: "Estilo, praticidade e conforto.<br>A aeronave pessoal mais vendida do mundo.",
+      desc: "O ícone da aviação geral com motor aspirado de alta performance, equilibrando velocidade, alcance e capacidade de carga útil.",
+      vel: "183 ktas",
+      alc: "1.169 nm",
+      alt: "17.500 ft",
+      motor: "IO 550 (310 HP)",
+      link: "universo-cirrus.html#sr22"
+    },
+    sr22t: {
+      title: "SR22T G7",
+      sub: "Alta performance e voos em altitude.<br>A máxima expressão em tecnologia a pistão.",
+      desc: "Equipado com motor Turbo-normalizado, mantém a potência total em altitudes elevadas, voando acima da maioria das formações meteorológicas.",
+      vel: "213 ktas",
+      alc: "1.021 nm",
+      alt: "25.000 ft",
+      motor: "TSIO 550 TURBO",
+      link: "universo-cirrus.html#sr22t"
+    }
+  };
 
-      <span class="eyebrow dark">Segurança Inigualável</span>
-      <h2 class="h-display"><span class="light">TECNOLOGIA QUE</span> <span class="bold">SALVA VIDAS</span></h2>
-      <p class="text-body">Inovação e confiabilidade absolutas. Conheça os sistemas de segurança avançados que fazem da Cirrus a aeronave pessoal mais segura do mundo.</p>
-      
-      <div class="safety-glass-grid">
-        
-        <div class="safety-glass-card">
-          <h3>Sistema de Paraquedas (CAPS®)</h3>
-          <p>Um sistema revolucionário projetado para trazer a aeronave e os passageiros em segurança ao solo em caso de emergência. Equipamento padrão, o CAPS já salvou mais de 290 vidas.</p>
-        </div>
+  function updateSrCard(modelKey, btnEl) {
+    const data = SR_DATA[modelKey];
+    if (!data) return;
 
-        <div class="safety-glass-card">
-          <h3>Safe Return™ Autoland</h3>
-          <p>Com um único toque, o sistema assume o controle, comunica-se com o tráfego aéreo e realiza um pouso autônomo em segurança, desviando de terrenos e mau tempo.</p>
-        </div>
+    // Atualiza os botões das abas
+    document.querySelectorAll('.cp-tab-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
 
-        <div class="safety-glass-card">
-          <h3>Estabilidade Eletrônica (ESP™)</h3>
-          <p>Corrige atitudes de voo incomuns de forma passiva, sem distrair o piloto. Aprimora a consciência situacional e evita ativamente velocidades perigosas de operação.</p>
-        </div>
+    // Atualiza os textos do card
+    document.getElementById('srCardTitle').textContent = data.title;
+    document.getElementById('srCardSub').innerHTML = data.sub;
+    document.getElementById('srCardDesc').textContent = data.desc;
+    document.getElementById('srStatVel').textContent = data.vel;
+    document.getElementById('srStatAlc').textContent = data.alc;
+    document.getElementById('srStatAlt').textContent = data.alt;
+    document.getElementById('srStatMotor').textContent = data.motor;
+    document.getElementById('srBtnDetails').href = data.link;
+  }
+</script>
 
-        <div class="safety-glass-card">
-          <h3>Auto Radar Garmin®</h3>
-          <p>Escaneia o clima em tempo real de forma automática (vertical e horizontal), oferecendo uma imagem composta para reduzir a carga de trabalho do piloto em condições adversas.</p>
-        </div>
-
-        <div class="safety-glass-card">
-          <h3>Segurança de Solo 3D</h3>
-          <p>Fornece uma visão 3D externa da aeronave durante o táxi e monitora ativamente o tráfego próximo, emitindo alertas visuais e sonoros para evitar conflitos em pistas ativas.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
 <!-- ================================================================ 
 CONFIGURADOR
 ================================================================ -->
