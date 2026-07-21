@@ -212,46 +212,53 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
 ================================================================ -->
 
 <style>
-  .sr-compare-table {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3rem; /* Espaço largo para os textos não ficarem espremidos */
-    width: 100%;
-    margin: 2.5rem 0;
-    text-align: left;
-  }
-  .sr-col {
+  .sr-comparativo-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem; /* Espaço entre cada informação (motor, velocidade, etc) */
+    align-items: center;
+    gap: 3.5rem; /* Espaço entre Título, Colunas e Botão */
+    width: 100%;
+    padding: 2rem 1rem;
   }
-  .sr-col h3 {
+  .sr-comparativo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem; /* Muito respiro entre os 3 modelos para o texto não apertar */
+    width: 100%;
+    text-align: left;
+  }
+  .sr-modelo-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espaço entre o título do modelo e as especificações */
+  }
+  .sr-modelo-col h3 {
     margin: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding-bottom: 1rem;
     font-size: 2.2rem;
+    color: #fff;
   }
-  .sr-col .cp-stat {
+  .sr-modelo-col .cp-stat {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
-  .sr-col .cp-stat .label {
+  .sr-modelo-col .cp-stat .label {
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 1px;
   }
-  .sr-col .cp-stat .h-display {
-    font-size: 1.3rem;
+  .sr-modelo-col .cp-stat .h-display {
+    font-size: 1.35rem;
     color: #fff;
+    margin: 0;
   }
-  
-  /* Adaptação para Mobile: Coloca um debaixo do outro com bom respiro */
   @media (max-width: 900px) {
-    .sr-compare-table {
+    .sr-comparativo-grid {
       grid-template-columns: 1fr;
-      gap: 3.5rem;
+      gap: 3rem;
     }
   }
 </style>
@@ -269,16 +276,16 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
       <h1 class="cp-title" id="cp-texto-modelo">SERIES SR</h1>
       
       <div id="cp-card-glass">
-        <div class="cp-card-content" style="flex-direction: column; align-items: center; text-align: center; width: 100%; padding: 2.5rem;">
+        <div class="cp-card-content sr-comparativo-wrapper">
           
-          <!-- TÍTULO CENTRALIZADO -->
-          <h2 class="h-display" style="margin: 0; font-size: 2.5rem; color: #fff;">Conheça a linha SR</h2>
+          <!-- 1. TÍTULO AO CENTRO NO TOPO -->
+          <h2 class="h-display" style="margin: 0; font-size: 2.6rem; color: #fff; text-align: center;">Conheça a linha SR</h2>
 
-          <!-- TABELA COMPARATIVA LARGA E DISTRIBUÍDA -->
-          <div class="sr-compare-table">
+          <!-- 2. TRÊS COMPARATIVOS ABAIXO BEM ESPAÇADOS -->
+          <div class="sr-comparativo-grid">
             
             <!-- SR20 -->
-            <div class="sr-col">
+            <div class="sr-modelo-col">
               <h3 class="h-display">SR20</h3>
               <div class="cp-stat">
                 <span class="label">Velocidade</span>
@@ -299,7 +306,7 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
             </div>
 
             <!-- SR22 -->
-            <div class="sr-col">
+            <div class="sr-modelo-col">
               <h3 class="h-display">SR22</h3>
               <div class="cp-stat">
                 <span class="label">Velocidade</span>
@@ -320,7 +327,7 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
             </div>
 
             <!-- SR22 G7+ -->
-            <div class="sr-col">
+            <div class="sr-modelo-col">
               <h3 class="h-display">SR22 G7+</h3>
               <div class="cp-stat">
                 <span class="label">Velocidade</span>
@@ -342,19 +349,18 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22 G7+)
 
           </div>
 
-          <!-- BOTÃO ÚNICO CENTRALIZADO -->
-          <div class="cp-buttons" style="justify-content: center; width: 100%;">
-            <a href="universo-cirrus.html" class="btn btn-invert">
-              SAIBA MAIS
-              <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-            </a>
-          </div>
+          <!-- 3. BOTÃO CENTRALIZADO ABAIXO -->
+          <a href="universo-cirrus.html" class="btn btn-invert">
+            SAIBA MAIS
+            <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
 
         </div>
       </div>
     </div>
   </div>
 </section>
+
 <!-- ================================================================ 
 CONFIGURADOR
 ================================================================ -->
