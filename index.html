@@ -208,37 +208,135 @@ CASA CIRRUS
   </section>
 
 <!-- ================================================================ 
-PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22T)
+PARALAXE - TABELA COMPARATIVA LINHA SR (SR20, SR22, SR22 G7+)
 ================================================================ -->
 
 <style>
-  .cp-tabs-wrapper {
+  /* CSS da Tabela / Cards Comparativos do Paralaxe */
+  .sr-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: 1.2rem;
+    width: 100%;
+  }
+
+  .sr-compare-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 1.25rem;
     display: flex;
-    gap: 8px;
-    margin-bottom: 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-bottom: 0.8rem;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
   }
-  .cp-tab-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.7);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+
+  .sr-compare-card:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-4px);
+  }
+
+  /* Destaque para o modelo topo de linha */
+  .sr-compare-card.highlight {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .sr-card-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .sr-card-tag {
+    font-size: 0.65rem;
     font-weight: 700;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    display: block;
+    margin-bottom: 0.2rem;
   }
-  .cp-tab-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+
+  .sr-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 1px;
     color: #fff;
+    margin: 0;
+    line-height: 1;
   }
-  .cp-tab-btn.active {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+
+  .sr-specs-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .sr-spec-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sr-spec-item.full-width {
+    grid-column: span 2;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 0.6rem;
+    margin-top: 0.2rem;
+  }
+
+  .sr-spec-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .sr-spec-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 0.1rem;
+  }
+
+  .sr-card-action {
+    margin-top: auto;
+  }
+
+  .sr-card-action .btn {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.75rem;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  /* Adaptação e Responsividade Mobile */
+  @media (max-width: 1024px) {
+    .sr-compare-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .sr-specs-list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sr-compare-card {
+      padding: 1rem;
+    }
+    .sr-card-title {
+      font-size: 1.75rem;
+    }
+    .sr-spec-val {
+      font-size: 0.88rem;
+    }
   }
 </style>
 
@@ -252,99 +350,121 @@ PARALAXE - COMPARATIVO LINHA SR (SR20, SR22, SR22T)
     </div>
     <div class="cp-camada cp-frente">
       <h1 class="cp-title" id="cp-texto-modelo">SERIES SR</h1>
+      
       <div id="cp-card-glass">
-        <div class="cp-card-content">
+        <div class="cp-card-content" style="flex-direction: column; align-items: stretch;">
           
-          <!-- SELEÇÃO DE MODELOS (ABAS) -->
-          <div class="cp-tabs-wrapper">
-            <button class="cp-tab-btn" onclick="updateSrCard('sr20', this)">SR20 G7</button>
-            <button class="cp-tab-btn active" onclick="updateSrCard('sr22', this)">SR22 G7</button>
-            <button class="cp-tab-btn" onclick="updateSrCard('sr22t', this)">SR22T G7</button>
+          <div style="text-align: center; margin-bottom: 0.5rem;">
+            <span class="eyebrow dark">LINHA CIRRUS AIRCRAFT</span>
+            <h2 class="h-display" style="font-size: 1.8rem; margin: 0.2rem 0;">COMPARATIVO LINHA SR</h2>
           </div>
 
-          <div class="cp-card-left">
-            <span class="eyebrow dark">CIRRUS AIRCRAFT</span>
-            <h2 class="h-display" id="srCardTitle">SR22 G7</h2>
-            <p class="text-body cp-text-body-fixed" id="srCardSub">Estilo, praticidade e conforto.<br>A aeronave pessoal mais vendida do mundo.</p>
-            <p class="muted text-sm cp-description-fixed" id="srCardDesc">O ícone da aviação geral com motor aspirado de alta performance, equilibrando velocidade, alcance e custos operacionais.</p>
+          <!-- TABELA COMPARATIVA EM GRID -->
+          <div class="sr-compare-grid">
+            
+            <!-- MODELO 1: SR20 -->
+            <div class="sr-compare-card">
+              <div class="sr-card-head">
+                <span class="sr-card-tag">ENTRADA NA LINHA</span>
+                <h3 class="sr-card-title">SR20</h3>
+              </div>
+              <div class="sr-specs-list">
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Velocidade</span>
+                  <span class="sr-spec-val">155 KTAS</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Alcance</span>
+                  <span class="sr-spec-val">709 NM</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Altitude Máx.</span>
+                  <span class="sr-spec-val">17.500 FT</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Motor</span>
+                  <span class="sr-spec-val">IO-390 (215 HP)</span>
+                </div>
+              </div>
+              <div class="sr-card-action">
+                <a href="universo-cirrus.html#sr20" class="btn btn-outline-dark">
+                  VER DETALHES
+                  <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- MODELO 2: SR22 -->
+            <div class="sr-compare-card">
+              <div class="sr-card-head">
+                <span class="sr-card-tag">ASPIRADO</span>
+                <h3 class="sr-card-title">SR22</h3>
+              </div>
+              <div class="sr-specs-list">
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Velocidade</span>
+                  <span class="sr-spec-val">183 KTAS</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Alcance</span>
+                  <span class="sr-spec-val">1.169 NM</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Altitude Máx.</span>
+                  <span class="sr-spec-val">17.500 FT</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Motor</span>
+                  <span class="sr-spec-val">IO-550 (310 HP)</span>
+                </div>
+              </div>
+              <div class="sr-card-action">
+                <a href="universo-cirrus.html#sr22" class="btn btn-outline-dark">
+                  VER DETALHES
+                  <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- MODELO 3: SR22 G7+ -->
+            <div class="sr-compare-card highlight">
+              <div class="sr-card-head">
+                <span class="sr-card-tag">ALTA PERFORMANCE & TURBO</span>
+                <h3 class="sr-card-title">SR22 G7+</h3>
+              </div>
+              <div class="sr-specs-list">
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Velocidade</span>
+                  <span class="sr-spec-val">213 KTAS</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Alcance</span>
+                  <span class="sr-spec-val">1.021 NM</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Altitude Máx.</span>
+                  <span class="sr-spec-val">25.000 FT</span>
+                </div>
+                <div class="sr-spec-item">
+                  <span class="sr-spec-label">Motor</span>
+                  <span class="sr-spec-val">TSIO-550 TURBO</span>
+                </div>
+              </div>
+              <div class="sr-card-action">
+                <a href="universo-cirrus.html#sr22g7" class="btn btn-invert">
+                  CONHECER G7+
+                  <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+              </div>
+            </div>
+
           </div>
 
-          <div class="cp-card-right">
-            <div class="cp-stat"><span class="label">velocidade máxima</span><span class="h-display" id="srStatVel">183 ktas</span></div>
-            <div class="cp-stat"><span class="label">alcance máximo</span><span class="h-display" id="srStatAlc">1.169 nm</span></div>
-            <div class="cp-stat"><span class="label">altitude máxima</span><span class="h-display" id="srStatAlt">17.500 ft</span></div>
-            <div class="cp-stat"><span class="label">motorização</span><span class="h-display" id="srStatMotor">IO 550 (310 HP)</span></div>
-          </div>
-
-          <div class="cp-buttons">
-             <a href="universo-cirrus.html" class="btn btn-invert" id="srBtnDetails">
-              VER NO UNIVERSO CIRRUS
-             <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-            </a>
-             <a href="https://configurator.cirrusaircraft.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">
-              CONFIGURADOR
-            <svg class="icon-arrow-diag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-             </a>
-          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<script>
-  const SR_DATA = {
-    sr20: {
-      title: "SR20 G7",
-      sub: "Eficiência, tecnologia e aprendizado.<br>A porta de entrada para o Universo Cirrus.",
-      desc: "Ideal para quem está ingressando na aviação executiva ou busca máxima eficiência operacional com o motor Lycoming de 215 HP.",
-      vel: "155 ktas",
-      alc: "709 nm",
-      alt: "17.500 ft",
-      motor: "IO 390 (215 HP)",
-      link: "universo-cirrus.html#sr20"
-    },
-    sr22: {
-      title: "SR22 G7",
-      sub: "Estilo, praticidade e conforto.<br>A aeronave pessoal mais vendida do mundo.",
-      desc: "O ícone da aviação geral com motor aspirado de alta performance, equilibrando velocidade, alcance e capacidade de carga útil.",
-      vel: "183 ktas",
-      alc: "1.169 nm",
-      alt: "17.500 ft",
-      motor: "IO 550 (310 HP)",
-      link: "universo-cirrus.html#sr22"
-    },
-    sr22t: {
-      title: "SR22T G7",
-      sub: "Alta performance e voos em altitude.<br>A máxima expressão em tecnologia a pistão.",
-      desc: "Equipado com motor Turbo-normalizado, mantém a potência total em altitudes elevadas, voando acima da maioria das formações meteorológicas.",
-      vel: "213 ktas",
-      alc: "1.021 nm",
-      alt: "25.000 ft",
-      motor: "TSIO 550 TURBO",
-      link: "universo-cirrus.html#sr22t"
-    }
-  };
-
-  function updateSrCard(modelKey, btnEl) {
-    const data = SR_DATA[modelKey];
-    if (!data) return;
-
-    // Atualiza os botões das abas
-    document.querySelectorAll('.cp-tab-btn').forEach(b => b.classList.remove('active'));
-    if (btnEl) btnEl.classList.add('active');
-
-    // Atualiza os textos do card
-    document.getElementById('srCardTitle').textContent = data.title;
-    document.getElementById('srCardSub').innerHTML = data.sub;
-    document.getElementById('srCardDesc').textContent = data.desc;
-    document.getElementById('srStatVel').textContent = data.vel;
-    document.getElementById('srStatAlc').textContent = data.alc;
-    document.getElementById('srStatAlt').textContent = data.alt;
-    document.getElementById('srStatMotor').textContent = data.motor;
-    document.getElementById('srBtnDetails').href = data.link;
-  }
-</script>
 
 <!-- ================================================================ 
 CONFIGURADOR
