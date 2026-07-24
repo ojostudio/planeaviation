@@ -168,25 +168,36 @@ function sellBandHTML(){
 function buildFilters(){
   if(!allListings.length){ filtersBar.style.display = "none"; return; }
   filtersBar.style.display = "block"; /* Ajustado de '' para block */
-  
+
   const all = t("ac_all");
-  const cirrusModels = [...new Set(allListings.filter(l => l.fabricante === "Cirrus" || !l.fabricante).map(l => l.modeloBase || l.model.split(' ')[0]))].sort();
-  const outrosModels = [...new Set(allListings.filter(l => l.fabricante === "Outros").map(l => l.modeloBase || l.model))].sort();
+
+  // Agrupa dinamicamente por fabricante (qualquer fabricante cadastrado no painel),
+  // em vez de assumir só "Cirrus" / "Outros".
+  const groups = {};
+  allListings.forEach(l => {
+    const fab = l.fabricante || "Outros";
+    const modelo = l.modeloBase || l.model.split(' ')[0];
+    if(!modelo) return;
+    if(!groups[fab]) groups[fab] = new Set();
+    groups[fab].add(modelo);
+  });
+
+  // Cirrus (se existir) sempre primeiro, os demais fabricantes em ordem alfabética.
+  const fabNames = Object.keys(groups).sort((a,b) => {
+    if(a === "Cirrus") return -1;
+    if(b === "Cirrus") return 1;
+    return a.localeCompare(b);
+  });
 
   let modeloOptions = `<option value="${all}">${all}</option>`;
-  
-  if(cirrusModels.length) {
-    modeloOptions += `<optgroup label="Cirrus Aircraft">`;
-    cirrusModels.forEach(m => { modeloOptions += `<option value="${m}">${m}</option>`; });
+  fabNames.forEach(fab => {
+    const modelos = [...groups[fab]].sort();
+    if(!modelos.length) return;
+    modeloOptions += `<optgroup label="${fab}">`;
+    modelos.forEach(m => { modeloOptions += `<option value="${m}">${m}</option>`; });
     modeloOptions += `</optgroup>`;
-  }
-  
-  if(outrosModels.length) {
-    modeloOptions += `<optgroup label="Outros Fabricantes">`;
-    outrosModels.forEach(m => { modeloOptions += `<option value="${m}">${m}</option>`; });
-    modeloOptions += `</optgroup>`;
-  }
-  
+  });
+
   elModelo.innerHTML = modeloOptions;
   fill(elCond, [all, ...[...new Set(allListings.map(l=>l.condition).filter(Boolean))].sort()]);
   fill(elAno,  [all, ...[...new Set(allListings.map(l=>String(l.year)).filter(Boolean))].sort((a,b)=>b-a)]);
@@ -234,7 +245,7 @@ async function init(){
         const a = d.data();
         return { 
           id:d.id, tag:a.tag||"", model:a.model||"", year:a.year||"",
-          fabricante: a.fabricante || "Cirrus", modeloBase: a.modeloBase || "",
+          fabricante: a.fabricante || "Outros", modeloBase: a.modeloBase || "",
           hoursNum:a.hoursNum!=null?a.hoursNum:null, condition:a.condition||"", 
           currency:a.currency||"USD", priceNum:a.priceNum||null, sobConsulta:!!a.sobConsulta,
           images:a.images||[], translations:a.translations||{} 
