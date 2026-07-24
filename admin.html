@@ -108,15 +108,25 @@
   .fab-chip button{ background:none; border:none; color:#b42318; cursor:pointer; font-size:.9rem; line-height:1; padding:.1rem .35rem; }
   .fab-add-row{ display:flex; gap:.5rem; }
   .fab-add-row input{ flex:1; }
+  .rte-toolbar{ display:flex; gap:.25rem; margin-bottom:.375rem; }
+  .rte-btn{ background:hsl(var(--muted)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.3rem .6rem; font-size:.8125rem; cursor:pointer; color:hsl(var(--foreground)); }
+  .rte-btn:hover{ background:hsl(var(--border)); }
+  .rte-editor{ min-height:8rem; max-height:20rem; overflow-y:auto; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.625rem .75rem; font-size:.875rem; line-height:1.5; background:hsl(var(--background)); }
+  .rte-editor:empty:before{ content:attr(data-placeholder); color:hsl(var(--muted-foreground)); }
+  .rte-editor ul, .rte-editor ol{ padding-left:1.25rem; margin:.25rem 0; }
+  .av-desc ul, .av-desc ol{ padding-left:1.25rem; margin:.25rem 0; }
 
   /* image uploader */
   .uploader{ border:2px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:1rem; text-align:center; }
   .uploader input{ display:none; }
   .uploader .hint{ font-size:.75rem; color:hsl(var(--muted-foreground)); }
   .thumbs-edit{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.75rem; }
-  .thumbs-edit .t{ position:relative; }
-  .thumbs-edit img{ width:4.5rem; height:3.25rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); display:block; }
+  .thumbs-edit .t{ position:relative; cursor:grab; }
+  .thumbs-edit .t.dragging{ opacity:.4; cursor:grabbing; }
+  .thumbs-edit .t.drag-over{ outline:2px solid hsl(var(--foreground)); outline-offset:2px; }
+  .thumbs-edit img{ width:4.5rem; height:3.25rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); display:block; pointer-events:none; }
   .thumbs-edit .del{ position:absolute; top:-.4rem; right:-.4rem; width:1.25rem; height:1.25rem; background:#b42318; color:#fff; border:none; border-radius:9999px; font-size:.7rem; cursor:pointer; line-height:1; }
+  .thumbs-edit .cover-tag{ position:absolute; bottom:-.35rem; left:-.35rem; background:hsl(var(--foreground)); color:hsl(var(--background)); font-size:.5625rem; font-weight:700; letter-spacing:.03em; padding:.05rem .3rem; border-radius:3px; text-transform:uppercase; }
   .prog{ height:.25rem; background:hsl(var(--muted)); border-radius:9999px; overflow:hidden; margin-top:.5rem; display:none; }
   .prog.show{ display:block; } .prog .bar{ height:100%; background:hsl(var(--foreground)); width:0; transition:width .2s; }
 
@@ -529,7 +539,7 @@
       <div class="fld">
         <label>Imagens (galeria)</label>
         <div class="uploader" id="acUpZone">
-          <div class="hint">Clique para enviar imagens (JPG/PNG) · máx. 3 fotos no modo sem Storage</div>
+          <div class="hint">Clique para enviar imagens (JPG/PNG) · máx. 5 fotos · arraste as miniaturas abaixo para reordenar</div>
           <input type="file" id="acFiles" accept="image/*" multiple>
         </div>
         <div class="prog" id="acProg"><div class="bar"></div></div>
@@ -538,7 +548,15 @@
 
       <div class="fld">
         <label>Descrição</label>
-        <textarea id="acDesc" rows="6" style="resize:vertical;min-height:8rem" placeholder="Cole aqui a descrição completa da aeronave..."></textarea>
+        <div class="rte-toolbar">
+          <button type="button" class="rte-btn" data-cmd="bold" title="Negrito"><b>B</b></button>
+          <button type="button" class="rte-btn" data-cmd="italic" title="Itálico"><i>I</i></button>
+          <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Lista com marcadores">&#8226; Lista</button>
+          <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+          <button type="button" class="rte-btn" data-case="upper" title="Selecione um trecho e clique para deixar tudo em MAIÚSCULAS">AA</button>
+          <button type="button" class="rte-btn" data-case="lower" title="Selecione um trecho e clique para deixar tudo em minúsculas">aa</button>
+        </div>
+        <div id="acDesc" class="rte-editor" contenteditable="true" data-placeholder="Cole aqui a descrição completa da aeronave..."></div>
       </div>
       
       <div class="fld">
@@ -1236,6 +1254,7 @@
   function wireAircraftModal(){
     $("addAircraft").onclick = () => openAircraft(null, null);
     $("acFabricante").onchange = () => populateModeloBaseSelect($("acFabricante").value);
+    wireDescEditor();
     $("acAddSpec").onclick = () => $("acSpecs").appendChild(specRow());
     $("acAddFeat").onclick = () => $("acFeats").appendChild(featRow());
     $("acUpZone").onclick = (e)=>{ if(e.target.tagName!=="INPUT") $("acFiles").click(); };
@@ -1259,7 +1278,7 @@
   async function translateAll(){
     const condition  = $("acCondition").value;
     const location   = $("acLocation").value.trim();
-    const description= $("acDesc").value.trim();
+    const description= $("acDesc").innerText.trim();
     const specs      = [...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features   = [...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
 
@@ -1342,8 +1361,36 @@
   }
 
   function renderEditThumbs(){
-    $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t"><img src="${u}"><button class="del" data-i="${i}">×</button></div>`).join("");
-    $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=()=>{ editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
+    $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t" draggable="true" data-i="${i}"><img src="${u}">${i===0?'<span class="cover-tag">Capa</span>':''}<button class="del" data-i="${i}">×</button></div>`).join("");
+    $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
+    wireThumbDragAndDrop();
+  }
+
+  function wireThumbDragAndDrop(){
+    const container = $("acThumbs");
+    let dragIdx = null;
+    container.querySelectorAll(".t").forEach(el => {
+      el.addEventListener("dragstart", (e) => {
+        dragIdx = +el.dataset.i;
+        el.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+      });
+      el.addEventListener("dragend", () => {
+        el.classList.remove("dragging");
+        container.querySelectorAll(".t").forEach(x=>x.classList.remove("drag-over"));
+      });
+      el.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+      el.addEventListener("dragenter", () => { if(+el.dataset.i !== dragIdx) el.classList.add("drag-over"); });
+      el.addEventListener("dragleave", () => el.classList.remove("drag-over"));
+      el.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const dropIdx = +el.dataset.i;
+        if(dragIdx === null || dropIdx === dragIdx) return;
+        const [moved] = editImages.splice(dragIdx, 1);
+        editImages.splice(dropIdx, 0, moved);
+        renderEditThumbs();
+      });
+    });
   }
   function gerarCodigoInterno(){ return `PA-${Date.now().toString().slice(-5)}${Math.floor(Math.random()*9)+1}`; }
 
@@ -1378,7 +1425,7 @@
           <div class="av-item"><label>Preço</label>${avVal(precoTxt)}</div>
         </div>
       </div>
-      <div class="av-section"><div class="av-section-title">Descrição</div>${a.description ? `<p class="av-desc">${esc(a.description)}</p>` : `<span class="val empty">Sem descrição</span>`}</div>
+      <div class="av-section"><div class="av-section-title">Descrição</div>${a.description ? `<div class="av-desc">${isPlainTextDesc(a.description) ? plainTextToDescHTML(a.description) : sanitizeDescHTML(a.description)}</div>` : `<span class="val empty">Sem descrição</span>`}</div>
       <div class="av-section"><div class="av-section-title">Imagens</div>${imagesHTML}</div>
       <div class="av-section"><div class="av-section-title">Ficha Técnica</div><div>${specsHTML}</div></div>
       <div class="av-section"><div class="av-section-title">Tecnologias a Bordo</div>${featsHTML}</div>
@@ -1412,7 +1459,9 @@
     $("acCondition").value=a.condition||"Seminovo"; $("acLocation").value=a.location||"";
     $("acCurrency").value=a.currency||"USD";
     $("acPrice").value=a.priceNum!=null?a.priceNum:(a.price&&!isNaN(Number(String(a.price).replace(/\D/g,"")))?String(a.price).replace(/\D/g,""):"");
-    $("acSobConsulta").checked = !!a.sobConsulta; $("acTag").value=a.tag||""; $("acDesc").value=a.description||"";
+    $("acSobConsulta").checked = !!a.sobConsulta; $("acTag").value=a.tag||"";
+    const descRaw = a.description || "";
+    $("acDesc").innerHTML = isPlainTextDesc(descRaw) ? plainTextToDescHTML(descRaw) : sanitizeDescHTML(descRaw);
     editTranslations = a.translations || {}; trData = editTranslations;
     editImages = Array.isArray(a.images)? a.images.slice() : []; renderEditThumbs();
     $("acSpecs").innerHTML=""; (a.specs||[]).forEach(s=>$("acSpecs").appendChild(specRow(s.label,s.value)));
@@ -1481,7 +1530,7 @@
       sobConsulta: !!$("acSobConsulta").checked, 
       tag: $("acTag").value.trim(), 
       tagSolid: true, 
-      description: $("acDesc").value.trim(), 
+      description: sanitizeDescHTML($("acDesc").innerHTML), 
       translations: withTranslations ? trData : (editTranslations || {}), 
       images: editImages, 
       specs: specs, 
@@ -2004,6 +2053,61 @@
   function ts(){ return firebase.firestore.FieldValue.serverTimestamp(); }
   function inlineBytes(arr){ return (arr||[]).reduce((n,u)=>n + (typeof u==="string"?u.length:0), 0); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+  /* =================================================================
+     DESCRIÇÃO — EDITOR DE TEXTO RICO (negrito, itálico, listas)
+     ================================================================= */
+  const RTE_ALLOWED_TAGS = {B:1,STRONG:1,I:1,EM:1,UL:1,OL:1,LI:1,BR:1,P:1,DIV:1};
+  function sanitizeDescHTML(html){
+    if(!html) return "";
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    (function clean(node){
+      [...node.childNodes].forEach(child => {
+        if(child.nodeType === 1){
+          if(!RTE_ALLOWED_TAGS[child.tagName]){
+            while(child.firstChild) node.insertBefore(child.firstChild, child);
+            node.removeChild(child);
+          } else {
+            [...child.attributes].forEach(attr => child.removeAttribute(attr.name));
+            clean(child);
+          }
+        } else if(child.nodeType !== 3){
+          node.removeChild(child);
+        }
+      });
+    })(tmp);
+    return tmp.innerHTML;
+  }
+  function isPlainTextDesc(desc){ return !!desc && !/<[a-z][\s\S]*>/i.test(desc); }
+  function plainTextToDescHTML(text){
+    return text.split(/\n+/).map(l=>l.trim()).filter(Boolean).map(l=>`<p>${esc(l)}</p>`).join("");
+  }
+  function wireDescEditor(){
+    const editor = $("acDesc");
+    document.querySelectorAll(".rte-btn[data-cmd]").forEach(btn => {
+      btn.onclick = () => { editor.focus(); document.execCommand(btn.dataset.cmd, false, null); };
+    });
+    document.querySelectorAll(".rte-btn[data-case]").forEach(btn => {
+      btn.onclick = () => applyCaseTransform(editor, btn.dataset.case === "upper");
+    });
+  }
+  function applyCaseTransform(editor, upper){
+    editor.focus();
+    const sel = window.getSelection();
+    if(!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if(!editor.contains(range.commonAncestorContainer)) return;
+    const frag = range.cloneContents();
+    const walker = document.createTreeWalker(frag, NodeFilter.SHOW_TEXT, null);
+    let node;
+    while(node = walker.nextNode()){
+      node.nodeValue = upper ? node.nodeValue.toUpperCase() : node.nodeValue.toLowerCase();
+    }
+    const wrap = document.createElement("div");
+    wrap.appendChild(frag);
+    document.execCommand("insertHTML", false, wrap.innerHTML);
+  }
   async function delDoc(col,id,name,after){ if(!confirm(`Excluir “${name||"item"}”?`)) return; try{ await db.collection(col).doc(id).delete(); after(); }catch(e){ alert(e.message);} }
   
   // (Legado) Usado caso o modo inline sem storage seja ativado
@@ -2043,8 +2147,8 @@
     
     // Fallback: Se não tem Storage, vai em modo inline (Base64)
     if (PA.IMAGE_MODE === "inline" || !storage) {
-      const slots = Math.max(0, 3 - editImages.length); const toProcess = Array.from(files).slice(0, slots);
-      if (files.length > slots) alert(`Modo sem Storage: máx 3 imagens.`); if (!toProcess.length) return;
+      const slots = Math.max(0, 5 - editImages.length); const toProcess = Array.from(files).slice(0, slots);
+      if (files.length > slots) alert(`Modo sem Storage: máx 5 imagens.`); if (!toProcess.length) return;
       progEl.classList.add("show"); const bar=progEl.querySelector(".bar"); bar.style.width="20%";
       for(const file of toProcess){
         if(!file.type.startsWith("image/")) continue;
@@ -2055,8 +2159,13 @@
     }
     
     // Fluxo Principal: Otimiza para WebP e sobe para o Firebase Storage
+    const slots = Math.max(0, 5 - editImages.length);
+    const toUpload = Array.from(files).slice(0, slots);
+    if(files.length > slots) alert(`Máximo de 5 imagens por aeronave. Serão enviadas apenas ${slots} das ${files.length} selecionadas.`);
+    if(!toUpload.length) return;
+
     progEl.classList.add("show"); const bar=progEl.querySelector(".bar");
-    for(const file of files){
+    for(const file of toUpload){
       if(!file.type.startsWith("image/")){ alert("Apenas imagens."); continue; }
       
       try {
