@@ -259,6 +259,11 @@ function fmtPrice(p){
   return p.currency==="BRL" ? "R$"+Number(p.priceNum).toLocaleString("pt-BR") : "USD "+Number(p.priceNum).toLocaleString("en-US");
 }
 function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
+function fmtMotor(v){
+  if(v==null || v==="") return null;
+  const n = Number(v);
+  return (v !== "" && !isNaN(n) && String(v).trim() === String(n)) ? (n.toLocaleString("pt-BR")+"h") : String(v);
+}
 
 // Descrição agora suporta negrito, itálico e listas (HTML sanitizado vindo do painel).
 const RTE_ALLOWED_TAGS = {B:1,STRONG:1,I:1,EM:1,UL:1,OL:1,LI:1,BR:1,P:1,DIV:1};
@@ -362,7 +367,7 @@ function renderPage(p){
   const metas = [];
   if(p.year)              metas.push({ l:t("det_meta_year"),   v:String(p.year) });
   if(p.hoursNum!=null)    metas.push({ l:t("det_meta_cell"),   v:fmtHoras(p.hoursNum) });
-  if(p.motorHours!=null)  metas.push({ l:t("det_meta_engine"), v:fmtHoras(p.motorHours) });
+  if(p.motorHours!=null)  metas.push({ l:t("det_meta_engine"), v:fmtMotor(p.motorHours) });
   if(p.heliceHours!=null) metas.push({ l:t("det_meta_prop"),   v:fmtHoras(p.heliceHours) });
   document.getElementById("detMetas").innerHTML = metas.map(m => `<span class="det-meta-pill"><span class="ml">${m.l}</span>${m.v}</span>`).join("");
 
@@ -424,11 +429,11 @@ async function init(){
   if(!window.PA || !PA.configured || !pageId){ notFound(); return; }
   try {
     const doc = await PA.db.collection("aircraft").doc(pageId).get();
-    if(!doc.exists || doc.data().archived){ notFound(); return; }
+    if(!doc.exists || doc.data().archived || doc.data().draft){ notFound(); return; }
     renderPage(fromFirestore(doc.data()));
 
     const others = await PA.db.collection("aircraft").get();
-    const otherDocs = others.docs.filter(d=>d.id!==pageId && !d.data().archived).sort((a,b)=>{ const ay = Number(a.data().year)||0, by = Number(b.data().year)||0; if(ay !== by) return by - ay; return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0); }).slice(0,4);
+    const otherDocs = others.docs.filter(d=>d.id!==pageId && !d.data().archived && !d.data().draft).sort((a,b)=>{ const ay = Number(a.data().year)||0, by = Number(b.data().year)||0; if(ay !== by) return by - ay; return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0); }).slice(0,4);
     if(otherDocs.length){ document.getElementById("otherSection").style.display="block"; document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCardHTML(d.id,d.data())).join(""); }
   } catch(e){ notFound(); }
 }
@@ -689,7 +694,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageW = 210, pageH = 297, margin = 15;
     const contentW = pageW - margin * 2;
     const gap = 8;
-    const leftW = 82;
+    const leftW = 92;
     const rightX = margin + leftW + gap;
     const rightW = contentW - leftW - gap;
 
@@ -717,8 +722,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Foto principal
     if (images[0]) {
-      const cropped = await coverCropToJpeg(images[0], 1000, 700);
-      const imgH = leftW * 0.78;
+      const imgH = leftW * 0.72; // proporção mais "paisagem", igual à usada no recorte abaixo
+      // Gera o recorte já na MESMA proporção do retângulo de destino (evita achatar a imagem)
+      const cropped = await coverCropToJpeg(images[0], Math.round(leftW * 12), Math.round(imgH * 12));
       doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
       doc.addImage(cropped, "JPEG", margin, ly, leftW, imgH);
       doc.rect(margin, ly, leftW, imgH);
@@ -761,7 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
     doc.setFontSize(8.5);
     const cmh = [
       ["Célula: ", P.hoursNum != null ? `${fmtHoras(P.hoursNum)}` : null],
-      ["Motor: ", P.motorHours != null ? `${fmtHoras(P.motorHours)}` : null],
+      ["Motor: ", P.motorHours != null ? `${fmtMotor(P.motorHours)}` : null],
       ["Hélice: ", P.heliceHours != null ? `${fmtHoras(P.heliceHours)}` : null],
     ];
     cmh.forEach(([label, val]) => {
@@ -806,14 +812,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const availH = bodyBottom - ly;
       const cols = 2;
       const rows = Math.ceil(extraImgs.length / cols);
-      let thumbH = Math.min(26, (availH - (rows - 1) * thumbGap) / rows);
+      let thumbH = Math.min(32, (availH - (rows - 1) * thumbGap) / rows);
       const maxRows = Math.max(1, Math.floor((availH + thumbGap) / (thumbH + thumbGap)));
       const shown = extraImgs.slice(0, maxRows * cols);
       for (let i = 0; i < shown.length; i++) {
         const col = i % cols, row = Math.floor(i / cols);
         const tx = margin + col * (thumbW + thumbGap);
         const ty = ly + row * (thumbH + thumbGap);
-        const cropped = await coverCropToJpeg(shown[i], 500, 380);
+        // Recorte gerado já na mesma proporção da miniatura exibida (evita achatar)
+        const cropped = await coverCropToJpeg(shown[i], Math.round(thumbW * 12), Math.round(thumbH * 12));
         doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
         doc.addImage(cropped, "JPEG", tx, ty, thumbW, thumbH);
         doc.rect(tx, ty, thumbW, thumbH);

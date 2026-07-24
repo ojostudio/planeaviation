@@ -236,7 +236,7 @@ async function init(){
   if(window.PA && PA.configured){
     try {
       const snap = await PA.db.collection("aircraft").get();
-      const docs = snap.docs.filter(d => !d.data().archived).slice().sort((a,b) => {
+      const docs = snap.docs.filter(d => !d.data().archived && !d.data().draft).slice().sort((a,b) => {
         const ay = Number(a.data().year)||0, by = Number(b.data().year)||0;
         if(ay !== by) return by - ay;
         return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0);

@@ -512,7 +512,7 @@
         <div class="fld"><label>Condição</label><select id="acCondition"><option>Novo</option><option>Seminovo</option></select></div>
       </div>
       <div class="grid2">
-        <div class="fld"><label>Motor (horas)</label><input id="acMotor" type="number" min="0" placeholder="280"></div>
+        <div class="fld"><label>Motor (horas)</label><input id="acMotor" type="text" placeholder="280 ou 280h / Overhaul em 2022"></div>
         <div class="fld"><label>Hélice (horas)</label><input id="acHelice" type="number" min="0" placeholder="280"></div>
       </div>
       <div class="grid2">
@@ -591,6 +591,7 @@
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-outline btn-sm" id="acTranslateBtn">Revisar Traduções →</button>
+      <button class="btn btn-outline btn-sm" id="acSaveDraft">Salvar rascunho</button>
       <button class="btn btn-solid btn-sm" id="acSave">Salvar aeronave</button>
     </div>
   </div>
@@ -926,6 +927,13 @@
       aircraftSearchTerm = e.target.value.trim();
       const filtered = aircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm));
       renderAircraftRows(filtered);
+
+      const filteredArchived = archivedAircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm));
+      renderArchivedRows(filteredArchived);
+      if(aircraftSearchTerm && filteredArchived.length){
+        $("archivedSection").style.display = "block";
+        $("archivedChevron").style.transform = "rotate(90deg)";
+      }
     });
   }
 
@@ -1142,7 +1150,7 @@
       tr.style.cursor = "pointer";
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
+        <td><b>${esc(a.model||"")}</b>${a.draft?` <span style="font-size:10px;font-weight:700;color:#92400e;border:1px solid #92400e;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:middle;text-transform:uppercase">Rascunho</span>`:""}<div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
         <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
       
       tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
@@ -1214,13 +1222,19 @@
     }catch(e){ alert("Erro ao duplicar: "+e.message); }
   }
 
+  let archivedAircraftCache = [];
+
   async function loadArchivedAircraft(){
-    const rows = $("archivedRows");
     const snap = await db.collection("aircraft").get().catch(()=>null);
     if(!snap){ return; }
-    const archived = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
-    $("archivedCount").textContent = archived.length ? `(${archived.length})` : "";
-    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
+    archivedAircraftCache = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
+    renderArchivedRows(archivedAircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm)));
+  }
+
+  function renderArchivedRows(archived){
+    const rows = $("archivedRows");
+    $("archivedCount").textContent = archivedAircraftCache.length ? `(${archivedAircraftCache.length})` : "";
+    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">${aircraftSearchTerm ? "Nenhuma aeronave arquivada encontrada." : "Nenhum anúncio arquivado."}</td></tr>`; return; }
     rows.innerHTML = "";
     archived.forEach(a => {
       const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
@@ -1259,7 +1273,8 @@
     $("acAddFeat").onclick = () => $("acFeats").appendChild(featRow());
     $("acUpZone").onclick = (e)=>{ if(e.target.tagName!=="INPUT") $("acFiles").click(); };
     $("acFiles").onchange = (e)=> uploadImages(e.target.files, "aircraft", $("acProg"), (url)=>{ editImages.push(url); renderEditThumbs(); });
-    $("acSave").onclick = saveAircraft;
+    $("acSave").onclick = () => saveAircraft(false, false);
+    $("acSaveDraft").onclick = () => saveAircraft(false, true);
     $("acTranslateBtn").onclick = openTranslateModal;
     wireTranslateModal();
   }
@@ -1408,7 +1423,7 @@
 
     $("avBody").innerHTML = `
       <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : `<span class="av-badge">Ativa no site</span>`}
+        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : a.draft ? `<span class="av-badge archived">Rascunho — não publicada</span>` : `<span class="av-badge">Ativa no site</span>`}
         ${a.featured ? `<span class="av-badge" style="background:#b45309">Em destaque na Home</span>` : ""}
       </div>
       <div class="av-section"><div class="av-section-title">Informações Gerais</div>
@@ -1443,7 +1458,8 @@
 
   function openAircraft(id, a){
     a = a || {};
-    $("acTitle").textContent = id ? "Editar aeronave" : "Nova aeronave";
+    $("acTitle").textContent = id ? (a.draft ? "Editar rascunho" : "Editar aeronave") : "Nova aeronave";
+    $("acSave").textContent = (id && a.draft) ? "Publicar aeronave" : "Salvar aeronave";
     $("acId").value = id || "";
     $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
 
@@ -1502,7 +1518,7 @@
   // =================================================================
   // FUNÇÃO DE SALVAR AERONAVE (BLINDADA)
   // =================================================================
-  async function saveAircraft(withTranslations=false){
+  async function saveAircraft(withTranslations=false, asDraft=false){
     const model = $("acTitulo").value.trim();
     const fabricante = $("acFabricante").value;
     const modeloBase = $("acModeloBase").value;
@@ -1518,10 +1534,11 @@
     
     let data = { 
       model, fabricante, modeloBase, versao, 
+      draft: asDraft,
       year: Number($("acYear").value) || null, 
       codigoInterno, 
       hoursNum: $("acHours").value ? Number($("acHours").value) : null, 
-      motorHours: $("acMotor").value ? Number($("acMotor").value) : null, 
+      motorHours: $("acMotor").value.trim() || null, 
       heliceHours: $("acHelice").value ? Number($("acHelice").value) : null, 
       condition: $("acCondition").value, 
       location: $("acLocation").value.trim(), 
@@ -1543,6 +1560,7 @@
     
     // A MÁGICA ACONTECE AQUI: O Scanner purifica os dados 100% antes do Firebase ver
     let finalData = cleanFirestoreData(data);
+    if(asDraft) finalData.featured = false;
     finalData.updatedAt = ts();
     finalData.updatedBy = me.email;
     
@@ -1554,7 +1572,7 @@
         finalData.createdBy = me.email; 
         await db.collection("aircraft").add(finalData); 
       }
-      msg($("acMsg"), id ? "Aeronave atualizada com sucesso!" : "Aeronave cadastrada com sucesso!", "ok");
+      msg($("acMsg"), id ? (asDraft ? "Rascunho atualizado com sucesso!" : "Aeronave atualizada e publicada com sucesso!") : (asDraft ? "Rascunho salvo! A aeronave não aparece no site até você publicá-la." : "Aeronave cadastrada com sucesso!"), "ok");
       loadAircraft();
       setTimeout(() => $("ovAircraft").classList.remove("open"), 1200);
     } catch(e) { 
