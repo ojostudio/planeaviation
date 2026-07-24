@@ -61,7 +61,7 @@
   .modal-head{ display:flex; align-items:center; justify-content:space-between; padding:1.25rem 1.5rem; border-bottom:1px solid hsl(var(--border)); }
   .modal-head h3{ font-size:1rem; font-weight:700; }
   .modal-body{ padding:1.5rem; }
-  .modal-foot{ display:flex; justify-content:flex-end; gap:.75rem; padding:1.25rem 1.5rem; border-top:1px solid hsl(var(--border)); }
+  .modal-foot{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.75rem; padding:1.25rem 1.5rem; border-top:1px solid hsl(var(--border)); }
   .x-btn{ background:none; border:none; cursor:pointer; color:hsl(var(--muted-foreground)); padding:.25rem; }
 
   /* Forms */
@@ -473,7 +473,7 @@
 </div>
 
 <div class="overlay" id="ovAircraft">
-  <div class="modal">
+  <div class="modal" style="max-width:58rem">
     <div class="modal-head"><h3 id="acTitle">Nova aeronave</h3><button class="x-btn" data-close>✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="acId">
@@ -905,7 +905,7 @@
     document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".overlay").classList.remove("open"));
 
     // Carrega tudo
-    loadFabricantes().then(() => loadAircraft());
+    loadFabricantes().then(() => { loadAircraft(); renderFabricantesPanel(); });
     loadLeads();
     loadPartners();
     $("exportLeadsBtn").onclick = exportLeadsCSV;
@@ -913,7 +913,7 @@
     loadPodcasts();
     loadNewsletter();
     wireNewsModals();
-    if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); renderFabricantesPanel(); }
+    if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
     wireAircraftModal(); wireUserModal(); wireAircraftViewModal(); wirePartnerModal(); wireFabricanteModal();
 
     $("archivedToggle").onclick = () => {
