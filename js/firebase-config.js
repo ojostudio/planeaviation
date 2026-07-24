@@ -34,7 +34,7 @@ window.PA = {
   // Onde guardar as imagens das aeronaves:
   //   "inline"  → comprimidas dentro do Firestore (funciona no plano grátis, sem Storage)
   //   "storage" → Firebase Storage (requer plano Blaze; troque para cá depois do upgrade)
-  IMAGE_MODE: "inline",
+  IMAGE_MODE: "storage",
   // papéis aceitos
   ROLES: ["admin", "editor"],
   // ícones disponíveis para "Tecnologias a bordo"
