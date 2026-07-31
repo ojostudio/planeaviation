@@ -500,11 +500,7 @@
 
       <div class="grid2">
         <div class="fld">
-<<<<<<< HEAD
-          <label>Modelo Base (Para o Filtro)</label>
-=======
           <label>Modelo Base (para o filtro) *</label>
->>>>>>> e72a2c88fb356d85167a0d54199bf50a2988b87b
           <select id="acModeloBase">
             <option value="">Selecione o fabricante primeiro…</option>
           </select>
@@ -1356,19 +1352,9 @@
     }
   }
   async function openTranslateModal(){
-<<<<<<< HEAD
-    const fabricante = $("acFabricante").value;
-    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
-    const model = `${modeloBase} ${$("acVersao").value.trim()}`.trim();
-    
-    // LINHA REMOVIDA (COMENTADA): Agora o sistema não bloqueia mais se o modelo base estiver em branco
-    // if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
-    
-=======
     const model = $("acTitulo").value.trim();
 
     if (!model) return alert("Informe o título da aeronave antes de revisar as traduções.");
->>>>>>> e72a2c88fb356d85167a0d54199bf50a2988b87b
     msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
     $("ovTranslate").classList.add("open");
     await translateAll();
