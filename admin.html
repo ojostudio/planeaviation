@@ -1352,12 +1352,9 @@
     }
   }
   async function openTranslateModal(){
-    const fabricante = $("acFabricante").value;
-    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
-    const model = `${modeloBase} ${$("acVersao").value.trim()}`.trim();
+    const model = $("acTitulo").value.trim();
     
-    // LINHA REMOVIDA (COMENTADA): Agora o sistema não bloqueia mais se o modelo base estiver em branco
-    // if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
+    if (!model) return alert("Informe o título da aeronave antes de revisar as traduções.");
     
     msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
     $("ovTranslate").classList.add("open");
@@ -1530,7 +1527,7 @@
 
     if(!model) return alert("Informe o título da aeronave.");
     if(!fabricante) return alert("Selecione o fabricante.");
-    if(!modeloBase) return alert("Selecione o modelo base.");
+    // if(!modeloBase) return alert("Selecione o modelo base."); <-- TRAVA REMOVIDA AQUI!
     const codigoInterno = $("acCodigo").value.trim(); if(!codigoInterno) return alert("Informe o código interno.");
     
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
