@@ -1352,9 +1352,13 @@
     }
   }
   async function openTranslateModal(){
-    const model = $("acTitulo").value.trim();
-
-    if (!model) return alert("Informe o título da aeronave antes de revisar as traduções.");
+    const fabricante = $("acFabricante").value;
+    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
+    const model = `${modeloBase} ${$("acVersao").value.trim()}`.trim();
+    
+    // LINHA REMOVIDA (COMENTADA): Agora o sistema não bloqueia mais se o modelo base estiver em branco
+    // if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
+    
     msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
     $("ovTranslate").classList.add("open");
     await translateAll();
