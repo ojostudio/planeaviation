@@ -614,21 +614,39 @@ document.addEventListener("DOMContentLoaded", () => {
     async function coverCropToJpeg(src, outW, outH) {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      await new Promise((ok, fail) => { img.onload = ok; img.onerror = fail; img.src = src; });
+      
+      // Nova versão blindada contra erros de imagem
+      const loaded = await new Promise((resolve) => { 
+        img.onload = () => resolve(true); 
+        img.onerror = () => resolve(false); // Resolve como falso em vez de causar erro!
+        img.src = src; 
+      });
+
       const canvas = document.createElement("canvas");
       canvas.width = outW; canvas.height = outH;
       const ctx = canvas.getContext("2d");
+      
+      // Fundo padrão
       ctx.fillStyle = "#f5f5f5";
       ctx.fillRect(0, 0, outW, outH);
-      const srcRatio = img.width / img.height;
-      const outRatio = outW / outH;
-      let sx, sy, sw, sh;
-      if (srcRatio > outRatio) {
-        sh = img.height; sw = sh * outRatio; sx = (img.width - sw) / 2; sy = 0;
+
+      if (loaded) {
+        const srcRatio = img.width / img.height;
+        const outRatio = outW / outH;
+        let sx, sy, sw, sh;
+        if (srcRatio > outRatio) {
+          sh = img.height; sw = sh * outRatio; sx = (img.width - sw) / 2; sy = 0;
+        } else {
+          sw = img.width; sh = sw / outRatio; sx = 0; sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
       } else {
-        sw = img.width; sh = sw / outRatio; sx = 0; sy = (img.height - sh) / 2;
+        // Se a foto falhar, desenha um placeholder no PDF
+        ctx.fillStyle = "#cccccc";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Foto indisponível", outW / 2, outH / 2);
       }
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
       return canvas.toDataURL("image/jpeg", 0.9);
     }
 
