@@ -469,7 +469,7 @@
 
       <div class="grid2">
         <div class="fld">
-          <label>Modelo Base (Para o Filtro) *</label>
+          <label>Modelo Base (Para o Filtro)</label>
           <select id="acModeloBase">
             <option value="SR20">SR20</option>
             <option value="SR22">SR22</option>
@@ -1292,7 +1292,9 @@
     const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
     const model = `${modeloBase} ${$("acVersao").value.trim()}`.trim();
     
-    if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
+    // LINHA REMOVIDA (COMENTADA): Agora o sistema não bloqueia mais se o modelo base estiver em branco
+    // if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
+    
     msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
     $("ovTranslate").classList.add("open");
     await translateAll();
