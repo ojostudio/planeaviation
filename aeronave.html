@@ -91,7 +91,7 @@ window.PA_LINKS = (function () {
 
           <div id="descBlock" class="det-desc-box" style="display:none;">
             <p class="eyebrow dark" id="descLabel" data-i18n="det_about">Sobre esta aeronave</p>
-            <p class="det-desc-text text-sm" id="descText"></p>
+            <div class="det-desc-text text-sm" id="descText"></div>
           </div>
 
           <div id="specsBlock" class="det-desc-box" style="display:none;">
@@ -259,6 +259,43 @@ function fmtPrice(p){
   return p.currency==="BRL" ? "R$"+Number(p.priceNum).toLocaleString("pt-BR") : "USD "+Number(p.priceNum).toLocaleString("en-US");
 }
 function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
+function fmtMotor(v){
+  if(v==null || v==="") return null;
+  const n = Number(v);
+  return (v !== "" && !isNaN(n) && String(v).trim() === String(n)) ? (n.toLocaleString("pt-BR")+"h") : String(v);
+}
+
+// Descrição agora suporta negrito, itálico e listas (HTML sanitizado vindo do painel).
+const RTE_ALLOWED_TAGS = {B:1,STRONG:1,I:1,EM:1,UL:1,OL:1,LI:1,BR:1,P:1,DIV:1};
+function sanitizeDescHTML(html){
+  if(!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  (function clean(node){
+    [...node.childNodes].forEach(child => {
+      if(child.nodeType === 1){
+        if(!RTE_ALLOWED_TAGS[child.tagName]){
+          while(child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+        } else {
+          [...child.attributes].forEach(attr => child.removeAttribute(attr.name));
+          clean(child);
+        }
+      } else if(child.nodeType !== 3){
+        node.removeChild(child);
+      }
+    });
+  })(tmp);
+  return tmp.innerHTML;
+}
+function isPlainTextDesc(desc){ return !!desc && !/<[a-z][\s\S]*>/i.test(desc); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function stripDescHTML(desc){
+  if(!desc) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = sanitizeDescHTML(desc);
+  return (tmp.textContent || "").replace(/\s+/g, " ").trim();
+}
 
 // Atualiza meta description/OG e injeta dados estruturados (Vehicle) assim que a
 // aeronave carrega. Ajuda o Google (que executa JS) a entender a página melhor
@@ -266,7 +303,7 @@ function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : n
 // de JS) é a etapa seguinte do trabalho de SEO.
 function updateSeoTags(p, loc_desc, loc_cond){
   const title = `${p.model}${p.year ? " "+p.year : ""} | Plane Aviation`;
-  const desc = (loc_desc || `${p.model}${p.year ? ", "+p.year : ""}${loc_cond ? " — "+loc_cond : ""}. Aeronave Cirrus disponível na Plane Aviation, representante exclusiva da marca no Brasil.`).slice(0, 300);
+  const desc = (stripDescHTML(loc_desc) || `${p.model}${p.year ? ", "+p.year : ""}${loc_cond ? " — "+loc_cond : ""}. Aeronave Cirrus disponível na Plane Aviation, representante exclusiva da marca no Brasil.`).slice(0, 300);
   const img = (p.images && p.images[0]) || "https://www.planeaviation.net.br/images/og-cover.jpg";
 
   document.querySelector('meta[name="description"]')?.setAttribute("content", desc);
@@ -330,7 +367,7 @@ function renderPage(p){
   const metas = [];
   if(p.year)              metas.push({ l:t("det_meta_year"),   v:String(p.year) });
   if(p.hoursNum!=null)    metas.push({ l:t("det_meta_cell"),   v:fmtHoras(p.hoursNum) });
-  if(p.motorHours!=null)  metas.push({ l:t("det_meta_engine"), v:fmtHoras(p.motorHours) });
+  if(p.motorHours!=null)  metas.push({ l:t("det_meta_engine"), v:fmtMotor(p.motorHours) });
   if(p.heliceHours!=null) metas.push({ l:t("det_meta_prop"),   v:fmtHoras(p.heliceHours) });
   document.getElementById("detMetas").innerHTML = metas.map(m => `<span class="det-meta-pill"><span class="ml">${m.l}</span>${m.v}</span>`).join("");
 
@@ -339,7 +376,7 @@ function renderPage(p){
   if(price){ priceEl.textContent=price; priceEl.className="det-price"; } else { priceEl.textContent=t("ac_consult"); priceEl.className="det-price consult"; }
 
   const descBlock = document.getElementById("descBlock");
-  if(loc_desc){ document.getElementById("descLabel").textContent = t("det_about"); document.getElementById("descText").textContent  = loc_desc; descBlock.style.display="block"; } else { descBlock.style.display="none"; }
+  if(loc_desc){ document.getElementById("descLabel").textContent = t("det_about"); document.getElementById("descText").innerHTML  = isPlainTextDesc(loc_desc) ? esc(loc_desc).replace(/\n+/g,"<br>") : sanitizeDescHTML(loc_desc); descBlock.style.display="block"; } else { descBlock.style.display="none"; }
 
   const specsBlock = document.getElementById("specsBlock");
   const specsHTML = loc_specs.filter(s=>s[0]||s[1]).map(s => `<div class="det-spec-row"><span class="det-spec-key">${s[0]||""}</span><span class="det-spec-val">${s[1]||""}</span></div>`).join("");
@@ -392,11 +429,11 @@ async function init(){
   if(!window.PA || !PA.configured || !pageId){ notFound(); return; }
   try {
     const doc = await PA.db.collection("aircraft").doc(pageId).get();
-    if(!doc.exists || doc.data().archived){ notFound(); return; }
+    if(!doc.exists || doc.data().archived || doc.data().draft){ notFound(); return; }
     renderPage(fromFirestore(doc.data()));
 
     const others = await PA.db.collection("aircraft").get();
-    const otherDocs = others.docs.filter(d=>d.id!==pageId && !d.data().archived).sort((a,b)=>{ const ay = Number(a.data().year)||0, by = Number(b.data().year)||0; if(ay !== by) return by - ay; return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0); }).slice(0,4);
+    const otherDocs = others.docs.filter(d=>d.id!==pageId && !d.data().archived && !d.data().draft).sort((a,b)=>{ const ay = Number(a.data().year)||0, by = Number(b.data().year)||0; if(ay !== by) return by - ay; return (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0); }).slice(0,4);
     if(otherDocs.length){ document.getElementById("otherSection").style.display="block"; document.getElementById("otherGrid").innerHTML = otherDocs.map(d=>otherCardHTML(d.id,d.data())).join(""); }
   } catch(e){ notFound(); }
 }
@@ -597,11 +634,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const priceStr = fmtPrice(P) || "Sob Consulta";
     const validSpecs = (P.specs || []).filter(s => s[0] || s[1]);
 
-    // Quebra a descrição em linhas/bullets (uma linha de texto = um marcador de lista)
-    const descLines = (P.description || "")
-      .split("\n")
-      .map(l => l.replace(/^[\s•\-\*·]+/, "").trim())
-      .filter(Boolean);
+    // Quebra a descrição (com formatação: negrito, listas) em blocos para o PDF
+    function parseDescriptionForPDF(desc){
+      if(!desc) return [];
+      if(isPlainTextDesc(desc)){
+        return desc.split("\n")
+          .map(l => l.replace(/^[\s•\-\*·]+/, "").trim())
+          .filter(Boolean)
+          .map(l => ({ bullet: "•", runs: [{ text: l, bold: false, italic: false }] }));
+      }
+      const container = document.createElement("div");
+      container.innerHTML = sanitizeDescHTML(desc);
+      const blocks = [];
+      function walkInline(node, bold, italic, out){
+        if(node.nodeType === 3){ if(node.textContent) out.push({ text: node.textContent, bold, italic }); return; }
+        if(node.nodeType !== 1) return;
+        const tag = node.tagName;
+        let b = bold, i = italic;
+        if(tag === "B" || tag === "STRONG") b = true;
+        if(tag === "I" || tag === "EM") i = true;
+        if(tag === "BR"){ out.push({ text: "\n", bold, italic }); return; }
+        node.childNodes.forEach(c => walkInline(c, b, i, out));
+      }
+      function pushBlock(bullet, node){
+        const runs = [];
+        node.childNodes.forEach(c => walkInline(c, false, false, runs));
+        if(runs.some(r => r.text.trim())) blocks.push({ bullet, runs });
+      }
+      Array.from(container.childNodes).forEach(node => {
+        if(node.nodeType === 3){ if(node.textContent.trim()) blocks.push({ bullet: null, runs: [{ text: node.textContent, bold: false, italic: false }] }); return; }
+        if(node.nodeType !== 1) return;
+        const tag = node.tagName;
+        if(tag === "UL" || tag === "OL"){
+          let idx = 1;
+          Array.from(node.children).forEach(li => {
+            if(li.tagName !== "LI") return;
+            pushBlock(tag === "OL" ? `${idx}.` : "•", li);
+            idx++;
+          });
+        } else {
+          pushBlock(null, node);
+        }
+      });
+      return blocks;
+    }
 
     // ---- Documento PDF (uma única página, layout em 2 colunas) ----
     const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
@@ -618,7 +694,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageW = 210, pageH = 297, margin = 15;
     const contentW = pageW - margin * 2;
     const gap = 8;
-    const leftW = 82;
+    const leftW = 92;
     const rightX = margin + leftW + gap;
     const rightW = contentW - leftW - gap;
 
@@ -646,8 +722,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Foto principal
     if (images[0]) {
-      const cropped = await coverCropToJpeg(images[0], 1000, 700);
-      const imgH = leftW * 0.78;
+      const imgH = leftW * 0.72; // proporção mais "paisagem", igual à usada no recorte abaixo
+      // Gera o recorte já na MESMA proporção do retângulo de destino (evita achatar a imagem)
+      const cropped = await coverCropToJpeg(images[0], Math.round(leftW * 12), Math.round(imgH * 12));
       doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
       doc.addImage(cropped, "JPEG", margin, ly, leftW, imgH);
       doc.rect(margin, ly, leftW, imgH);
@@ -690,7 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
     doc.setFontSize(8.5);
     const cmh = [
       ["Célula: ", P.hoursNum != null ? `${fmtHoras(P.hoursNum)}` : null],
-      ["Motor: ", P.motorHours != null ? `${fmtHoras(P.motorHours)}` : null],
+      ["Motor: ", P.motorHours != null ? `${fmtMotor(P.motorHours)}` : null],
       ["Hélice: ", P.heliceHours != null ? `${fmtHoras(P.heliceHours)}` : null],
     ];
     cmh.forEach(([label, val]) => {
@@ -735,14 +812,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const availH = bodyBottom - ly;
       const cols = 2;
       const rows = Math.ceil(extraImgs.length / cols);
-      let thumbH = Math.min(26, (availH - (rows - 1) * thumbGap) / rows);
+      let thumbH = Math.min(32, (availH - (rows - 1) * thumbGap) / rows);
       const maxRows = Math.max(1, Math.floor((availH + thumbGap) / (thumbH + thumbGap)));
       const shown = extraImgs.slice(0, maxRows * cols);
       for (let i = 0; i < shown.length; i++) {
         const col = i % cols, row = Math.floor(i / cols);
         const tx = margin + col * (thumbW + thumbGap);
         const ty = ly + row * (thumbH + thumbGap);
-        const cropped = await coverCropToJpeg(shown[i], 500, 380);
+        // Recorte gerado já na mesma proporção da miniatura exibida (evita achatar)
+        const cropped = await coverCropToJpeg(shown[i], Math.round(thumbW * 12), Math.round(thumbH * 12));
         doc.setDrawColor(...LGRAY); doc.setLineWidth(0.2);
         doc.addImage(cropped, "JPEG", tx, ty, thumbW, thumbH);
         doc.rect(tx, ty, thumbW, thumbH);
@@ -755,30 +833,70 @@ document.addEventListener("DOMContentLoaded", () => {
     doc.text("Descrição:", rightX, ry);
     ry += 6;
 
-    if (descLines.length) {
+    const descBlocks = parseDescriptionForPDF(P.description || "");
+    if (descBlocks.length) {
       const availH = bodyBottom - ry;
       const indent = 4;
       const bulletWrapW = rightW - indent;
 
+      function wordsOf(runs){
+        const words = [];
+        runs.forEach(r => {
+          String(r.text).split("\n").forEach((part, idx, arr) => {
+            part.split(/\s+/).filter(Boolean).forEach(w => words.push({ text: w, bold: r.bold, italic: r.italic }));
+            if (idx < arr.length - 1) words.push({ lineBreak: true });
+          });
+        });
+        return words;
+      }
+
       // Ajusta o tamanho da fonte para garantir que tudo caiba em uma única página
       let fontSize = 9;
-      let lineH, wrappedAll;
       const fitAt = (fs) => {
         doc.setFontSize(fs);
         const lh = fs * 0.42 + 1.1;
-        const wrapped = descLines.map(l => doc.splitTextToSize("• " + l, bulletWrapW));
-        const totalLines = wrapped.reduce((acc, arr) => acc + arr.length, 0);
-        return { lh, wrapped, total: totalLines * lh };
+        let totalLines = 0;
+        const renderBlocks = [];
+        descBlocks.forEach(block => {
+          const prefix = block.bullet ? block.bullet + " " : "";
+          doc.setFont("Grift", "normal");
+          const prefixW = prefix ? doc.getTextWidth(prefix) : 0;
+          const words = wordsOf(block.runs);
+          const lines = [];
+          let current = [], currentW = 0;
+          words.forEach(w => {
+            if (w.lineBreak) { lines.push(current); current = []; currentW = 0; return; }
+            doc.setFont("Grift", w.bold ? "bold" : "normal");
+            const ww = doc.getTextWidth(w.text + " ");
+            const maxW = (lines.length === 0 ? bulletWrapW - prefixW : bulletWrapW);
+            if (current.length && currentW + ww > maxW) { lines.push(current); current = []; currentW = 0; }
+            current.push(w); currentW += ww;
+          });
+          lines.push(current);
+          renderBlocks.push({ prefix, lines });
+          totalLines += lines.length;
+        });
+        return { lh, renderBlocks, total: totalLines * lh };
       };
       let fit = fitAt(fontSize);
       while (fit.total > availH && fontSize > 6.5) {
         fontSize -= 0.25;
         fit = fitAt(fontSize);
       }
-      doc.setFont("Grift", "normal"); doc.setFontSize(fontSize); doc.setTextColor(50, 50, 50);
-      fit.wrapped.forEach(lines => {
-        lines.forEach((line, i) => {
-          doc.text(line, rightX + (i === 0 ? 0 : indent), ry);
+      doc.setFontSize(fontSize); doc.setTextColor(50, 50, 50);
+      fit.renderBlocks.forEach(block => {
+        block.lines.forEach((lineWords, li) => {
+          let x = rightX + (li === 0 ? 0 : indent);
+          if (li === 0 && block.prefix) {
+            doc.setFont("Grift", "normal");
+            doc.text(block.prefix, x, ry);
+            x += doc.getTextWidth(block.prefix);
+          }
+          lineWords.forEach(w => {
+            doc.setFont("Grift", w.bold ? "bold" : "normal");
+            doc.text(w.text, x, ry);
+            x += doc.getTextWidth(w.text + " ");
+          });
           ry += fit.lh;
         });
       });

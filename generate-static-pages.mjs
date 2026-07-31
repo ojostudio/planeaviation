@@ -353,7 +353,7 @@ async function main() {
     fetchCollection("articles"),
   ]);
 
-  const activeAircraft = aircraftDocs.filter((a) => !a.archived);
+  const activeAircraft = aircraftDocs.filter((a) => !a.archived && !a.draft);
   console.log(`  ${aircraftDocs.length} aeronaves no total, ${activeAircraft.length} ativas.`);
   console.log(`  ${articleDocs.length} artigos.`);
 

@@ -61,7 +61,7 @@
   .modal-head{ display:flex; align-items:center; justify-content:space-between; padding:1.25rem 1.5rem; border-bottom:1px solid hsl(var(--border)); }
   .modal-head h3{ font-size:1rem; font-weight:700; }
   .modal-body{ padding:1.5rem; }
-  .modal-foot{ display:flex; justify-content:flex-end; gap:.75rem; padding:1.25rem 1.5rem; border-top:1px solid hsl(var(--border)); }
+  .modal-foot{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.75rem; padding:1.25rem 1.5rem; border-top:1px solid hsl(var(--border)); }
   .x-btn{ background:none; border:none; cursor:pointer; color:hsl(var(--muted-foreground)); padding:.25rem; }
 
   /* Forms */
@@ -100,15 +100,33 @@
   @media(max-width:560px){ .repeater .rrow, .repeater .rrow.feat{ grid-template-columns:1fr; } }
   .mini{ font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.03em; color:hsl(var(--foreground)); background:none; border:1px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:.5rem .75rem; cursor:pointer; }
   .rm{ background:none; border:none; color:#b42318; cursor:pointer; font-size:1.1rem; line-height:1; padding:.25rem .5rem; }
+  .fab-card{ border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:1rem; margin-bottom:1rem; }
+  .fab-card-head{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.75rem; }
+  .fab-card-head h3{ font-size:1rem; font-weight:700; margin:0; }
+  .fab-chips{ display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.75rem; }
+  .fab-chip{ display:flex; align-items:center; gap:.4rem; background:hsl(var(--muted)); border:1px solid hsl(var(--border)); border-radius:999px; padding:.25rem .35rem .25rem .75rem; font-size:.8125rem; }
+  .fab-chip button{ background:none; border:none; color:#b42318; cursor:pointer; font-size:.9rem; line-height:1; padding:.1rem .35rem; }
+  .fab-add-row{ display:flex; gap:.5rem; }
+  .fab-add-row input{ flex:1; }
+  .rte-toolbar{ display:flex; gap:.25rem; margin-bottom:.375rem; }
+  .rte-btn{ background:hsl(var(--muted)); border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.3rem .6rem; font-size:.8125rem; cursor:pointer; color:hsl(var(--foreground)); }
+  .rte-btn:hover{ background:hsl(var(--border)); }
+  .rte-editor{ min-height:8rem; max-height:20rem; overflow-y:auto; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); padding:.625rem .75rem; font-size:.875rem; line-height:1.5; background:hsl(var(--background)); }
+  .rte-editor:empty:before{ content:attr(data-placeholder); color:hsl(var(--muted-foreground)); }
+  .rte-editor ul, .rte-editor ol{ padding-left:1.25rem; margin:.25rem 0; }
+  .av-desc ul, .av-desc ol{ padding-left:1.25rem; margin:.25rem 0; }
 
   /* image uploader */
   .uploader{ border:2px dashed hsl(var(--border)); border-radius:var(--radius-sm); padding:1rem; text-align:center; }
   .uploader input{ display:none; }
   .uploader .hint{ font-size:.75rem; color:hsl(var(--muted-foreground)); }
   .thumbs-edit{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.75rem; }
-  .thumbs-edit .t{ position:relative; }
-  .thumbs-edit img{ width:4.5rem; height:3.25rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); display:block; }
+  .thumbs-edit .t{ position:relative; cursor:grab; }
+  .thumbs-edit .t.dragging{ opacity:.4; cursor:grabbing; }
+  .thumbs-edit .t.drag-over{ outline:2px solid hsl(var(--foreground)); outline-offset:2px; }
+  .thumbs-edit img{ width:4.5rem; height:3.25rem; object-fit:cover; border:1px solid hsl(var(--border)); border-radius:var(--radius-sm); display:block; pointer-events:none; }
   .thumbs-edit .del{ position:absolute; top:-.4rem; right:-.4rem; width:1.25rem; height:1.25rem; background:#b42318; color:#fff; border:none; border-radius:9999px; font-size:.7rem; cursor:pointer; line-height:1; }
+  .thumbs-edit .cover-tag{ position:absolute; bottom:-.35rem; left:-.35rem; background:hsl(var(--foreground)); color:hsl(var(--background)); font-size:.5625rem; font-weight:700; letter-spacing:.03em; padding:.05rem .3rem; border-radius:3px; text-transform:uppercase; }
   .prog{ height:.25rem; background:hsl(var(--muted)); border-radius:9999px; overflow:hidden; margin-top:.5rem; display:none; }
   .prog.show{ display:block; } .prog .bar{ height:100%; background:hsl(var(--foreground)); width:0; transition:width .2s; }
 
@@ -226,6 +244,7 @@
       <button class="tab" data-tab="partners">Parceiros</button>
       <button class="tab" data-tab="leads">Mensagens <span id="unreadBadge" class="badge-count" style="display:none; background:#b42318; color:#fff; border-radius:999px; padding:2px 6px; font-size:9px; margin-left:4px;">0</span></button>
       <button class="tab" data-tab="newsletter">Newsletter</button>
+      <button class="tab admin-only" data-tab="manufacturers">Fabricantes & Modelos</button>
       <button class="tab admin-only" data-tab="users">Usuários & Permissões</button>
     </div>
 
@@ -279,6 +298,14 @@
       </div>
     </div>
     
+    <div class="panel" id="panel-manufacturers">
+      <div class="row-head">
+        <div><h2>Fabricantes & Modelos</h2><p class="sub">Cadastre os fabricantes e os modelos base de cada um. Essa lista alimenta os campos "Fabricante" e "Modelo Base" no cadastro de aeronaves e os filtros da página Aeronaves Disponíveis.</p></div>
+        <button class="btn btn-solid btn-sm" id="addFabricante">+ Novo Fabricante</button>
+      </div>
+      <div id="fabricantesList"></div>
+    </div>
+
     <div class="panel" id="panel-users">
       <div class="row-head">
         <div><h2>Usuários &amp; Permissões</h2><p class="sub">Gerencie quem tem acesso ao painel e com qual nível de permissão.</p></div>
@@ -446,7 +473,7 @@
 </div>
 
 <div class="overlay" id="ovAircraft">
-  <div class="modal">
+  <div class="modal" style="max-width:58rem">
     <div class="modal-head"><h3 id="acTitle">Nova aeronave</h3><button class="x-btn" data-close>✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="acId">
@@ -456,12 +483,16 @@
         <input id="acCodigo" placeholder="PA-0001" style="font-family:monospace;font-weight:700;letter-spacing:.05em">
       </div>
 
+      <div class="fld">
+        <label>Título da Aeronave *</label>
+        <input id="acTitulo" placeholder="Ex: Cirrus SR22T G7+ Ferrari Edition">
+      </div>
+
       <div class="grid2">
         <div class="fld">
-          <label>Fabricante *</label>
+          <label>Fabricante (para o filtro) *</label>
           <select id="acFabricante">
-            <option value="Cirrus">Cirrus Aircraft</option>
-            <option value="Outros">Outro Fabricante</option>
+            <option value="">Selecione o fabricante…</option>
           </select>
         </div>
         <div class="fld"><label>Ano *</label><input id="acYear" type="number" placeholder="2022"></div>
@@ -469,14 +500,14 @@
 
       <div class="grid2">
         <div class="fld">
+<<<<<<< HEAD
           <label>Modelo Base (Para o Filtro)</label>
+=======
+          <label>Modelo Base (para o filtro) *</label>
+>>>>>>> e72a2c88fb356d85167a0d54199bf50a2988b87b
           <select id="acModeloBase">
-            <option value="SR20">SR20</option>
-            <option value="SR22">SR22</option>
-            <option value="SR22T">SR22T</option>
-            <option value="Vision Jet">Vision Jet</option>
+            <option value="">Selecione o fabricante primeiro…</option>
           </select>
-          <input id="acModeloBaseOutros" placeholder="Ex: Maule M-7, Cessna 172" style="display:none; margin-top:0.5rem;">
         </div>
         <div class="fld"><label>Versão / Sufixo Comercial</label><input id="acVersao" placeholder="Ex: G7+, G3, Rocket"></div>
       </div>
@@ -485,7 +516,7 @@
         <div class="fld"><label>Condição</label><select id="acCondition"><option>Novo</option><option>Seminovo</option></select></div>
       </div>
       <div class="grid2">
-        <div class="fld"><label>Motor (horas)</label><input id="acMotor" type="number" min="0" placeholder="280"></div>
+        <div class="fld"><label>Motor (horas)</label><input id="acMotor" type="text" placeholder="280 ou 280h / Overhaul em 2022"></div>
         <div class="fld"><label>Hélice (horas)</label><input id="acHelice" type="number" min="0" placeholder="280"></div>
       </div>
       <div class="grid2">
@@ -512,7 +543,7 @@
       <div class="fld">
         <label>Imagens (galeria)</label>
         <div class="uploader" id="acUpZone">
-          <div class="hint">Clique para enviar imagens (JPG/PNG) · máx. 3 fotos no modo sem Storage</div>
+          <div class="hint">Clique para enviar imagens (JPG/PNG) · máx. 5 fotos · arraste as miniaturas abaixo para reordenar</div>
           <input type="file" id="acFiles" accept="image/*" multiple>
         </div>
         <div class="prog" id="acProg"><div class="bar"></div></div>
@@ -521,7 +552,15 @@
 
       <div class="fld">
         <label>Descrição</label>
-        <textarea id="acDesc" rows="6" style="resize:vertical;min-height:8rem" placeholder="Cole aqui a descrição completa da aeronave..."></textarea>
+        <div class="rte-toolbar">
+          <button type="button" class="rte-btn" data-cmd="bold" title="Negrito"><b>B</b></button>
+          <button type="button" class="rte-btn" data-cmd="italic" title="Itálico"><i>I</i></button>
+          <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Lista com marcadores">&#8226; Lista</button>
+          <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+          <button type="button" class="rte-btn" data-case="upper" title="Selecione um trecho e clique para deixar tudo em MAIÚSCULAS">AA</button>
+          <button type="button" class="rte-btn" data-case="lower" title="Selecione um trecho e clique para deixar tudo em minúsculas">aa</button>
+        </div>
+        <div id="acDesc" class="rte-editor" contenteditable="true" data-placeholder="Cole aqui a descrição completa da aeronave..."></div>
       </div>
       
       <div class="fld">
@@ -556,6 +595,7 @@
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-outline btn-sm" id="acTranslateBtn">Revisar Traduções →</button>
+      <button class="btn btn-outline btn-sm" id="acSaveDraft">Salvar rascunho</button>
       <button class="btn btn-solid btn-sm" id="acSave">Salvar aeronave</button>
     </div>
   </div>
@@ -661,6 +701,21 @@
     <div class="modal-foot">
       <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
       <button class="btn btn-solid btn-sm" id="editUserSave">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovFabricante">
+  <div class="modal" style="max-width:28rem">
+    <div class="modal-head"><h3 id="fabTitle">Novo Fabricante</h3><button class="x-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="fabId">
+      <div class="fld"><label>Nome do Fabricante *</label><input id="fabNome" placeholder="Ex: Cirrus Aircraft"></div>
+      <div id="fabMsg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-solid btn-sm" id="fabSave">Salvar</button>
     </div>
   </div>
 </div>
@@ -854,7 +909,7 @@
     document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest(".overlay").classList.remove("open"));
 
     // Carrega tudo
-    loadAircraft(); 
+    loadFabricantes().then(() => { loadAircraft(); renderFabricantesPanel(); });
     loadLeads();
     loadPartners();
     $("exportLeadsBtn").onclick = exportLeadsCSV;
@@ -863,7 +918,7 @@
     loadNewsletter();
     wireNewsModals();
     if(me.role==="admin") { loadUsers(); loadConfig(); wireConfigPanel(); }
-    wireAircraftModal(); wireUserModal(); wireAircraftViewModal(); wirePartnerModal();
+    wireAircraftModal(); wireUserModal(); wireAircraftViewModal(); wirePartnerModal(); wireFabricanteModal();
 
     $("archivedToggle").onclick = () => {
       const sec = $("archivedSection");
@@ -876,6 +931,13 @@
       aircraftSearchTerm = e.target.value.trim();
       const filtered = aircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm));
       renderAircraftRows(filtered);
+
+      const filteredArchived = archivedAircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm));
+      renderArchivedRows(filteredArchived);
+      if(aircraftSearchTerm && filteredArchived.length){
+        $("archivedSection").style.display = "block";
+        $("archivedChevron").style.transform = "rotate(90deg)";
+      }
     });
   }
 
@@ -1092,7 +1154,7 @@
       tr.style.cursor = "pointer";
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>
-        <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
+        <td><b>${esc(a.model||"")}</b>${a.draft?` <span style="font-size:10px;font-weight:700;color:#92400e;border:1px solid #92400e;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:middle;text-transform:uppercase">Rascunho</span>`:""}<div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
         <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
       
       tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
@@ -1164,13 +1226,19 @@
     }catch(e){ alert("Erro ao duplicar: "+e.message); }
   }
 
+  let archivedAircraftCache = [];
+
   async function loadArchivedAircraft(){
-    const rows = $("archivedRows");
     const snap = await db.collection("aircraft").get().catch(()=>null);
     if(!snap){ return; }
-    const archived = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
-    $("archivedCount").textContent = archived.length ? `(${archived.length})` : "";
-    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum anúncio arquivado.</td></tr>`; return; }
+    archivedAircraftCache = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(a => a.archived);
+    renderArchivedRows(archivedAircraftCache.filter(a => matchesSearch(a, aircraftSearchTerm)));
+  }
+
+  function renderArchivedRows(archived){
+    const rows = $("archivedRows");
+    $("archivedCount").textContent = archivedAircraftCache.length ? `(${archivedAircraftCache.length})` : "";
+    if(!archived.length){ rows.innerHTML = `<tr><td class="empty-row" colspan="3">${aircraftSearchTerm ? "Nenhuma aeronave arquivada encontrada." : "Nenhum anúncio arquivado."}</td></tr>`; return; }
     rows.innerHTML = "";
     archived.forEach(a => {
       const img = (a.images&&a.images[0])?`<img class="thumb" src="${a.images[0]}">`:`<div class="thumb" style="width:5rem;height:3.75rem;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius-sm)"></div>`;
@@ -1203,11 +1271,14 @@
 
   function wireAircraftModal(){
     $("addAircraft").onclick = () => openAircraft(null, null);
+    $("acFabricante").onchange = () => populateModeloBaseSelect($("acFabricante").value);
+    wireDescEditor();
     $("acAddSpec").onclick = () => $("acSpecs").appendChild(specRow());
     $("acAddFeat").onclick = () => $("acFeats").appendChild(featRow());
     $("acUpZone").onclick = (e)=>{ if(e.target.tagName!=="INPUT") $("acFiles").click(); };
     $("acFiles").onchange = (e)=> uploadImages(e.target.files, "aircraft", $("acProg"), (url)=>{ editImages.push(url); renderEditThumbs(); });
-    $("acSave").onclick = saveAircraft;
+    $("acSave").onclick = () => saveAircraft(false, false);
+    $("acSaveDraft").onclick = () => saveAircraft(false, true);
     $("acTranslateBtn").onclick = openTranslateModal;
     wireTranslateModal();
   }
@@ -1226,7 +1297,7 @@
   async function translateAll(){
     const condition  = $("acCondition").value;
     const location   = $("acLocation").value.trim();
-    const description= $("acDesc").value.trim();
+    const description= $("acDesc").innerText.trim();
     const specs      = [...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
     const features   = [...$("acFeats").querySelectorAll(".rrow")].map(r=>({icon:r.querySelector("select").value,title:r.querySelectorAll("input")[0].value.trim(),desc:r.querySelectorAll("input")[1].value.trim()})).filter(f=>f.title||f.desc);
 
@@ -1239,10 +1310,7 @@
     trData["pt"] = { condition, location, description, specs: specs.map(s=>({label:s.label,value:s.value})), features: features.map(f=>({icon:f.icon,title:f.title,desc:f.desc})) };
   }
   function fillTranslateModal(){
-    const fabricante = $("acFabricante").value;
-    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
-    const versao = $("acVersao").value.trim();
-    $("trModel").textContent = `${modeloBase} ${versao}`.trim();
+    $("trModel").textContent = $("acTitulo").value.trim();
     
     $("tr-pt-condition").value    = trData.pt?.condition || "";
     $("tr-pt-location").value     = trData.pt?.location  || "";
@@ -1288,6 +1356,7 @@
     }
   }
   async function openTranslateModal(){
+<<<<<<< HEAD
     const fabricante = $("acFabricante").value;
     const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
     const model = `${modeloBase} ${$("acVersao").value.trim()}`.trim();
@@ -1295,6 +1364,11 @@
     // LINHA REMOVIDA (COMENTADA): Agora o sistema não bloqueia mais se o modelo base estiver em branco
     // if (!model) return alert("Informe o modelo base antes de revisar as traduções.");
     
+=======
+    const model = $("acTitulo").value.trim();
+
+    if (!model) return alert("Informe o título da aeronave antes de revisar as traduções.");
+>>>>>>> e72a2c88fb356d85167a0d54199bf50a2988b87b
     msg($("trMsg"), "Traduzindo automaticamente… (pode levar alguns segundos)", "ok");
     $("ovTranslate").classList.add("open");
     await translateAll();
@@ -1316,8 +1390,36 @@
   }
 
   function renderEditThumbs(){
-    $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t"><img src="${u}"><button class="del" data-i="${i}">×</button></div>`).join("");
-    $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=()=>{ editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
+    $("acThumbs").innerHTML = editImages.map((u,i)=>`<div class="t" draggable="true" data-i="${i}"><img src="${u}">${i===0?'<span class="cover-tag">Capa</span>':''}<button class="del" data-i="${i}">×</button></div>`).join("");
+    $("acThumbs").querySelectorAll(".del").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); editImages.splice(+b.dataset.i,1); renderEditThumbs(); });
+    wireThumbDragAndDrop();
+  }
+
+  function wireThumbDragAndDrop(){
+    const container = $("acThumbs");
+    let dragIdx = null;
+    container.querySelectorAll(".t").forEach(el => {
+      el.addEventListener("dragstart", (e) => {
+        dragIdx = +el.dataset.i;
+        el.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+      });
+      el.addEventListener("dragend", () => {
+        el.classList.remove("dragging");
+        container.querySelectorAll(".t").forEach(x=>x.classList.remove("drag-over"));
+      });
+      el.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+      el.addEventListener("dragenter", () => { if(+el.dataset.i !== dragIdx) el.classList.add("drag-over"); });
+      el.addEventListener("dragleave", () => el.classList.remove("drag-over"));
+      el.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const dropIdx = +el.dataset.i;
+        if(dragIdx === null || dropIdx === dragIdx) return;
+        const [moved] = editImages.splice(dragIdx, 1);
+        editImages.splice(dropIdx, 0, moved);
+        renderEditThumbs();
+      });
+    });
   }
   function gerarCodigoInterno(){ return `PA-${Date.now().toString().slice(-5)}${Math.floor(Math.random()*9)+1}`; }
 
@@ -1335,7 +1437,7 @@
 
     $("avBody").innerHTML = `
       <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : `<span class="av-badge">Ativa no site</span>`}
+        ${a.archived ? `<span class="av-badge archived">Arquivada</span>` : a.draft ? `<span class="av-badge archived">Rascunho — não publicada</span>` : `<span class="av-badge">Ativa no site</span>`}
         ${a.featured ? `<span class="av-badge" style="background:#b45309">Em destaque na Home</span>` : ""}
       </div>
       <div class="av-section"><div class="av-section-title">Informações Gerais</div>
@@ -1352,7 +1454,7 @@
           <div class="av-item"><label>Preço</label>${avVal(precoTxt)}</div>
         </div>
       </div>
-      <div class="av-section"><div class="av-section-title">Descrição</div>${a.description ? `<p class="av-desc">${esc(a.description)}</p>` : `<span class="val empty">Sem descrição</span>`}</div>
+      <div class="av-section"><div class="av-section-title">Descrição</div>${a.description ? `<div class="av-desc">${isPlainTextDesc(a.description) ? plainTextToDescHTML(a.description) : sanitizeDescHTML(a.description)}</div>` : `<span class="val empty">Sem descrição</span>`}</div>
       <div class="av-section"><div class="av-section-title">Imagens</div>${imagesHTML}</div>
       <div class="av-section"><div class="av-section-title">Ficha Técnica</div><div>${specsHTML}</div></div>
       <div class="av-section"><div class="av-section-title">Tecnologias a Bordo</div>${featsHTML}</div>
@@ -1370,26 +1472,16 @@
 
   function openAircraft(id, a){
     a = a || {};
-    $("acTitle").textContent = id ? "Editar aeronave" : "Nova aeronave";
+    $("acTitle").textContent = id ? (a.draft ? "Editar rascunho" : "Editar aeronave") : "Nova aeronave";
+    $("acSave").textContent = (id && a.draft) ? "Publicar aeronave" : "Salvar aeronave";
     $("acId").value = id || "";
     $("acCodigo").value = a.codigoInterno || (id ? "" : gerarCodigoInterno());
-    
-    // --- Lógica Nova do Modelo Separado ---
-    $("acFabricante").value = a.fabricante || "Cirrus";
+
+    // --- Título livre + Fabricante/Modelo Base vindos do catálogo ---
+    $("acTitulo").value = a.model || "";
     $("acVersao").value = a.versao || "";
-    
-    const isCirrus = ($("acFabricante").value === "Cirrus");
-    if(isCirrus) {
-      $("acModeloBase").value = a.modeloBase || "SR22T";
-      $("acModeloBase").style.display = "block";
-      $("acModeloBaseOutros").style.display = "none";
-      $("acModeloBaseOutros").value = "";
-    } else {
-      $("acModeloBaseOutros").value = a.modeloBase || "";
-      $("acModeloBase").style.display = "none";
-      $("acModeloBaseOutros").style.display = "block";
-    }
-    // --------------------------------------
+    populateFabricanteSelect(a.fabricante || "");
+    populateModeloBaseSelect(a.fabricante || "", a.modeloBase || "");
 
     $("acYear").value=a.year||"";
     $("acHours").value=a.hoursNum!=null?a.hoursNum:(a.hours?String(a.hours).replace(/\D/g,""):"");
@@ -1397,7 +1489,9 @@
     $("acCondition").value=a.condition||"Seminovo"; $("acLocation").value=a.location||"";
     $("acCurrency").value=a.currency||"USD";
     $("acPrice").value=a.priceNum!=null?a.priceNum:(a.price&&!isNaN(Number(String(a.price).replace(/\D/g,"")))?String(a.price).replace(/\D/g,""):"");
-    $("acSobConsulta").checked = !!a.sobConsulta; $("acTag").value=a.tag||""; $("acDesc").value=a.description||"";
+    $("acSobConsulta").checked = !!a.sobConsulta; $("acTag").value=a.tag||"";
+    const descRaw = a.description || "";
+    $("acDesc").innerHTML = isPlainTextDesc(descRaw) ? plainTextToDescHTML(descRaw) : sanitizeDescHTML(descRaw);
     editTranslations = a.translations || {}; trData = editTranslations;
     editImages = Array.isArray(a.images)? a.images.slice() : []; renderEditThumbs();
     $("acSpecs").innerHTML=""; (a.specs||[]).forEach(s=>$("acSpecs").appendChild(specRow(s.label,s.value)));
@@ -1438,13 +1532,15 @@
   // =================================================================
   // FUNÇÃO DE SALVAR AERONAVE (BLINDADA)
   // =================================================================
-  async function saveAircraft(withTranslations=false){
+  async function saveAircraft(withTranslations=false, asDraft=false){
+    const model = $("acTitulo").value.trim();
     const fabricante = $("acFabricante").value;
-    const modeloBase = fabricante === "Cirrus" ? $("acModeloBase").value : $("acModeloBaseOutros").value.trim();
+    const modeloBase = $("acModeloBase").value;
     const versao = $("acVersao").value.trim();
-    const model = `${modeloBase} ${versao}`.trim();
-    
-    if(!model) return alert("Informe o modelo.");
+
+    if(!model) return alert("Informe o título da aeronave.");
+    if(!fabricante) return alert("Selecione o fabricante.");
+    if(!modeloBase) return alert("Selecione o modelo base.");
     const codigoInterno = $("acCodigo").value.trim(); if(!codigoInterno) return alert("Informe o código interno.");
     
     const specs=[...$("acSpecs").querySelectorAll(".rrow")].map(r=>{const i=r.querySelectorAll("input");return {label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label||s.value);
@@ -1452,10 +1548,11 @@
     
     let data = { 
       model, fabricante, modeloBase, versao, 
+      draft: asDraft,
       year: Number($("acYear").value) || null, 
       codigoInterno, 
       hoursNum: $("acHours").value ? Number($("acHours").value) : null, 
-      motorHours: $("acMotor").value ? Number($("acMotor").value) : null, 
+      motorHours: $("acMotor").value.trim() || null, 
       heliceHours: $("acHelice").value ? Number($("acHelice").value) : null, 
       condition: $("acCondition").value, 
       location: $("acLocation").value.trim(), 
@@ -1464,7 +1561,7 @@
       sobConsulta: !!$("acSobConsulta").checked, 
       tag: $("acTag").value.trim(), 
       tagSolid: true, 
-      description: $("acDesc").value.trim(), 
+      description: sanitizeDescHTML($("acDesc").innerHTML), 
       translations: withTranslations ? trData : (editTranslations || {}), 
       images: editImages, 
       specs: specs, 
@@ -1477,6 +1574,7 @@
     
     // A MÁGICA ACONTECE AQUI: O Scanner purifica os dados 100% antes do Firebase ver
     let finalData = cleanFirestoreData(data);
+    if(asDraft) finalData.featured = false;
     finalData.updatedAt = ts();
     finalData.updatedBy = me.email;
     
@@ -1488,7 +1586,7 @@
         finalData.createdBy = me.email; 
         await db.collection("aircraft").add(finalData); 
       }
-      msg($("acMsg"), id ? "Aeronave atualizada com sucesso!" : "Aeronave cadastrada com sucesso!", "ok");
+      msg($("acMsg"), id ? (asDraft ? "Rascunho atualizado com sucesso!" : "Aeronave atualizada e publicada com sucesso!") : (asDraft ? "Rascunho salvo! A aeronave não aparece no site até você publicá-la." : "Aeronave cadastrada com sucesso!"), "ok");
       loadAircraft();
       setTimeout(() => $("ovAircraft").classList.remove("open"), 1200);
     } catch(e) { 
@@ -1800,6 +1898,149 @@
     } catch(e){ rows.innerHTML=`<tr><td class="empty-row" colspan="3">Erro de conexão.</td></tr>`; }
   }
 
+  /* =================================================================
+     FABRICANTES & MODELOS
+     ================================================================= */
+  let fabricantesCache = [];
+
+  async function loadFabricantes(){
+    try {
+      const snap = await db.collection("fabricantes").get();
+      fabricantesCache = snap.docs.map(d => ({ _id:d.id, ...d.data() }))
+        .sort((a,b) => (Number(a.order)||0) - (Number(b.order)||0) || String(a.nome).localeCompare(String(b.nome)));
+    } catch(e) { fabricantesCache = []; }
+    populateFabricanteSelect();
+  }
+
+  function populateFabricanteSelect(selected){
+    const sel = $("acFabricante");
+    const current = selected !== undefined ? selected : sel.value;
+    sel.innerHTML = `<option value="">Selecione o fabricante…</option>` +
+      fabricantesCache.map(f => `<option value="${esc(f.nome)}">${esc(f.nome)}</option>`).join("");
+    sel.value = current || "";
+    populateModeloBaseSelect(sel.value);
+  }
+
+  function populateModeloBaseSelect(nomeFabricante, selectedModelo){
+    const sel = $("acModeloBase");
+    const fab = fabricantesCache.find(f => f.nome === nomeFabricante);
+    const modelos = fab && Array.isArray(fab.modelos) ? fab.modelos : [];
+    if(!nomeFabricante){
+      sel.innerHTML = `<option value="">Selecione o fabricante primeiro…</option>`;
+      sel.disabled = true;
+      return;
+    }
+    sel.disabled = false;
+    sel.innerHTML = `<option value="">Selecione o modelo base…</option>` +
+      modelos.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+    sel.value = selectedModelo || "";
+  }
+
+  function renderFabricantesPanel(){
+    const list = $("fabricantesList");
+    if(!fabricantesCache.length){
+      list.innerHTML = `<p class="sub">Nenhum fabricante cadastrado ainda. Clique em "+ Novo Fabricante" para começar.</p>`;
+      return;
+    }
+    list.innerHTML = fabricantesCache.map(f => `
+      <div class="fab-card" data-id="${f._id}">
+        <div class="fab-card-head">
+          <h3>${esc(f.nome)}</h3>
+          <div class="act">
+            <button class="icon-btn edit-fab" data-id="${f._id}">Renomear</button>
+            <button class="icon-btn danger del-fab" data-id="${f._id}">Excluir Fabricante</button>
+          </div>
+        </div>
+        <div class="fab-chips" id="chips-${f._id}">
+          ${(f.modelos||[]).length ? f.modelos.map((m,i) => `<span class="fab-chip">${esc(m)}<button class="rm-modelo" data-id="${f._id}" data-idx="${i}">×</button></span>`).join("") : `<span class="sub" style="font-size:.8125rem">Nenhum modelo cadastrado.</span>`}
+        </div>
+        <div class="fab-add-row">
+          <input placeholder="Novo modelo base (ex: SR22T)" data-newmodelo="${f._id}">
+          <button class="btn btn-outline btn-sm add-modelo" data-id="${f._id}">+ Adicionar</button>
+        </div>
+      </div>
+    `).join("");
+
+    list.querySelectorAll(".edit-fab").forEach(b => b.onclick = () => openFabricante(b.dataset.id));
+    list.querySelectorAll(".del-fab").forEach(b => b.onclick = () => deleteFabricante(b.dataset.id));
+    list.querySelectorAll(".add-modelo").forEach(b => b.onclick = () => addModelo(b.dataset.id));
+    list.querySelectorAll("[data-newmodelo]").forEach(inp => inp.addEventListener("keydown", e => { if(e.key==="Enter"){ e.preventDefault(); addModelo(inp.dataset.newmodelo); } }));
+    list.querySelectorAll(".rm-modelo").forEach(b => b.onclick = () => removeModelo(b.dataset.id, Number(b.dataset.idx)));
+  }
+
+  function wireFabricanteModal(){
+    $("addFabricante").onclick = () => openFabricante(null);
+    $("fabSave").onclick = () => saveFabricante();
+  }
+
+  function openFabricante(id){
+    const f = id ? fabricantesCache.find(x => x._id === id) : null;
+    $("fabTitle").textContent = id ? "Renomear Fabricante" : "Novo Fabricante";
+    $("fabId").value = id || "";
+    $("fabNome").value = f ? f.nome : "";
+    clearMsg($("fabMsg"));
+    $("ovFabricante").classList.add("open");
+  }
+
+  async function saveFabricante(){
+    const nome = $("fabNome").value.trim();
+    if(!nome) return msg($("fabMsg"), "O nome do fabricante é obrigatório.", "err");
+    const id = $("fabId").value;
+    try {
+      if(id){
+        await db.collection("fabricantes").doc(id).update({ nome, updatedAt: ts() });
+      } else {
+        if(fabricantesCache.some(f => f.nome.toLowerCase() === nome.toLowerCase())) return msg($("fabMsg"), "Já existe um fabricante com esse nome.", "err");
+        await db.collection("fabricantes").add({ nome, modelos: [], order: fabricantesCache.length, createdAt: ts() });
+      }
+      msg($("fabMsg"), "Fabricante salvo com sucesso!", "ok");
+      await loadFabricantes();
+      renderFabricantesPanel();
+      setTimeout(() => $("ovFabricante").classList.remove("open"), 900);
+    } catch(e){ msg($("fabMsg"), e.message, "err"); }
+  }
+
+  async function deleteFabricante(id){
+    const f = fabricantesCache.find(x => x._id === id);
+    if(!f) return;
+    if(!confirm(`Excluir o fabricante "${f.nome}" e todos os seus modelos base?\n\nIsso não altera aeronaves já cadastradas, mas elas deixarão de aparecer corretamente nos filtros até serem editadas.`)) return;
+    try {
+      await db.collection("fabricantes").doc(id).delete();
+      await loadFabricantes();
+      renderFabricantesPanel();
+    } catch(e){ alert("Erro ao excluir: " + e.message); }
+  }
+
+  async function addModelo(fabId){
+    const inp = document.querySelector(`[data-newmodelo="${fabId}"]`);
+    const val = inp.value.trim();
+    if(!val) return;
+    const f = fabricantesCache.find(x => x._id === fabId);
+    if(!f) return;
+    const modelos = Array.isArray(f.modelos) ? f.modelos.slice() : [];
+    if(modelos.some(m => m.toLowerCase() === val.toLowerCase())) { inp.value = ""; return; }
+    modelos.push(val);
+    try {
+      await db.collection("fabricantes").doc(fabId).update({ modelos, updatedAt: ts() });
+      await loadFabricantes();
+      renderFabricantesPanel();
+    } catch(e){ alert("Erro ao adicionar modelo: " + e.message); }
+  }
+
+  async function removeModelo(fabId, idx){
+    const f = fabricantesCache.find(x => x._id === fabId);
+    if(!f) return;
+    const modelos = Array.isArray(f.modelos) ? f.modelos.slice() : [];
+    const nome = modelos[idx];
+    if(!confirm(`Remover o modelo "${nome}"?`)) return;
+    modelos.splice(idx, 1);
+    try {
+      await db.collection("fabricantes").doc(fabId).update({ modelos, updatedAt: ts() });
+      await loadFabricantes();
+      renderFabricantesPanel();
+    } catch(e){ alert("Erro ao remover modelo: " + e.message); }
+  }
+
   function wirePartnerModal(){
     $("addPartner").onclick=()=>openPartner(null,null); 
     $("ptSave").onclick=()=>savePartner(); 
@@ -1844,6 +2085,61 @@
   function ts(){ return firebase.firestore.FieldValue.serverTimestamp(); }
   function inlineBytes(arr){ return (arr||[]).reduce((n,u)=>n + (typeof u==="string"?u.length:0), 0); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+  /* =================================================================
+     DESCRIÇÃO — EDITOR DE TEXTO RICO (negrito, itálico, listas)
+     ================================================================= */
+  const RTE_ALLOWED_TAGS = {B:1,STRONG:1,I:1,EM:1,UL:1,OL:1,LI:1,BR:1,P:1,DIV:1};
+  function sanitizeDescHTML(html){
+    if(!html) return "";
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    (function clean(node){
+      [...node.childNodes].forEach(child => {
+        if(child.nodeType === 1){
+          if(!RTE_ALLOWED_TAGS[child.tagName]){
+            while(child.firstChild) node.insertBefore(child.firstChild, child);
+            node.removeChild(child);
+          } else {
+            [...child.attributes].forEach(attr => child.removeAttribute(attr.name));
+            clean(child);
+          }
+        } else if(child.nodeType !== 3){
+          node.removeChild(child);
+        }
+      });
+    })(tmp);
+    return tmp.innerHTML;
+  }
+  function isPlainTextDesc(desc){ return !!desc && !/<[a-z][\s\S]*>/i.test(desc); }
+  function plainTextToDescHTML(text){
+    return text.split(/\n+/).map(l=>l.trim()).filter(Boolean).map(l=>`<p>${esc(l)}</p>`).join("");
+  }
+  function wireDescEditor(){
+    const editor = $("acDesc");
+    document.querySelectorAll(".rte-btn[data-cmd]").forEach(btn => {
+      btn.onclick = () => { editor.focus(); document.execCommand(btn.dataset.cmd, false, null); };
+    });
+    document.querySelectorAll(".rte-btn[data-case]").forEach(btn => {
+      btn.onclick = () => applyCaseTransform(editor, btn.dataset.case === "upper");
+    });
+  }
+  function applyCaseTransform(editor, upper){
+    editor.focus();
+    const sel = window.getSelection();
+    if(!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if(!editor.contains(range.commonAncestorContainer)) return;
+    const frag = range.cloneContents();
+    const walker = document.createTreeWalker(frag, NodeFilter.SHOW_TEXT, null);
+    let node;
+    while(node = walker.nextNode()){
+      node.nodeValue = upper ? node.nodeValue.toUpperCase() : node.nodeValue.toLowerCase();
+    }
+    const wrap = document.createElement("div");
+    wrap.appendChild(frag);
+    document.execCommand("insertHTML", false, wrap.innerHTML);
+  }
   async function delDoc(col,id,name,after){ if(!confirm(`Excluir “${name||"item"}”?`)) return; try{ await db.collection(col).doc(id).delete(); after(); }catch(e){ alert(e.message);} }
   
   // (Legado) Usado caso o modo inline sem storage seja ativado
@@ -1883,8 +2179,8 @@
     
     // Fallback: Se não tem Storage, vai em modo inline (Base64)
     if (PA.IMAGE_MODE === "inline" || !storage) {
-      const slots = Math.max(0, 3 - editImages.length); const toProcess = Array.from(files).slice(0, slots);
-      if (files.length > slots) alert(`Modo sem Storage: máx 3 imagens.`); if (!toProcess.length) return;
+      const slots = Math.max(0, 5 - editImages.length); const toProcess = Array.from(files).slice(0, slots);
+      if (files.length > slots) alert(`Modo sem Storage: máx 5 imagens.`); if (!toProcess.length) return;
       progEl.classList.add("show"); const bar=progEl.querySelector(".bar"); bar.style.width="20%";
       for(const file of toProcess){
         if(!file.type.startsWith("image/")) continue;
@@ -1895,8 +2191,13 @@
     }
     
     // Fluxo Principal: Otimiza para WebP e sobe para o Firebase Storage
+    const slots = Math.max(0, 5 - editImages.length);
+    const toUpload = Array.from(files).slice(0, slots);
+    if(files.length > slots) alert(`Máximo de 5 imagens por aeronave. Serão enviadas apenas ${slots} das ${files.length} selecionadas.`);
+    if(!toUpload.length) return;
+
     progEl.classList.add("show"); const bar=progEl.querySelector(".bar");
-    for(const file of files){
+    for(const file of toUpload){
       if(!file.type.startsWith("image/")){ alert("Apenas imagens."); continue; }
       
       try {
