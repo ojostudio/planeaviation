@@ -513,7 +513,7 @@
       </div>
       <div class="grid2">
         <div class="fld"><label>Motor (horas)</label><input id="acMotor" type="text" placeholder="280 ou 280h / Overhaul em 2022"></div>
-        <div class="fld"><label>Hélice (horas)</label><input id="acHelice" type="number" min="0" placeholder="280"></div>
+        <div class="fld"><label>Hélice (horas)</label><input id="acHelice" type="text" placeholder="Ex: 280 ou 280h / Overhaul em 2022"></div>
       </div>
       <div class="grid2">
         <div class="fld"><label>Localização</label><input id="acLocation" placeholder="Jundiaí — SP"></div>
@@ -1540,7 +1540,7 @@
       codigoInterno, 
       hoursNum: $("acHours").value ? Number($("acHours").value) : null, 
       motorHours: $("acMotor").value.trim() || null, 
-      heliceHours: $("acHelice").value ? Number($("acHelice").value) : null, 
+      heliceHours: $("acHelice").value.trim() || null,
       condition: $("acCondition").value, 
       location: $("acLocation").value.trim(), 
       currency: $("acCurrency").value || "USD", 

@@ -258,7 +258,12 @@ function fmtPrice(p){
   if(p.sobConsulta || !p.priceNum) return null;
   return p.currency==="BRL" ? "R$"+Number(p.priceNum).toLocaleString("pt-BR") : "USD "+Number(p.priceNum).toLocaleString("en-US");
 }
-function fmtHoras(n){ return n!=null ? Number(n).toLocaleString("pt-BR")+"h" : null; }
+function fmtHoras(n) { 
+  if (n == null || n === "") return null;
+  // Se for só número, formata bonitinho com o "h". Se tiver texto, mostra exatamente o que você digitou:
+  if (!isNaN(n)) return Number(n).toLocaleString("pt-BR") + "h";
+  return String(n);
+}
 function fmtMotor(v){
   if(v==null || v==="") return null;
   const n = Number(v);
@@ -741,7 +746,7 @@ document.addEventListener("DOMContentLoaded", () => {
     doc.setFont("Grift", "bold"); doc.setFontSize(9); doc.setTextColor(...BLACK);
     doc.text("Valor: ", margin, ly);
     const valorLabelW = doc.getTextWidth("Valor: ");
-    doc.setFont("Grift", "normal"); doc.setTextColor(...RED);
+    doc.setFont("Grift", "normal"); doc.setTextColor(...BLACK);
     doc.text(priceStr, margin + valorLabelW, ly);
     ly += 7;
 
