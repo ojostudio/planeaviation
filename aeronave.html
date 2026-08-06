@@ -534,13 +534,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function imgToBase64(url) {
+    if (!url) return null;
+    // Imagens inline do Firestore já chegam como data:image/webp;base64,...
+    // fetch() de data: URIs falha silenciosamente no Safari e mobile — retorna direto.
+    if (url.startsWith("data:")) return url;
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) return url;
       const blob = await res.blob();
       return await new Promise((ok, fail) => {
         const r = new FileReader();
         r.onload = () => ok(r.result);
-        r.onerror = fail;
+        r.onerror = () => ok(url);
         r.readAsDataURL(blob);
       });
     } catch(e) { return url; }
@@ -613,7 +618,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Recorta/preenche uma imagem em um retângulo alvo, imitando "object-fit: cover"
     async function coverCropToJpeg(src, outW, outH) {
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      // crossOrigin só é necessário para URLs externas — data: URIs não precisam
+      // e em alguns browsers (Safari) causa erro ao tentar carregar
+      if (src && !src.startsWith("data:")) img.crossOrigin = "anonymous";
       
       // Nova versão blindada contra erros de imagem
       const loaded = await new Promise((resolve) => { 
