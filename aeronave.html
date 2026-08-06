@@ -617,38 +617,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Recorta/preenche uma imagem em um retângulo alvo, imitando "object-fit: cover"
     async function coverCropToJpeg(src, outW, outH) {
+      if (!src) return _blankJpeg(outW, outH);
+
       const img = new Image();
-      // crossOrigin só é necessário para URLs externas — data: URIs não precisam
-      // e em alguns browsers (Safari) causa erro ao tentar carregar
-      if (src && !src.startsWith("data:")) img.crossOrigin = "anonymous";
-      
-      // Nova versão blindada contra erros de imagem
-      const loaded = await new Promise((resolve) => { 
-        img.onload = () => resolve(true); 
-        img.onerror = () => resolve(false); // Resolve como falso em vez de causar erro!
-        img.src = src; 
+      // crossOrigin só para URLs externas — data: URIs não precisam e causam erro no Safari
+      if (!src.startsWith("data:")) img.crossOrigin = "anonymous";
+
+      const loaded = await new Promise((resolve) => {
+        // Registra os handlers ANTES de atribuir src para evitar race condition:
+        // em data: URIs muito pequenas o browser dispara onload síncrono
+        // antes dos handlers serem registrados se src for definido antes.
+        img.onload  = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+        // Se a imagem já estava em cache e complete=true, onload não dispara mais
+        if (img.complete && img.naturalWidth > 0) resolve(true);
+        else if (img.complete) resolve(false);
       });
 
+      // Aguarda um tick extra para data: URIs grandes — o browser pode reportar
+      // complete antes de decodificar o bitmap totalmente (causa drawImage em branco)
+      if (loaded && src.startsWith("data:")) {
+        await new Promise(r => setTimeout(r, 50));
+      }
+
+      return _drawCrop(img, loaded, outW, outH);
+    }
+
+    function _blankJpeg(outW, outH) {
+      const c = document.createElement("canvas");
+      c.width = outW; c.height = outH;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#f0f0f0"; ctx.fillRect(0, 0, outW, outH);
+      return c.toDataURL("image/jpeg", 0.9);
+    }
+
+    function _drawCrop(img, loaded, outW, outH) {
       const canvas = document.createElement("canvas");
       canvas.width = outW; canvas.height = outH;
       const ctx = canvas.getContext("2d");
-      
-      // Fundo padrão
       ctx.fillStyle = "#f5f5f5";
       ctx.fillRect(0, 0, outW, outH);
-
-      if (loaded) {
-        const srcRatio = img.width / img.height;
+      if (loaded && img.naturalWidth > 0) {
+        const srcRatio = img.naturalWidth / img.naturalHeight;
         const outRatio = outW / outH;
         let sx, sy, sw, sh;
         if (srcRatio > outRatio) {
-          sh = img.height; sw = sh * outRatio; sx = (img.width - sw) / 2; sy = 0;
+          sh = img.naturalHeight; sw = sh * outRatio; sx = (img.naturalWidth - sw) / 2; sy = 0;
         } else {
-          sw = img.width; sh = sw / outRatio; sx = 0; sy = (img.height - sh) / 2;
+          sw = img.naturalWidth; sh = sw / outRatio; sx = 0; sy = (img.naturalHeight - sh) / 2;
         }
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
       } else {
-        // Se a foto falhar, desenha um placeholder no PDF
         ctx.fillStyle = "#cccccc";
         ctx.font = "20px Arial";
         ctx.textAlign = "center";
@@ -658,8 +678,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Pré-carrega as fotos como base64 (evita problemas de CORS ao desenhar no canvas)
+    // Processa em SÉRIE (não Promise.all) para data: URIs grandes não competirem
+    // pelo thread de decodificação do browser simultaneamente
     const rawImages = P.images && P.images.length ? P.images : [];
-    const images = await Promise.all(rawImages.map(u => imgToBase64(u)));
+    const images = [];
+    for (const u of rawImages) {
+      images.push(await imgToBase64(u));
+    }
 
     const priceStr = fmtPrice(P) || "Sob Consulta";
     const validSpecs = (P.specs || []).filter(s => s[0] || s[1]);
