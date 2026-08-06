@@ -18,6 +18,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   body{ background:hsl(var(--background)); }
   body{ padding-top:0 !important; }
@@ -1151,10 +1152,11 @@
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>
         <td><b>${esc(a.model||"")}</b>${a.draft?` <span style="font-size:10px;font-weight:700;color:#92400e;border:1px solid #92400e;border-radius:3px;padding:1px 4px;margin-left:4px;vertical-align:middle;text-transform:uppercase">Rascunho</span>`:""}<div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700;color:hsl(var(--foreground))">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""} · ${esc(a.location||"")}</div></td>
-        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
+        <td><div class="act">${featBtn}<button class="icon-btn">Editar</button><button class="icon-btn pdf-btn">⬇ PDF</button><button class="icon-btn dup-btn">Duplicar</button><button class="icon-btn danger archive-btn">Arquivar</button></div></td>`;
       
       tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
-      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn)").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".icon-btn:not(.dup-btn):not(.archive-btn):not(.pdf-btn)").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".pdf-btn").onclick = (e) => { e.stopPropagation(); downloadAircraftPDF(a, e.currentTarget); };
       tr.querySelector(".dup-btn").onclick = (e) => { e.stopPropagation(); duplicateAircraft(a.id, a); };
       tr.querySelector(".archive-btn").onclick = (e) => { e.stopPropagation(); archiveAircraft(a.id, a.model); };
       
@@ -1244,9 +1246,10 @@
       tr.innerHTML = `
         <td style="width:5rem;padding:.5rem">${img}</td>
         <td><b>${esc(a.model||"")}</b><div style="font-size:.75rem;color:hsl(var(--muted-foreground))">${a.codigoInterno?`<span style="font-family:monospace;font-weight:700">${esc(a.codigoInterno)}</span> · `:""}${esc(a.condition||"")} · ${a.year||""}</div></td>
-        <td><div class="act"><button class="icon-btn edit-archived-btn">Editar</button><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
+        <td><div class="act"><button class="icon-btn edit-archived-btn">Editar</button><button class="icon-btn pdf-btn">⬇ PDF</button><button class="icon-btn republish-btn">↺ Republicar</button><button class="icon-btn danger del-btn">Excluir definitivamente</button></div></td>`;
       tr.addEventListener("click", (e) => { if(!e.target.closest("button")) openAircraftView(a.id, a); });
       tr.querySelector(".edit-archived-btn").onclick = (e) => { e.stopPropagation(); openAircraft(a.id, a); };
+      tr.querySelector(".pdf-btn").onclick = (e) => { e.stopPropagation(); downloadAircraftPDF(a, e.currentTarget); };
       tr.querySelector(".republish-btn").onclick = (e) => { e.stopPropagation(); unarchiveAircraft(a.id, a.model); };
       tr.querySelector(".del-btn").onclick = (e) => { e.stopPropagation(); delDoc("aircraft", a.id, a.model, () => { loadAircraft(); }); };
       rows.appendChild(tr);
@@ -2476,6 +2479,283 @@
       loadVideos();
       setTimeout(() => $("ovVideo").classList.remove("open"), 1200);
     } catch(e) { msg($("vidMsg"), e.message, "err"); }
+  }
+
+  /* ============================================================
+     GERAÇÃO DE PDF — idêntico ao aeronave.html
+     Chamado por: downloadAircraftPDF(aircraftObj, btnElement)
+     ============================================================ */
+  function fmtPrice(p){
+    if(p.sobConsulta || !p.priceNum) return null;
+    return p.currency==="BRL" ? "R$"+Number(p.priceNum).toLocaleString("pt-BR") : "USD "+Number(p.priceNum).toLocaleString("en-US");
+  }
+  function fmtHoras(n){
+    if(n==null||n==="") return null;
+    if(!isNaN(n)) return Number(n).toLocaleString("pt-BR")+"h";
+    return String(n);
+  }
+
+  async function imgToBase64PDF(url){
+    if(!url) return null;
+    if(url.startsWith("data:")) return url;
+    try {
+      const res = await fetch(url, { mode:"cors" });
+      if(!res.ok) return url;
+      const blob = await res.blob();
+      return await new Promise((ok)=>{
+        const r = new FileReader();
+        r.onload = ()=>ok(r.result);
+        r.onerror = ()=>ok(url);
+        r.readAsDataURL(blob);
+      });
+    } catch(e){ return url; }
+  }
+
+  function _blankJpegPDF(w,h){
+    const c=document.createElement("canvas"); c.width=w; c.height=h;
+    const ctx=c.getContext("2d"); ctx.fillStyle="#f0f0f0"; ctx.fillRect(0,0,w,h);
+    return c.toDataURL("image/jpeg",0.9);
+  }
+  function _drawCropPDF(img,loaded,outW,outH){
+    const c=document.createElement("canvas"); c.width=outW; c.height=outH;
+    const ctx=c.getContext("2d"); ctx.fillStyle="#f5f5f5"; ctx.fillRect(0,0,outW,outH);
+    if(loaded&&img.naturalWidth>0){
+      const sR=img.naturalWidth/img.naturalHeight, oR=outW/outH;
+      let sx,sy,sw,sh;
+      if(sR>oR){ sh=img.naturalHeight; sw=sh*oR; sx=(img.naturalWidth-sw)/2; sy=0; }
+      else      { sw=img.naturalWidth; sh=sw/oR; sx=0; sy=(img.naturalHeight-sh)/2; }
+      ctx.drawImage(img,sx,sy,sw,sh,0,0,outW,outH);
+    } else {
+      ctx.fillStyle="#cccccc"; ctx.font="20px Arial"; ctx.textAlign="center";
+      ctx.fillText("Foto indisponível",outW/2,outH/2);
+    }
+    return c.toDataURL("image/jpeg",0.9);
+  }
+  async function coverCropToJpegPDF(src,outW,outH){
+    if(!src) return _blankJpegPDF(outW,outH);
+    const img=new Image();
+    if(!src.startsWith("data:")) img.crossOrigin="anonymous";
+    const loaded=await new Promise(resolve=>{
+      img.onload=()=>resolve(true);
+      img.onerror=()=>resolve(false);
+      img.src=src;
+      if(img.complete&&img.naturalWidth>0) resolve(true);
+      else if(img.complete) resolve(false);
+    });
+    if(loaded&&src.startsWith("data:")) await new Promise(r=>setTimeout(r,50));
+    return _drawCropPDF(img,loaded,outW,outH);
+  }
+  async function svgToPngPDF(svgStr,pxW,pxH){
+    const uri="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgStr);
+    const img=new Image();
+    await new Promise((ok,fail)=>{img.onload=ok;img.onerror=fail;img.src=uri;});
+    const c=document.createElement("canvas"); c.width=pxW; c.height=pxH;
+    c.getContext("2d").drawImage(img,0,0,pxW,pxH);
+    return c.toDataURL("image/png");
+  }
+
+  async function downloadAircraftPDF(P, btn){
+    if(!window.jspdf){ alert("Biblioteca PDF ainda carregando. Tente em segundos."); return; }
+    const orig = btn ? btn.textContent : "";
+    if(btn){ btn.textContent="Gerando..."; btn.disabled=true; }
+    try {
+      await _generateAircraftPDF(P);
+    } catch(e){
+      console.error(e);
+      alert("Erro ao gerar PDF: "+e.message);
+    } finally {
+      if(btn){ btn.textContent=orig; btn.disabled=false; }
+    }
+  }
+
+  async function _generateAircraftPDF(P){
+    const { jsPDF } = window.jspdf;
+
+    const logoSvgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 459.95"><g>
+      <path fill="#000" d="M61.85,395.81l-12.03,60.13H0l37.8-188.41h84.18c12.03,0,22.19,1.77,30.5,5.3,8.3,3.54,14.79,8.31,19.47,14.32,4.67,6.02,7.73,12.93,9.16,20.76,1.43,7.83,1.29,16.03-.43,24.62-1.72,8.59-4.82,16.71-9.31,24.34-4.49,7.64-10.31,14.32-17.47,20.04-7.16,5.73-15.56,10.3-25.2,13.74-9.64,3.43-20.47,5.15-32.5,5.15h-34.36ZM78.46,313.34l-7.73,38.66h34.36c6.68,0,12.5-1.58,17.47-4.73,4.96-3.15,8.11-8.06,9.45-14.75,1.53-6.68.38-11.55-3.44-14.6-3.82-3.05-9.07-4.58-15.75-4.58h-34.36Z"/>
+      <path fill="#000" d="M277.71,455.94h-109.6l37.8-188.41h49.82l-28.63,142.59h59.78l-9.16,45.81Z"/>
+      <path fill="#000" d="M383.9,267.53h55.83l32.36,188.41h-50.68l-5.15-30.06h-67.29l-17.18,30.06h-55.83l107.95-188.41ZM371.88,385.79h37.8l-6.3-62.13h-.57l-30.92,62.13Z"/>
+      <path fill="#000" d="M509.92,267.53h51.25l54.12,106.23,21.19-106.23h50.39l-37.51,188.41h-48.68l-55.26-114.53-23.19,114.53h-50.11l37.8-188.41Z"/>
+      <path fill="#000" d="M813.77,455.94h-145.45l37.8-188.41h144.02l-8.88,44.67h-94.49l-5.44,27.77h90.19l-8.59,42.95h-90.2l-5.73,28.34h95.64l-8.88,44.67Z"/>
+      <path fill="#000" d="M945.52,267.53h19.76l39.51,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM887.96,394.66h86.47l-22.05-105.37h-.28l-64.14,105.37Z"/>
+      <path fill="#000" d="M1005.87,267.53h17.75l27.49,165.5h.57l93.63-165.5h19.75l-106.51,188.41h-20.9l-31.79-188.41Z"/>
+      <path fill="#000" d="M1162.35,455.94h-17.75l37.8-188.41h17.75l-37.8,188.41Z"/>
+      <path fill="#000" d="M1292.6,267.53h19.76l39.52,188.41h-17.75l-9.16-44.95h-99.93l-27.77,44.95h-19.76l115.1-188.41ZM1235.05,394.66h86.47l-22.05-105.37h-.29l-64.13,105.37Z"/>
+      <path fill="#000" d="M1487.79,283.85h-61.56l-34.64,172.09h-17.47l34.36-172.09h-62.42l3.43-16.32h141.74l-3.44,16.32Z"/>
+      <path fill="#000" d="M1491.97,455.94h-17.75l37.79-188.41h17.75l-37.8,188.41Z"/>
+      <path fill="#000" d="M1538.81,362.02c2.67-13.55,7.78-26.29,15.32-38.22,7.54-11.93,16.61-22.34,27.2-31.21,10.59-8.88,22.28-15.89,35.07-21.04,12.79-5.16,25.87-7.73,39.23-7.73s25.39,2.57,36.08,7.73c10.69,5.15,19.56,12.17,26.63,21.04,7.06,8.88,11.93,19.28,14.61,31.21,2.67,11.93,2.67,24.67,0,38.22-2.68,13.36-7.74,26.01-15.18,37.94-7.45,11.93-16.46,22.33-27.05,31.21-10.59,8.88-22.29,15.89-35.08,21.04-12.79,5.15-25.87,7.73-39.23,7.73s-25.39-2.58-36.07-7.73c-10.69-5.15-19.57-12.17-26.63-21.04-7.06-8.88-11.98-19.28-14.74-31.21-2.77-11.93-2.82-24.57-.14-37.94Z"/>
+      <path fill="#000" d="M1772.25,267.53h18.33l79.59,161.21,32.36-161.21h17.47l-37.51,188.41h-18.32l-79.6-161.49-32.35,161.49h-17.75l37.79-188.41Z"/>
+      </g>
+      <path fill="#dc0000" d="M351.95,0s18.82,44.01,60.49,140.68c37.7,87.45,97.97,93.92,121.87,93.92h331.66c9.55,0,9.68-13.01,0-13.01-155.54,0-252.24-84.42-305.59-169.47C541.9,22.67,502.22,0,469.15,0c-122.93,0-117.2,0-117.2,0h0Z"/>
+    </svg>`;
+
+    // Pré-carrega imagens em série
+    const rawImages = P.images&&P.images.length ? P.images : [];
+    const images = [];
+    for(const u of rawImages) images.push(await imgToBase64PDF(u));
+
+    const priceStr = fmtPrice(P) || "Sob Consulta";
+    const validSpecs = (P.specs||[]).filter(s=>s[0]||s[1]);
+
+    function parseDescriptionForPDF(desc){
+      if(!desc) return [];
+      if(isPlainTextDesc(desc)){
+        return desc.split("\n").map(l=>l.replace(/^[\s•\-\*·]+/,"").trim()).filter(Boolean)
+          .map(l=>({bullet:"•",runs:[{text:l,bold:false,italic:false}]}));
+      }
+      const container=document.createElement("div");
+      container.innerHTML=sanitizeDescHTML(desc);
+      const blocks=[];
+      function walkInline(node,bold,italic,out){
+        if(node.nodeType===3){if(node.textContent)out.push({text:node.textContent,bold,italic});return;}
+        if(node.nodeType!==1)return;
+        const tag=node.tagName; let b=bold,i=italic;
+        if(tag==="B"||tag==="STRONG")b=true;
+        if(tag==="I"||tag==="EM")i=true;
+        if(tag==="BR"){out.push({text:"\n",bold,italic});return;}
+        node.childNodes.forEach(c=>walkInline(c,b,i,out));
+      }
+      function pushBlock(bullet,node){
+        const runs=[]; node.childNodes.forEach(c=>walkInline(c,false,false,runs));
+        if(runs.some(r=>r.text.trim()))blocks.push({bullet,runs});
+      }
+      Array.from(container.childNodes).forEach(node=>{
+        if(node.nodeType===3){if(node.textContent.trim())blocks.push({bullet:null,runs:[{text:node.textContent,bold:false,italic:false}]});return;}
+        if(node.nodeType!==1)return;
+        const tag=node.tagName;
+        if(tag==="UL"||tag==="OL"){
+          let idx=1;
+          Array.from(node.children).forEach(li=>{
+            if(li.tagName!=="LI")return;
+            pushBlock(tag==="OL"?`${idx}.`:"•",li); idx++;
+          });
+        } else { pushBlock(null,node); }
+      });
+      return blocks;
+    }
+
+    const doc = new jsPDF({ unit:"mm", format:"a4", orientation:"portrait" });
+    const pageW=210, pageH=297, margin=15;
+    const contentW=pageW-margin*2;
+    const gap=8, leftW=92;
+    const rightX=margin+leftW+gap, rightW=contentW-leftW-gap;
+    const RED=[211,30,30], BLACK=[20,20,20], GRAY=[90,90,90], LGRAY=[220,220,220];
+    const footerH=12, bodyBottom=pageH-margin-footerH;
+
+    const logoPng=await svgToPngPDF(logoSvgStr,1920,460);
+    const logoWmm=42, logoHmm=logoWmm*(460/1920);
+    doc.addImage(logoPng,"PNG",margin,margin,logoWmm,logoHmm);
+    let headerBottom=margin+logoHmm+6;
+    doc.setDrawColor(...LGRAY); doc.setLineWidth(0.4);
+    doc.line(margin,headerBottom,pageW-margin,headerBottom);
+    headerBottom+=8;
+
+    let ly=headerBottom;
+    if(images[0]){
+      const imgH=leftW*0.72;
+      const cropped=await coverCropToJpegPDF(images[0],Math.round(leftW*12),Math.round(imgH*12));
+      doc.addImage(cropped,"JPEG",margin,ly,leftW,imgH);
+      ly+=imgH+6;
+    }
+    // Nome e preço (coluna esquerda)
+    doc.setFont("helvetica","bold"); doc.setFontSize(15); doc.setTextColor(...BLACK);
+    const modelLines=doc.splitTextToSize(P.model||"",leftW);
+    doc.text(modelLines,margin,ly); ly+=modelLines.length*6+2;
+    doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.setTextColor(...RED);
+    doc.text(priceStr,margin,ly); ly+=7;
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...GRAY);
+    const metaParts=[P.condition,P.year?String(P.year):null,P.codigoInterno?"Cód: "+P.codigoInterno:null].filter(Boolean);
+    if(metaParts.length){ doc.text(metaParts.join(" · "),margin,ly); ly+=5.5; }
+    ly+=3;
+    // Horas
+    const horasItems=[
+      P.hoursNum   ?{l:"Célula", v:fmtHoras(P.hoursNum)}   :null,
+      P.motorHours ?{l:"Motor",  v:fmtHoras(P.motorHours)} :null,
+      P.heliceHours?{l:"Hélice", v:fmtHoras(P.heliceHours)}:null,
+    ].filter(Boolean);
+    if(horasItems.length){
+      doc.setDrawColor(...LGRAY); doc.setLineWidth(0.3);
+      doc.setFillColor(248,248,248); doc.roundedRect(margin,ly,leftW,horasItems.length*6+4,1,1,"FD");
+      let hy=ly+5;
+      horasItems.forEach(h=>{
+        doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...GRAY);
+        doc.text(h.l+":",margin+3,hy);
+        doc.setFont("helvetica","bold"); doc.setTextColor(...BLACK);
+        doc.text(h.v,margin+leftW-3,hy,{align:"right"});
+        hy+=6;
+      });
+      ly+=horasItems.length*6+8;
+    }
+    // Specs
+    if(validSpecs.length){
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(...BLACK);
+      doc.text("Ficha Técnica",margin,ly); ly+=4;
+      doc.setDrawColor(...LGRAY); doc.setLineWidth(0.3);
+      doc.line(margin,ly,margin+leftW,ly); ly+=3;
+      validSpecs.forEach((s,i)=>{
+        if(ly>bodyBottom-6){ doc.addPage(); ly=margin; }
+        if(i%2===0){ doc.setFillColor(249,249,249); doc.rect(margin,ly-3,leftW,5.5,"F"); }
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...GRAY);
+        doc.text(String(s[0]||""),margin+1,ly);
+        doc.setFont("helvetica","bold"); doc.setTextColor(...BLACK);
+        doc.text(String(s[1]||""),margin+leftW-1,ly,{align:"right"});
+        doc.setDrawColor(...LGRAY); doc.setLineWidth(0.15);
+        doc.line(margin,ly+2,margin+leftW,ly+2);
+        ly+=5.5;
+      });
+      ly+=4;
+    }
+    // Fotos extras (coluna esquerda, abaixo das specs)
+    if(images.length>1){
+      const shown=images.slice(1,4);
+      const thumbW=(leftW-(shown.length-1)*2)/shown.length;
+      const thumbH=thumbW*0.72;
+      if(ly+thumbH<=bodyBottom){
+        for(let i=0;i<shown.length;i++){
+          const tx=margin+i*(thumbW+2), ty=ly;
+          const tc=await coverCropToJpegPDF(shown[i],Math.round(thumbW*12),Math.round(thumbH*12));
+          doc.addImage(tc,"JPEG",tx,ty,thumbW,thumbH);
+        }
+        ly+=thumbH+4;
+      }
+    }
+
+    // ---- COLUNA DIREITA ----
+    let ry=headerBottom;
+    const descBlocks=parseDescriptionForPDF(P.description);
+    if(descBlocks.length){
+      doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(...BLACK);
+      doc.text("Descrição:",rightX,ry); ry+=5;
+      doc.setDrawColor(...LGRAY); doc.setLineWidth(0.3);
+      doc.line(rightX,ry,rightX+rightW,ry); ry+=4;
+      const LINE_H=4.5;
+      descBlocks.forEach(block=>{
+        if(ry>bodyBottom-8){ doc.addPage(); ry=margin; }
+        const prefix=block.bullet?block.bullet+" ":"";
+        const indent=block.bullet?3:0;
+        let lineText=prefix;
+        block.runs.forEach(run=>{ lineText+=run.text; });
+        lineText=lineText.replace(/\n/g," ").trim();
+        if(!lineText) return;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...BLACK);
+        const wrapped=doc.splitTextToSize(lineText,rightW-indent);
+        wrapped.forEach((ln,i)=>{
+          if(ry>bodyBottom-6){ doc.addPage(); ry=margin; }
+          doc.text(ln,rightX+(i===0?0:indent),ry);
+          ry+=LINE_H;
+        });
+        ry+=1;
+      });
+    }
+
+    // ---- RODAPÉ ----
+    const footerY=pageH-margin-4;
+    doc.setDrawColor(...LGRAY); doc.setLineWidth(0.3);
+    doc.line(margin,footerY-3,pageW-margin,footerY-3);
+    doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(...GRAY);
+    doc.text("Av. Emilio Antonon 771 Aeroporto estadual de Jundiaí - SP  |  (11) 4582-6144  |  planeaviation.com.br  |  info@plane.net.br",pageW/2,footerY,{align:"center"});
+
+    doc.save(`Plane-Aviation-${(P.model||"aeronave").replace(/\s+/g,"-")}.pdf`);
   }
 
 })();
