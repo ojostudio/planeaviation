@@ -535,11 +535,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function imgToBase64(url) {
     if (!url) return null;
-    // Imagens inline do Firestore já chegam como data:image/webp;base64,...
-    // fetch() de data: URIs falha silenciosamente no Safari e mobile — retorna direto.
     if (url.startsWith("data:")) return url;
     try {
-      const res = await fetch(url, { mode: "cors" });
+      // MÁGICA AQUI: Burla o cache do navegador para evitar bloqueio de CORS
+      const safeUrl = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+      const res = await fetch(safeUrl, { mode: "cors", cache: "no-cache" });
+      
       if (!res.ok) return url;
       const blob = await res.blob();
       return await new Promise((ok, fail) => {

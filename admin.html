@@ -2499,7 +2499,10 @@
     if(!url) return null;
     if(url.startsWith("data:")) return url;
     try {
-      const res = await fetch(url, { mode:"cors" });
+      // MÁGICA AQUI: Burla o cache do navegador para evitar bloqueio de CORS
+      const safeUrl = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+      const res = await fetch(safeUrl, { mode:"cors", cache: "no-cache" });
+      
       if(!res.ok) return url;
       const blob = await res.blob();
       return await new Promise((ok)=>{
