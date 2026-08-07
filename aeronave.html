@@ -535,18 +535,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function imgToBase64(url) {
     if (!url) return null;
-    if (url.startsWith("data:")) return url;
+    if (url.startsWith("data:") || url.startsWith("blob:")) return url;
     try {
-      const safeUrl = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
-      const res = await fetch(safeUrl, { mode: "cors", cache: "no-cache" });
+      // Usando Blob Virtual para não estourar a memória RAM do visitante
+      const res = await fetch(url, { mode: "cors", cache: "no-cache" });
       if (!res.ok) return url;
       const blob = await res.blob();
-      return await new Promise((ok, fail) => {
-        const r = new FileReader();
-        r.onload = () => ok(r.result);
-        r.onerror = () => ok(url);
-        r.readAsDataURL(blob);
-      });
+      return URL.createObjectURL(blob);
     } catch(e) { return url; }
   }
 
@@ -616,27 +611,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Recorta/preenche uma imagem em um retângulo alvo, imitando "object-fit: cover"
     async function coverCropToJpeg(src, outW, outH) {
-    if (!src) return _blankJpeg(outW, outH);
+      if (!src) return _blankJpeg(outW, outH);
 
-    const img = new Image();
-    if (!src.startsWith("data:")) img.crossOrigin = "anonymous";
+      const img = new Image();
+      if (!src.startsWith("data:") && !src.startsWith("blob:")) {
+         img.crossOrigin = "anonymous";
+      }
 
-    const loaded = await new Promise((resolve) => {
-      img.onload  = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = src;
-    });
+      const loaded = await new Promise((resolve) => {
+        img.onload  = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+      });
 
-    if (loaded) {
-      await new Promise(r => setTimeout(r, 150));
+      if (loaded) {
+         // Obriga o navegador a decodificar todos os pixels antes de desenhar
+         try { await img.decode(); } catch(e){}
+      }
+
+      return _drawCrop(img, loaded, outW, outH);
     }
-
-    if (loaded && src.startsWith("data:")) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-
-    return _drawCrop(img, loaded, outW, outH);
-  }
 
     function _blankJpeg(outW, outH) {
       const c = document.createElement("canvas");

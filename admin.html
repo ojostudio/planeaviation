@@ -2495,20 +2495,16 @@
     return String(n);
   }
 
+  // --- NOVO SISTEMA BLINDADO DE IMAGENS PARA PDF ---
   async function imgToBase64PDF(url){
     if(!url) return null;
-    if(url.startsWith("data:")) return url;
+    if(url.startsWith("data:") || url.startsWith("blob:")) return url;
     try {
-      const safeUrl = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
-      const res = await fetch(safeUrl, { mode:"cors", cache: "no-cache" });
+      // Baixa a imagem e cria um BLOB VIRTUAL na memória (muito mais leve e não trava o navegador)
+      const res = await fetch(url, { mode:"cors", cache: "no-cache" });
       if(!res.ok) return url;
       const blob = await res.blob();
-      return await new Promise((ok)=>{
-        const r = new FileReader();
-        r.onload = ()=>ok(r.result);
-        r.onerror = ()=>ok(url);
-        r.readAsDataURL(blob);
-      });
+      return URL.createObjectURL(blob); 
     } catch(e){ return url; }
   }
 
@@ -2517,10 +2513,11 @@
     const ctx=c.getContext("2d"); ctx.fillStyle="#f0f0f0"; ctx.fillRect(0,0,w,h);
     return c.toDataURL("image/jpeg",0.9);
   }
+
   function _drawCropPDF(img,loaded,outW,outH){
     const c=document.createElement("canvas"); c.width=outW; c.height=outH;
     const ctx=c.getContext("2d"); ctx.fillStyle="#f5f5f5"; ctx.fillRect(0,0,outW,outH);
-    if(loaded&&img.naturalWidth>0){
+    if(loaded && img.naturalWidth>0){
       const sR=img.naturalWidth/img.naturalHeight, oR=outW/outH;
       let sx,sy,sw,sh;
       if(sR>oR){ sh=img.naturalHeight; sw=sh*oR; sx=(img.naturalWidth-sw)/2; sy=0; }
@@ -2532,19 +2529,30 @@
     }
     return c.toDataURL("image/jpeg",0.9);
   }
+
   async function coverCropToJpegPDF(src,outW,outH){
     if(!src) return _blankJpegPDF(outW,outH);
     const img=new Image();
-    if(!src.startsWith("data:")) img.crossOrigin="anonymous";
+    
+    // Se for Blob Virtual, não precisa de crossOrigin (fura o bloqueio de CORS nativamente)
+    if(!src.startsWith("data:") && !src.startsWith("blob:")) {
+        img.crossOrigin="anonymous";
+    }
+    
     const loaded = await new Promise(resolve=>{
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
       img.src = src;
     });
-    // Dá um tempo vital de 150ms pro navegador "pintar" as imagens pesadas na memória
-    if(loaded) await new Promise(r=>setTimeout(r, 150));
+    
+    if(loaded) {
+       // OBRIGA o processador gráfico a renderizar a imagem antes de colar no PDF
+       try { await img.decode(); } catch(e){}
+    }
+    
     return _drawCropPDF(img,loaded,outW,outH);
   }
+
   async function svgToPngPDF(svgStr,pxW,pxH){
     const uri="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgStr);
     const img=new Image();
