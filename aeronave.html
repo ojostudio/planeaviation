@@ -537,10 +537,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!url) return null;
     if (url.startsWith("data:")) return url;
     try {
-      // MÁGICA AQUI: Burla o cache do navegador para evitar bloqueio de CORS
       const safeUrl = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
       const res = await fetch(safeUrl, { mode: "cors", cache: "no-cache" });
-      
       if (!res.ok) return url;
       const blob = await res.blob();
       return await new Promise((ok, fail) => {
@@ -618,32 +616,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Recorta/preenche uma imagem em um retângulo alvo, imitando "object-fit: cover"
     async function coverCropToJpeg(src, outW, outH) {
-      if (!src) return _blankJpeg(outW, outH);
+    if (!src) return _blankJpeg(outW, outH);
 
-      const img = new Image();
-      // crossOrigin só para URLs externas — data: URIs não precisam e causam erro no Safari
-      if (!src.startsWith("data:")) img.crossOrigin = "anonymous";
+    const img = new Image();
+    if (!src.startsWith("data:")) img.crossOrigin = "anonymous";
 
-      const loaded = await new Promise((resolve) => {
-        // Registra os handlers ANTES de atribuir src para evitar race condition:
-        // em data: URIs muito pequenas o browser dispara onload síncrono
-        // antes dos handlers serem registrados se src for definido antes.
-        img.onload  = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = src;
-        // Se a imagem já estava em cache e complete=true, onload não dispara mais
-        if (img.complete && img.naturalWidth > 0) resolve(true);
-        else if (img.complete) resolve(false);
-      });
+    const loaded = await new Promise((resolve) => {
+      img.onload  = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = src;
+      
+      if (img.complete && img.naturalWidth > 0) resolve(true);
+      // BUG REMOVIDO AQUI TAMBÉM
+    });
 
-      // Aguarda um tick extra para data: URIs grandes — o browser pode reportar
-      // complete antes de decodificar o bitmap totalmente (causa drawImage em branco)
-      if (loaded && src.startsWith("data:")) {
-        await new Promise(r => setTimeout(r, 50));
-      }
-
-      return _drawCrop(img, loaded, outW, outH);
+    if (loaded && src.startsWith("data:")) {
+      await new Promise(r => setTimeout(r, 100));
     }
+
+    return _drawCrop(img, loaded, outW, outH);
+  }
 
     function _blankJpeg(outW, outH) {
       const c = document.createElement("canvas");
