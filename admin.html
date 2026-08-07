@@ -2532,30 +2532,18 @@
     }
     return c.toDataURL("image/jpeg",0.9);
   }
-  async function coverCropToJpegPDF(src, outW, outH){
+  async function coverCropToJpegPDF(src,outW,outH){
     if(!src) return _blankJpegPDF(outW,outH);
-    
-    const img = new Image();
-    if(!src.startsWith("data:")) img.crossOrigin = "anonymous";
-    
-    const loaded = await new Promise(resolve => {
+    const img=new Image();
+    if(!src.startsWith("data:")) img.crossOrigin="anonymous";
+    const loaded = await new Promise(resolve=>{
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
       img.src = src;
-      
-      // Resolve imediatamente apenas se a imagem já foi 100% decodificada
-      if(img.complete && img.naturalWidth > 0) resolve(true);
-      
-      // A LINHA QUE CAUSAVA O BUG FOI REMOVIDA DAQUI!
-      // O navegador agora vai aguardar o onload disparar naturalmente.
     });
-    
-    // Aumentamos o tempo de "respiro" para o navegador desenhar imagens mais pesadas
-    if(loaded && src.startsWith("data:")) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-    
-    return _drawCropPDF(img, loaded, outW, outH);
+    // Dá um tempo vital de 150ms pro navegador "pintar" as imagens pesadas na memória
+    if(loaded) await new Promise(r=>setTimeout(r, 150));
+    return _drawCropPDF(img,loaded,outW,outH);
   }
   async function svgToPngPDF(svgStr,pxW,pxH){
     const uri="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgStr);

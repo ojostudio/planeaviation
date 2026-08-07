@@ -625,10 +625,11 @@ document.addEventListener("DOMContentLoaded", () => {
       img.onload  = () => resolve(true);
       img.onerror = () => resolve(false);
       img.src = src;
-      
-      if (img.complete && img.naturalWidth > 0) resolve(true);
-      // BUG REMOVIDO AQUI TAMBÉM
     });
+
+    if (loaded) {
+      await new Promise(r => setTimeout(r, 150));
+    }
 
     if (loaded && src.startsWith("data:")) {
       await new Promise(r => setTimeout(r, 100));
