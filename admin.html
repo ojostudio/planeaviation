@@ -2494,6 +2494,11 @@
     if(!isNaN(n)) return Number(n).toLocaleString("pt-BR")+"h";
     return String(n);
   }
+  function fmtMotor(v){
+    if(v==null||v==="") return null;
+    const n = Number(v);
+    return (v!==""&&!isNaN(n)&&String(v).trim()===String(n)) ? (n.toLocaleString("pt-BR")+"h") : String(v);
+  }
 
   // --- NOVO SISTEMA BLINDADO DE IMAGENS PARA PDF ---
   async function imgToBase64PDF(url){
