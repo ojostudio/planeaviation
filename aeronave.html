@@ -701,7 +701,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       function pushBlock(bullet, node){
         const runs = [];
-        node.childNodes.forEach(c => walkInline(c, false, false, runs));
+        // O execCommand pode gerar <li><p>texto</p></li> ou <li><div>texto</div></li>
+        // Nesse caso precisamos descer dentro do <p>/<div> antes de walkInline
+        const children = Array.from(node.childNodes);
+        const onlyBlockChild = children.length === 1 &&
+          children[0].nodeType === 1 &&
+          (children[0].tagName === "P" || children[0].tagName === "DIV");
+        if (onlyBlockChild) {
+          children[0].childNodes.forEach(c => walkInline(c, false, false, runs));
+        } else {
+          node.childNodes.forEach(c => walkInline(c, false, false, runs));
+        }
         if(runs.some(r => r.text.trim())) blocks.push({ bullet, runs });
       }
       Array.from(container.childNodes).forEach(node => {
