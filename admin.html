@@ -2996,7 +2996,21 @@
             idx++;
           });
         } else {
-          pushBlock(null, node);
+          // Detecta <p> ou <div> cujo texto começa com bullet char
+          // (ocorre quando descrição antiga foi salva como texto puro com "• item"
+          //  e o plainTextToDescHTML converteu para <p>• item</p>)
+          const nodeText = node.textContent || "";
+          const bulletMatch = nodeText.match(/^[\s]*([•\-\*·])\s*/);
+          if (bulletMatch) {
+            const cleanRuns = [];
+            node.childNodes.forEach(c => walkInline(c, false, false, cleanRuns));
+            if (cleanRuns.length && cleanRuns[0].text) {
+              cleanRuns[0] = { ...cleanRuns[0], text: cleanRuns[0].text.replace(/^[\s]*[•\-\*·]\s*/, "") };
+            }
+            if (cleanRuns.some(r => r.text.trim())) blocks.push({ bullet: "•", runs: cleanRuns });
+          } else {
+            pushBlock(null, node);
+          }
         }
       });
       return blocks;
