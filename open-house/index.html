@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPEN HOUSE - PLANE AVIATION</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <video class="video-background" autoplay loop muted playsinline>
+        <source src="img/hero.mp4" type="video/mp4">
+    </video>
+
+    <div class="video-overlay"></div>
+
+    <div class="header-wrapper">
+        <header class="custom-header" id="mainHeader">
+            
+            <div class="header-top">
+                
+                <a href="#" class="logo-container">
+                    <img src="img/logo.png" alt="Plane Aviation Logo">
+                </a>
+
+                <nav class="main-nav desktop-only">
+                    <ul>
+                        <li><a href="https://www.planeaviation.net.br/aeronaves/">Aeronaves</a></li>
+                        <li><a href="https://www.planeaviation.net.br/sobre/">Sobre nós</a></li>
+                        <li><a href="https://www.planeaviation.net.br/suporte/">Suporte</a></li>
+                        <li><a href="https://www.planeaviation.net.br/news/">News</a></li>
+                    </ul>
+                </nav>
+
+                <div class="action-container desktop-only">
+                    <a href="https://www.planeaviation.net.br/contato/" class="btn-contato">Entre em contato</a>
+                </div>
+
+                <button class="menu-toggle mobile-only" id="mobileMenuBtn" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+            </div>
+
+            <nav class="nav-mobile" id="mobileMenu">
+                <ul>
+                    <li><a href="https://www.planeaviation.net.br/aeronaves/">Aeronaves</a></li>
+                        <li><a href="https://www.planeaviation.net.br/sobre/">Sobre nós</a></li>
+                        <li><a href="https://www.planeaviation.net.br/suporte/">Suporte</a></li>
+                        <li><a href="https://www.planeaviation.net.br/news/">News</a></li>
+                    <li><a href="https://www.planeaviation.net.br/contato/">Contato</a></li>
+                </ul>
+            </nav>
+
+        </header>
+    </div>
+
+    <section class="hero-content">
+        <div class="hero-container">
+            
+            <div class="hero-text">
+                <h1>Uma <span class="text-red">Nova Era</span> na Aviação Executiva</h1>
+                <p>Venha conhecer de perto as máquinas que redefinem o conceito de voar. Participe do nosso evento exclusivo.</p>
+                
+                <div class="event-details">
+                    <strong class="text-red">OPEN HOUSE</strong>
+                    <span>26 de Setembro de 2026</span>
+                </div>
+            </div>
+
+            <div class="hero-form-container">
+                <h2>Preencha Para Participar</h2>
+                
+                <form class="hero-form" id="leadForm">
+
+                    <div class="input-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" name="nome" required placeholder="Seu Nome">
+                    </div>
+                    <div class="input-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="input-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                    </div>
+                    <button type="submit" class="btn-submit" id="btnSubmit">Confirmar Presença</button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-info">
+                <p>&copy; 2026 Plane Aviation. Todos os direitos reservados.</p>
+                
+                <div class="lgpd-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lock-icon">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Seus dados estão seguros. Atuamos em estrita conformidade com a Lei Geral de Proteção de Dados (LGPD).</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
